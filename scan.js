@@ -211,7 +211,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         Do not wrap in markdown \`\`\`json. Return pure JSON only.`;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/analyze`, {
+            // Automatically switch between local development and production URLs
+            const apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
+                ? 'http://localhost:3000/api/analyze' 
+                : '/api/analyze';
+                
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
