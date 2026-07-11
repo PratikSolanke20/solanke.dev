@@ -1,3 +1,6 @@
+import { db } from './firebase-init.js';
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 // Global Variables
 let uploadedImageBase64 = '';
 let isFaceApiLoaded = false;
@@ -266,25 +269,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             displayResults(parsedData);
             
-            // Silently save report to backend AFTER chart renders
-            setTimeout(() => {
+            // Silently save report to Firebase AFTER chart renders
+            setTimeout(async () => {
                 const chartCanvas = document.getElementById('deformity-pie-chart');
                 const chartImgData = chartCanvas ? chartCanvas.toDataURL('image/png') : null;
                 
-                const saveUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                    ? 'http://localhost:3000/api/save-report' 
-                    : '/api/save-report';
-                    
-                fetch(saveUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
+                try {
+                    await addDoc(collection(db, "reports"), {
+                        id: Math.random().toString(36).substring(2) + Date.now().toString(36),
+                        timestamp: new Date().toISOString(),
                         patientDetails: patientDetails,
                         analysisData: parsedData,
                         chartImgData: chartImgData,
                         userImgData: uploadedImageBase64.startsWith('data:image') ? uploadedImageBase64 : 'data:image/jpeg;base64,' + uploadedImageBase64
-                    })
-                }).catch(err => console.log("Silent save failed:", err));
+                    });
+                } catch (err) {
+                    console.error("Firebase save failed:", err);
+                }
             }, 600);
 
             return true;
