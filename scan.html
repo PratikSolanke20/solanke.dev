@@ -31,7 +31,7 @@
     <header class="fixed top-0 w-full z-50 transition-all duration-300 glass border-b border-white/5 bg-[#020617]/80 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-                <a href="index.html" class="flex items-center gap-2">
+                <a href="index.html" class="flex items-center gap-2" id="header-logo">
                     <span class="font-heading font-bold text-2xl tracking-tight text-white flex items-center gap-2">
                         <i class="fa-solid fa-leaf text-emerald-400"></i> AyurSkin <span class="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">PRO</span>
                     </span>
@@ -401,5 +401,48 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="scan.js"></script>
+
+    <!-- Secret Admin Access -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const secretElements = [
+                document.getElementById('header-logo')
+            ];
+            
+            secretElements.forEach(el => {
+                if(!el) return;
+                
+                let clickCount = 0;
+                let clickTimer;
+                
+                el.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    clickCount++;
+                    
+                    clearTimeout(clickTimer);
+                    
+                    if (clickCount >= 5) {
+                        clickCount = 0;
+                        const pwd = prompt("Admin Authentication:");
+                        if (pwd === "Admin@123") {
+                            window.location.href = "admin.html";
+                        } else if (pwd !== null) {
+                            alert("Authentication failed.");
+                        }
+                        return;
+                    }
+
+                    clickTimer = setTimeout(() => {
+                        if (clickCount > 0 && clickCount < 5) {
+                            if(el.tagName === 'A' && el.getAttribute('href')) {
+                                window.location.href = el.getAttribute('href');
+                            }
+                        }
+                        clickCount = 0;
+                    }, 500); 
+                });
+            });
+        });
+    </script>
 </body>
 </html>
