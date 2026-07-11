@@ -1,9 +1,23 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const generateId = () => require('crypto').randomUUID ? require('crypto').randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Database Setup
+const DB_DIR = path.join(__dirname, 'database');
+const REPORTS_FILE = path.join(DB_DIR, 'reports.json');
+
+if (!fs.existsSync(DB_DIR)) {
+    fs.mkdirSync(DB_DIR);
+}
+if (!fs.existsSync(REPORTS_FILE)) {
+    fs.writeFileSync(REPORTS_FILE, JSON.stringify([]));
+}
 
 // Enable CORS for all routes so the frontend can make requests
 app.use(cors());
@@ -46,7 +60,62 @@ app.post('/api/analyze', async (req, res) => {
     }
 });
 
-// Removed old filesystem database routes (migrated to Firebase Firestore)
+// Admin Dashboard Endpoints
+
+// 1. Save Report Data (Silently called after scan)
+app.post('/api/save-report', (req, res) => {
+    try {
+        const { patientDetails, analysisData, chartImgData, userImgData } = req.body;
+        
+        if (!patientDetails || !analysisData) {
+            return res.status(400).json({ error: 'Missing required data' });
+        }
+
+        const newReport = {
+            id: generateId(),
+            timestamp: new Date().toISOString(),
+            patientDetails,
+            analysisData,
+            chartImgData, // Base64 of pie chart for recreating the PDF
+            userImgData   // Base64 of user's face photo
+        };
+
+        const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+        currentData.unshift(newReport); // Add to beginning (newest first)
+        fs.writeFileSync(REPORTS_FILE, JSON.stringify(currentData, null, 2));
+
+        res.json({ success: true, message: 'Report saved securely.' });
+    } catch (error) {
+        console.error("Error saving report:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// 2. Get All Reports (For Admin Dashboard)
+app.get('/api/reports', (req, res) => {
+    try {
+        const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+        res.json(currentData);
+    } catch (error) {
+        console.error("Error reading reports:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// 3. Delete Report (To prevent exceeding free limits)
+app.delete('/api/delete-report/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+        const filteredData = currentData.filter(report => report.id !== id);
+        
+        fs.writeFileSync(REPORTS_FILE, JSON.stringify(filteredData, null, 2));
+        res.json({ success: true, message: 'Report deleted successfully.' });
+    } catch (error) {
+        console.error("Error deleting report:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
