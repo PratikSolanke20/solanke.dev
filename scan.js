@@ -265,6 +265,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             const parsedData = JSON.parse(aiText);
             
             displayResults(parsedData);
+            
+            // Silently save report to backend AFTER chart renders
+            setTimeout(() => {
+                const chartCanvas = document.getElementById('deformity-pie-chart');
+                const chartImgData = chartCanvas ? chartCanvas.toDataURL('image/png') : null;
+                
+                const saveUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
+                    ? 'http://localhost:3000/api/save-report' 
+                    : '/api/save-report';
+                    
+                fetch(saveUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        patientDetails: patientDetails,
+                        analysisData: parsedData,
+                        chartImgData: chartImgData,
+                        userImgData: uploadedImageBase64.startsWith('data:image') ? uploadedImageBase64 : 'data:image/jpeg;base64,' + uploadedImageBase64
+                    })
+                }).catch(err => console.log("Silent save failed:", err));
+            }, 600);
+
             return true;
 
         } catch (error) {
@@ -489,9 +511,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     <!-- Header -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 20px; margin-bottom: 25px;">
-                        <div>
-                            <h1 style="margin: 0; color: #34d399; font-size: 28px; font-weight: 800; letter-spacing: -1px;">AyurSkin PRO</h1>
-                            <p style="margin: 3px 0 0 0; color: #10b981; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Clinical Microscopic Skin Audit</p>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div style="width: 60px; height: 60px; border-radius: 12px; overflow: hidden; border: 2px solid #10b981; background-color: #0f172a;">
+                                <img src="${uploadedImageBase64.startsWith('data:image') ? uploadedImageBase64 : 'data:image/jpeg;base64,' + uploadedImageBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                            </div>
+                            <div>
+                                <h1 style="margin: 0; color: #34d399; font-size: 28px; font-weight: 800; letter-spacing: -1px;">AyurSkin PRO</h1>
+                                <p style="margin: 3px 0 0 0; color: #10b981; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Clinical Microscopic Skin Audit</p>
+                            </div>
                         </div>
                         <div style="text-align: right; background: #0f172a; padding: 12px 20px; border-radius: 12px; border: 1px solid #1e293b;">
                             <div style="display: flex; gap: 20px;">
