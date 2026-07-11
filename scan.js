@@ -191,23 +191,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 5. Elite Gemini API Call (Chart Data included)
     async function fetchGeminiAnalysis() {
         const prompt = `Perform an EXHAUSTIVE microscopic clinical Ayurvedic skin audit on this facial image.
+        Crucially, DO NOT limit your analysis to just acne. You MUST accurately diagnose and identify a wide spectrum of skin diseases and abnormalities if they are present on the user's skin. 
+        Look closely for:
+        - Acne & Eruptions: Pimples (Yauvana Pidaka), Blackheads/Whiteheads (Mukhadushika), Papules/Pustules (Pidaka), Nodules, Boils (Vidradhi).
+        - Pigmentation & Color: Hyperpigmentation/Melasma/Sun Spots (Vyanga), Freckles (Neelika), Dark Circles (Shyawata), Vitiligo (Shwitra), Redness (Raktadushti), Pallor.
+        - Inflammation & Rashes: Eczema/Dermatitis (Vicharchika), Psoriasis (Ekakushtha), Rosacea (Mukharunata), Urticaria (Sheetapitta), Fungal/Ringworm (Dadru).
+        - Texture & Aging: Enlarged Pores (Romakupa Vistara), Wrinkles (Vali), Fine Lines, Sagging (Twacha Shaithilya), Scars (Vrana Chihna), Roughness.
+        - Other: Warts (Charmakeela), Moles (Tilakalaka), Cysts (Granthi), Swelling/Edema (Shotha), Dryness (Ruksha Twacha), Excess Oil (Snigdha Twacha).
+        
+        ONLY report conditions you GENUINELY detect in the image based on proper clinical analysis. Do not invent conditions.
+
         Provide a strictly valid JSON response containing EXACTLY these keys:
-        1. "spots": Array of ALL minute spots, pimples, dark spots, depressions, and pits found on the skin. You must return a massive array (up to 50 items) mapping EVERY single deformity you can see.
-           - "type": string (e.g. "Acne", "Pigmentation", "Pore", "Scar", "Pit")
+        1. "spots": Array of ALL detected lesions, rashes, patches, spots, and deformities. You must return a massive array (up to 50 items) mapping EVERY single affected area.
+           - "type": string (Name the condition, e.g., "Acne", "Melasma", "Eczema Patch", "Wrinkle", "Large Pore", "Redness", "Fungal Lesion")
            - "x": number (percentage 0-100 for X coordinate)
            - "y": number (percentage 0-100 for Y coordinate)
-           - "radius": number (Size of the circle required to cover the spot exactly. 1-2 for tiny dots, 3-6 for medium spots, 7-12 for large patches)
+           - "radius": number (Size of the circle. 1-2 for tiny dots, 3-6 for medium spots, 7-15 for large rashes/patches)
         2. "analysis": An object containing:
-           - "overallDiseaseType": string
-           - "causes": array of 3-5 strings (Keep these SHORT, punchy, like "High Pitta Dosha" or "UV Damage")
-           - "spreadPercentage": number (Integer 1-100)
-           - "symptoms": array of 3-5 short strings (e.g. "Inflamed pores", "Redness on cheeks")
-        3. "chartData": An object mapping deformity types to their percentages (Must add up to 100).
-           - e.g. {"Acne": 40, "Pigmentation": 30, "Pores": 30}
-        4. "treatments": Array of objects for Ayurvedic remedies.
+           - "overallDiseaseType": string (The primary Ayurvedic diagnosis, e.g., "Severe Mukhadushika", "Vicharchika (Eczema)", "Vyanga (Melasma)")
+           - "causes": array of 3-5 strings (Keep these SHORT, punchy, like "High Pitta Dosha", "UV Damage", "Fungal Overgrowth")
+           - "spreadPercentage": number (Integer 1-100 representing total facial area affected)
+           - "symptoms": array of 3-5 short strings (e.g. "Inflamed pores", "Flaky red patches", "Severe hyperpigmentation")
+        3. "chartData": An object mapping deformity/condition types to their percentages (Must add up to 100).
+           - e.g. {"Eczema": 40, "Pigmentation": 30, "Wrinkles": 20, "Pores": 10}
+        4. "treatments": Array of objects for specific Ayurvedic remedies tailored to the EXACT diagnosis.
            - "title": string (Remedy Name)
            - "instructions": string (Exact steps, short and punchy)
-           - "icon": string (A font-awesome class name that best represents it, e.g. "fa-solid fa-leaf", "fa-solid fa-droplet", "fa-solid fa-mortar-pestle")
+           - "icon": string (A font-awesome class name, e.g. "fa-solid fa-leaf", "fa-solid fa-droplet", "fa-solid fa-mortar-pestle", "fa-solid fa-spa")
         Do not wrap in markdown \`\`\`json. Return pure JSON only.`;
 
         try {
