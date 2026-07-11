@@ -1,3 +1,6 @@
+import { db } from './firebase-init.js';
+import { collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     const loadingState = document.getElementById('loading-state');
     const emptyState = document.getElementById('empty-state');
@@ -18,14 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchReports() {
         try {
-            const apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                ? 'http://localhost:3000/api/reports' 
-                : '/api/reports';
-
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error("Failed to fetch reports");
+            const querySnapshot = await getDocs(collection(db, "reports"));
+            allReports = [];
+            querySnapshot.forEach((docSnapshot) => {
+                let data = docSnapshot.data();
+                data.docId = docSnapshot.id;
+                allReports.push(data);
+            });
             
-            allReports = await response.json();
+            // Sort by latest first
+            allReports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
             renderDashboard();
         } catch (error) {
             console.error("Dashboard error:", error);
@@ -99,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button onclick="viewReport('${report.id}')" class="flex-1 py-2 rounded-xl bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-white/5 hover:border-emerald-500/50 transition-all text-sm font-medium flex items-center justify-center gap-2">
                         <i class="fa-solid fa-eye"></i> View PDF Data
                     </button>
-                    <button onclick="deleteReport('${report.id}')" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-red-500/20 text-slate-500 hover:text-red-400 border border-white/5 hover:border-red-500/50 transition-all flex items-center justify-center" title="Delete Record">
+                    <button onclick="deleteReport('${report.docId}')" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-red-500/20 text-slate-500 hover:text-red-400 border border-white/5 hover:border-red-500/50 transition-all flex items-center justify-center" title="Delete Record">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </div>
@@ -212,24 +218,19 @@ document.addEventListener('DOMContentLoaded', () => {
         openModal();
     };
 
-    window.deleteReport = async function(id) {
+    window.deleteReport = async function(docId) {
         if(!confirm("Are you sure you want to permanently delete this patient record? This action cannot be undone.")) return;
         
         try {
-            const apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                ? 'http://localhost:3000/api/delete-report/' + id
-                : '/api/delete-report/' + id;
-
-            const response = await fetch(apiUrl, { method: 'DELETE' });
-            if (!response.ok) throw new Error("Delete failed");
+            await deleteDoc(doc(db, "reports", docId));
             
             // Optimistic UI update
-            allReports = allReports.filter(r => r.id !== id);
+            allReports = allReports.filter(r => r.docId !== docId);
             renderDashboard();
             
         } catch (error) {
             console.error("Delete error:", error);
-            alert("Failed to delete the record. Please ensure the server is running.");
+            alert("Failed to delete the record. Please check your connection.");
         }
     };
 
