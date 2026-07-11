@@ -1,0 +1,127 @@
+/* AyurSkin Pro-Max Ultimate CSS */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+html { scroll-behavior: smooth; background-color: #020617; }
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', sans-serif;
+    color: #f8fafc;
+    background-color: #020617;
+    overflow-x: hidden;
+}
+h1, h2, h3, h4, h5, h6, .font-heading { font-family: 'Outfit', sans-serif; }
+
+/* Premium Glassmorphism */
+.glass {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-card {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Magnetic Shimmer CTA Button */
+.btn-magnetic {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+    border-radius: 9999px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.btn-magnetic:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.btn-magnetic::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-20deg); animation: shimmer 3s infinite;
+}
+@keyframes shimmer { 100% { left: 200%; } }
+
+/* Massive CTA Button */
+.btn-massive {
+    padding: 1.25rem 4rem;
+    font-size: 1.25rem;
+    background: linear-gradient(135deg, #059669 0%, #10b981 50%, #0d9488 100%);
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* How It Works Steps */
+.step-card { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.step-card:hover { transform: translateY(-10px); }
+
+/* Circular Progress Ring */
+.circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+.circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3.8; }
+.circle {
+    fill: none; stroke-width: 2.8; stroke-linecap: round;
+    transition: stroke-dasharray 2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.percentage-text { font-family: 'Outfit', sans-serif; font-size: 8px; font-weight: bold; fill: #fff; text-anchor: middle; dominant-baseline: middle; }
+.label-text { font-family: 'Inter', sans-serif; font-size: 3px; fill: #94a3b8; text-anchor: middle; dominant-baseline: baseline; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #020617; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+/* Mega Menu */
+.group:hover .invisible { visibility: visible; }
+
+/* Drag & Drop Zone */
+.drop-zone {
+    border: 2px dashed rgba(16, 185, 129, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(16, 185, 129, 0.02);
+}
+.drop-zone:hover, .drop-zone.dragover { border-color: #10b981; background: rgba(16, 185, 129, 0.1); transform: scale(1.02); }
+
+/* Pulsing Scan Line */
+.scan-line {
+    position: absolute; width: 100%; height: 3px; background: #10b981;
+    box-shadow: 0 0 15px #10b981, 0 0 30px #10b981;
+    animation: scan 2s ease-in-out infinite; top: 0; left: 0; z-index: 10;
+}
+@keyframes scan { 0% { top: -5%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { top: 105%; opacity: 0; } }
+
+/* Dynamic Detected Spots */
+.spot-circle {
+    position: absolute;
+    border: 2px solid #ef4444; 
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.2);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 20;
+    animation: contract-relax 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes contract-relax {
+    0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.7; box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+    100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; box-shadow: 0 0 15px rgba(239, 68, 68, 1); }
+}
+
+/* Ambient Background Glow */
+.ambient-glow { position: fixed; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(2, 6, 23, 0) 70%); top: -20vw; right: -20vw; border-radius: 50%; z-index: -1; pointer-events: none; }
+.ambient-glow-2 { position: fixed; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(2, 6, 23, 0) 70%); bottom: -10vw; left: -10vw; border-radius: 50%; z-index: -1; pointer-events: none; }
+
+/* Camera UI */
+#camera-video { transform: scaleX(-1); /* Mirror effect */ object-fit: cover; }

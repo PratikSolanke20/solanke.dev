@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner - AyurSkin PRO</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Outfit', 'sans-serif'] },
+                    colors: { emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669', 900: '#064e3b' } }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-sans antialiased bg-[#020617] text-slate-200 selection:bg-emerald-500/30">
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+
+    <!-- Header (Synced with index.html) -->
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 glass border-b border-white/5 bg-[#020617]/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="index.html" class="flex items-center gap-2" id="header-logo">
+                    <span class="font-heading font-bold text-2xl tracking-tight text-white flex items-center gap-2">
+                        <i class="fa-solid fa-leaf text-emerald-400"></i> AyurSkin <span class="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">PRO</span>
+                    </span>
+                </a>
+
+                <nav class="hidden md:flex space-x-8 items-center h-full">
+                    <a href="index.html#how-it-works" class="text-slate-300 hover:text-white font-medium transition-colors text-sm tracking-wide">How it works</a>
+                    
+                    <div class="group relative h-full flex items-center">
+                        <button class="text-slate-300 group-hover:text-white font-medium transition-colors inline-flex items-center gap-1 text-sm tracking-wide">
+                            Our Solutions <i class="fa-solid fa-chevron-down text-[10px] transition-transform group-hover:rotate-180"></i>
+                        </button>
+                        <div class="absolute top-[80px] left-1/2 -translate-x-1/2 w-[600px] glass-card rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-4 overflow-hidden flex shadow-2xl">
+                            <div class="w-1/2 p-6 border-r border-white/10">
+                                <h3 class="font-heading font-semibold text-slate-200 mb-4 flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-400"><i class="fa-solid fa-circle-exclamation"></i> Common Concern</h3>
+                                <ul class="space-y-2">
+                                    <li><a href="#" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-red-500/10 text-red-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-virus"></i></div><div><div class="font-medium text-slate-200 text-sm">Acne & Pimples</div></div></a></li>
+                                    <li><a href="#" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-sun"></i></div><div><div class="font-medium text-slate-200 text-sm">Pigmentation</div></div></a></li>
+                                    <li><a href="#" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-blue-500/10 text-blue-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-droplet"></i></div><div><div class="font-medium text-slate-200 text-sm">Dull Texture</div></div></a></li>
+                                </ul>
+                            </div>
+                            <div class="w-1/2 p-6">
+                                <h3 class="font-heading font-semibold text-slate-200 mb-4 flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-400"><i class="fa-solid fa-wand-magic-sparkles"></i> Our Approach</h3>
+                                <ul class="space-y-2">
+                                    <li><a href="#" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-robot"></i></div><div><div class="font-medium text-slate-200 text-sm">AI Technology</div></div></a></li>
+                                    <li><a href="#" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-mortar-pestle"></i></div><div><div class="font-medium text-slate-200 text-sm">Ayurvedic Remedies</div></div></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://www.linkedin.com/in/pratiksolanke20/" target="_blank" class="group relative flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-b from-white/5 to-transparent border border-white/10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:-translate-y-0.5">
+                        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 opacity-0 group-hover:opacity-100 translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-1000 ease-in-out"></div>
+                        <div class="flex items-center gap-2 relative z-10">
+                            <span class="text-[10px] uppercase tracking-[0.2em] text-slate-400 group-hover:text-emerald-400 transition-colors duration-300 font-semibold">Creator</span>
+                            <div class="w-px h-3 bg-white/10 group-hover:bg-emerald-500/30 transition-colors"></div>
+                            <span class="text-sm font-medium text-slate-200 group-hover:text-white transition-colors tracking-wide">Pratik Solanke</span>
+                        </div>
+                        <div class="relative z-10 flex items-center justify-center w-6 h-6 rounded-full bg-[#0A66C2]/10 group-hover:bg-[#0A66C2]/20 border border-[#0A66C2]/20 group-hover:border-[#0A66C2]/50 transition-all duration-300">
+                            <i class="fa-brands fa-linkedin-in text-[#0A66C2] text-xs group-hover:scale-110 transition-transform"></i>
+                        </div>
+                    </a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="hidden md:inline-flex px-4 py-2 text-sm text-slate-400 hover:text-white transition-colors border border-white/10 rounded-full hover:bg-white/5">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Exit
+                    </a>
+                    <button id="mobile-menu-btn" class="md:hidden relative group p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <i class="fa-solid fa-bars text-lg text-slate-300 group-hover:text-white relative z-10 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-24 min-h-screen flex flex-col items-center">
+        <!-- Analyze Section -->
+        <section id="analyze-section" class="w-full relative px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div class="glass-card rounded-[2.5rem] p-8 md:p-16 text-center border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500 hover:shadow-[0_20px_60px_rgba(16,185,129,0.15)]">
+                <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Diagnostic Terminal</h2>
+                <p class="text-slate-400 mb-12">System ready. Enter patient details to proceed with microscopic tensor analysis.</p>
+
+                <!-- User Details Form -->
+                <div id="user-info-form" class="max-w-md mx-auto bg-slate-900/50 p-8 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-md mb-8 transition-all duration-500">
+                    <h3 class="text-xl font-bold text-white mb-6 font-heading text-left flex items-center gap-3"><i class="fa-solid fa-user-injured text-emerald-400"></i> Patient Details</h3>
+                    <form id="patient-form" class="space-y-5 text-left">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Full Name</label>
+                            <input type="text" id="user-name" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="E.g. John Doe">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Age</label>
+                                <input type="number" id="user-age" required min="1" max="120" class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="25">
+                            </div>
+                            <div class="relative">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Gender</label>
+                                <select id="user-gender" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer shadow-inner">
+                                    <option value="" disabled selected class="text-slate-500">Select...</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="absolute right-4 top-10 pointer-events-none text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Phone Number</label>
+                            <input type="tel" id="user-phone" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="+91 - 00000 - 00000">
+                        </div>
+                        <button type="submit" class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-lg shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_10px_40px_rgba(16,185,129,0.5)] hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2 group">
+                            Continue to Scanner <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Input Selection -->
+                <div id="input-selection" class="hidden flex flex-col md:flex-row justify-center gap-6 mb-8">
+                    <button id="open-camera-btn" class="flex-1 max-w-xs mx-auto bg-slate-900/50 p-8 rounded-3xl border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-300 transform hover:-translate-y-2 group shadow-xl hover:shadow-[0_15px_30px_rgba(16,185,129,0.2)]">
+                        <div class="text-4xl text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300"><i class="fa-solid fa-camera"></i></div>
+                        <h3 class="text-lg font-bold text-white mb-2">Live Camera</h3>
+                        <p class="text-xs text-slate-400">Take a photo instantly</p>
+                    </button>
+                    <div class="flex-1 max-w-xs mx-auto bg-slate-900/50 p-8 rounded-3xl border border-white/5 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all duration-300 transform hover:-translate-y-2 group relative cursor-pointer overflow-hidden shadow-xl hover:shadow-[0_15px_30px_rgba(59,130,246,0.2)]">
+                        <input type="file" id="image-upload" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="text-4xl text-blue-400 mb-4 group-hover:scale-110 transition-transform duration-300"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <h3 class="text-lg font-bold text-white mb-2">Upload Photo</h3>
+                        <p class="text-xs text-slate-400">Select from device library</p>
+                    </div>
+                </div>
+
+                <!-- Live Camera UI -->
+                <div id="camera-container" class="hidden max-w-md mx-auto relative rounded-2xl overflow-hidden border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+                    <video id="camera-video" class="w-full h-auto bg-black" autoplay playsinline></video>
+                    <canvas id="camera-canvas" class="hidden"></canvas>
+                    <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-4">
+                        <button id="capture-btn" class="btn-magnetic rounded-full shadow-2xl px-8 py-4 transform hover:scale-105">
+                            <i class="fa-solid fa-camera mr-2"></i> Capture Scan
+                        </button>
+                        <button id="close-camera-btn" class="px-5 py-4 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/40 border border-red-500/30 transition-all shadow-xl">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Processing / Preview -->
+                <div id="preview-container" class="hidden mt-8">
+                    <div class="relative mx-auto flex justify-center max-w-md">
+                        <div class="relative inline-block rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.2)] border border-emerald-500/30">
+                            <img id="image-preview" src="" alt="Subject" class="block w-full opacity-80" style="filter: contrast(1.05);">
+                            <div id="scan-line" class="scan-line hidden"></div>
+                            <div id="spots-container" class="absolute inset-0"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="error-message" class="hidden mt-6 text-red-400 text-sm font-medium bg-red-500/10 border border-red-500/20 p-4 rounded-xl inline-flex items-center justify-center gap-3 w-full max-w-md mx-auto">
+                        <i class="fa-solid fa-triangle-exclamation text-lg"></i> <span id="error-text">Tensor error: No human face detected.</span>
+                    </div>
+                    
+                    <div id="action-buttons" class="mt-8 flex flex-col md:flex-row justify-center items-center gap-4">
+                        <button id="reupload-btn" class="px-6 py-3 rounded-full text-sm font-medium text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-2"></i> Retake
+                        </button>
+                        <button id="start-analysis-btn" class="hidden btn-magnetic px-8 py-3 transform hover:scale-105">
+                            Execute Neural Scan <i class="fa-solid fa-bolt ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Advanced Progress Engine -->
+                <div id="progress-container" class="hidden mt-10 max-w-2xl mx-auto bg-black/40 p-6 rounded-3xl border border-white/5">
+                    <div class="flex justify-between items-end mb-4">
+                        <span class="text-sm font-medium text-emerald-400 tracking-wider uppercase text-xs animate-pulse" id="progress-text">Initializing microscopic tensors...</span>
+                        <span class="text-lg font-bold text-white font-heading" id="progress-percentage">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800/50 rounded-full h-3 overflow-hidden border border-white/5 shadow-inner relative">
+                        <div id="progress-bar" class="bg-gradient-to-r from-emerald-600 via-emerald-400 to-cyan-400 h-full rounded-full transition-all duration-300 ease-out relative shadow-[0_0_15px_rgba(16,185,129,0.5)]" style="width: 0%">
+                            <div class="absolute inset-0 bg-white/30 animate-pulse"></div>
+                            <div class="absolute top-0 right-0 bottom-0 w-10 bg-gradient-to-r from-transparent to-white opacity-50 blur-sm"></div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-4 text-center uppercase tracking-widest flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-server text-emerald-500 animate-pulse"></i> Back-end process Running in progress....
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Results Section (PDF Target) -->
+        <!-- PDF fix: We wrap the content in a cleaner div that html2pdf can render without choking on complex 3D CSS -->
+        <section id="results-section" class="hidden w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-20">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+                <div>
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-white">Clinical Diagnosis</h2>
+                    <p class="text-emerald-400 text-sm tracking-widest uppercase mt-1">Microscopic Audit Complete</p>
+                </div>
+                <button id="download-pdf-btn" class="btn-magnetic px-6 py-2.5 text-sm flex items-center gap-2 transform hover:scale-105">
+                    <i class="fa-solid fa-download"></i> Download Report
+                </button>
+            </div>
+            
+            <div id="pdf-wrapper">
+                <div id="pdf-content" class="space-y-8 bg-[#020617] rounded-3xl p-6">
+                    <!-- Dynamic Grid inserted via JS -->
+                    <div id="results-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <!-- JS Injected Content -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (Synced with index.html) -->
+    <footer class="bg-[#01040f] text-slate-400 py-16 border-t border-white/10 relative overflow-hidden w-full mt-auto">
+        <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/10 to-transparent pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <span class="font-heading font-bold text-2xl tracking-tight text-white flex items-center gap-2 mb-6">
+                        <i class="fa-solid fa-leaf text-emerald-400"></i> AyurSkin
+                    </span>
+                    <p class="text-sm leading-relaxed mb-6">We provide natural, dermatologist-approved skincare solutions that combine ancient Ayurvedic wisdom with modern technology.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-6 uppercase tracking-widest text-xs">Services</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Face Analysis</a></li>
+                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Ayurvedic Care</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-6 uppercase tracking-widest text-xs">Resources</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-6 uppercase tracking-widest text-xs">Contact</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-envelope text-emerald-400"></i> Pratiksolanke20@gmail.com</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-phone text-emerald-400"></i> +91 94055 60764</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-location-dot text-emerald-400"></i> Dharashiv</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 PRATIK SOLANKE. All rights reserved.</p>
+                <a href="https://www.linkedin.com/in/pratiksolanke20/" target="_blank" class="group relative inline-flex items-center gap-4 px-6 py-3 rounded-2xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/5 hover:border-white/10 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1">
+                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div class="flex flex-col items-start relative z-10">
+                        <span class="text-[10px] uppercase tracking-[0.15em] text-slate-500 group-hover:text-emerald-400 transition-colors font-semibold mb-0.5">Engineered By</span>
+                        <span class="text-sm font-bold text-slate-200 group-hover:text-white transition-colors tracking-wide flex items-center gap-2">
+                            Pratik Solanke 
+                            <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-[#0A66C2]/10 flex items-center justify-center border border-[#0A66C2]/20 group-hover:bg-[#0A66C2] group-hover:border-[#0A66C2] group-hover:shadow-[0_0_15px_rgba(10,102,194,0.5)] transition-all duration-500 relative z-10">
+                        <i class="fa-brands fa-linkedin-in text-[#0A66C2] group-hover:text-white text-sm transition-colors"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Side Panel -->
+    <div id="mobile-menu" class="fixed inset-0 z-[100] invisible">
+        <!-- Backdrop -->
+        <div id="mobile-menu-backdrop" class="absolute inset-0 bg-[#020617]/80 backdrop-blur-md opacity-0 transition-opacity duration-500"></div>
+        <!-- Panel -->
+        <div id="mobile-menu-panel" class="absolute top-0 right-0 h-full w-[85%] max-w-sm bg-gradient-to-b from-[#0f172a] to-[#020617] border-l border-white/10 shadow-[auto_0_50px_rgba(0,0,0,0.5)] transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col">
+            <!-- Header -->
+            <div class="p-6 flex justify-between items-center relative">
+                <div class="absolute bottom-0 left-6 right-6 h-px bg-gradient-to-r from-emerald-500/50 to-transparent"></div>
+                <span class="font-heading font-bold text-2xl text-white flex items-center gap-2 tracking-tight">
+                    <i class="fa-solid fa-leaf text-emerald-400"></i> AyurSkin <span class="text-[10px] px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">PRO</span>
+                </span>
+                <button id="close-menu-btn" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-300">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Links -->
+            <div class="p-6 flex-1 overflow-y-auto flex flex-col gap-2">
+                <a href="index.html#how-it-works" class="group relative flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-300 mobile-link">
+                    <span class="text-lg font-medium text-slate-300 group-hover:text-white transition-colors">How it works</span>
+                    <i class="fa-solid fa-arrow-right text-sm text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all"></i>
+                </a>
+                
+                <div class="mt-4 mb-2 px-4">
+                    <h4 class="text-xs font-semibold text-emerald-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-microscope"></i> Solutions
+                    </h4>
+                    <div class="flex flex-col gap-2">
+                        <a href="#" class="group relative flex items-center gap-4 p-3 rounded-2xl hover:bg-red-500/5 border border-transparent hover:border-red-500/10 transition-all duration-300 mobile-link">
+                            <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 group-hover:bg-red-500/20 transition-all shadow-[inset_0_1px_rgba(255,255,255,0.1)]"><i class="fa-solid fa-virus"></i></div>
+                            <span class="text-slate-300 group-hover:text-white font-medium transition-colors">Acne & Pimples</span>
+                        </a>
+                        <a href="#" class="group relative flex items-center gap-4 p-3 rounded-2xl hover:bg-amber-500/5 border border-transparent hover:border-amber-500/10 transition-all duration-300 mobile-link">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 group-hover:bg-amber-500/20 transition-all shadow-[inset_0_1px_rgba(255,255,255,0.1)]"><i class="fa-solid fa-sun"></i></div>
+                            <span class="text-slate-300 group-hover:text-white font-medium transition-colors">Pigmentation</span>
+                        </a>
+                        <a href="#" class="group relative flex items-center gap-4 p-3 rounded-2xl hover:bg-blue-500/5 border border-transparent hover:border-blue-500/10 transition-all duration-300 mobile-link">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all shadow-[inset_0_1px_rgba(255,255,255,0.1)]"><i class="fa-solid fa-droplet"></i></div>
+                            <span class="text-slate-300 group-hover:text-white font-medium transition-colors">Dull Texture</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer of Mobile Menu -->
+            <div class="p-6 pb-8 bg-gradient-to-t from-[#020617] to-transparent relative z-10">
+                <a href="scan.html" class="flex justify-center items-center w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-lg shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_10px_40px_rgba(16,185,129,0.5)] hover:-translate-y-1 transition-all duration-300 mobile-link mb-6 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                    <span class="relative z-10 flex items-center"><i class="fa-solid fa-camera mr-2"></i> Launch Scanner</span>
+                </a>
+                
+                <!-- Premium Developer Card -->
+                <a href="https://www.linkedin.com/in/pratiksolanke20/" target="_blank" class="group block relative p-5 rounded-3xl bg-slate-800/40 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/80 transition-all duration-500 shadow-xl overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-[#0A66C2]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:bg-emerald-500/30 transition-colors"></div>
+                    
+                    <div class="flex items-center gap-4 relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-600 group-hover:border-emerald-500 flex items-center justify-center shadow-lg transition-all duration-500 overflow-hidden relative group-hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                             <i class="fa-solid fa-code text-slate-400 group-hover:text-emerald-400 transition-colors absolute"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-medium mb-1">Architected By</p>
+                            <h4 class="text-base font-bold text-slate-200 group-hover:text-white transition-colors tracking-wide leading-none">Pratik Solanke</h4>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-[#0A66C2]/10 flex items-center justify-center group-hover:bg-[#0A66C2] transition-colors duration-500 group-hover:shadow-[0_0_15px_rgba(10,102,194,0.5)]">
+                            <i class="fa-brands fa-linkedin-in text-[#0A66C2] group-hover:text-white transition-colors"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Script -->
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function openMenu() {
+            if(!mobileMenu) return;
+            mobileMenu.classList.remove('invisible');
+            setTimeout(() => {
+                mobileMenuBackdrop.classList.remove('opacity-0');
+                mobileMenuPanel.classList.remove('translate-x-full');
+            }, 10);
+        }
+
+        function closeMenu() {
+            if(!mobileMenu) return;
+            mobileMenuBackdrop.classList.add('opacity-0');
+            mobileMenuPanel.classList.add('translate-x-full');
+            setTimeout(() => {
+                mobileMenu.classList.add('invisible');
+            }, 300);
+        }
+
+        if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMenu);
+        if(closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
+        if(mobileMenuBackdrop) mobileMenuBackdrop.addEventListener('click', closeMenu);
+        
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="scan.js"></script>
+
+    <!-- Secret Admin Access -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const secretElements = [
+                document.getElementById('header-logo')
+            ];
+            
+            secretElements.forEach(el => {
+                if(!el) return;
+                
+                let clickCount = 0;
+                let clickTimer;
+                
+                el.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    clickCount++;
+                    
+                    clearTimeout(clickTimer);
+                    
+                    if (clickCount >= 5) {
+                        clickCount = 0;
+                        const pwd = prompt("Admin Authentication:");
+                        if (pwd === "Admin@123") {
+                            window.location.href = "admin.html";
+                        } else if (pwd !== null) {
+                            alert("Authentication failed.");
+                        }
+                        return;
+                    }
+
+                    clickTimer = setTimeout(() => {
+                        if (clickCount > 0 && clickCount < 5) {
+                            if(el.tagName === 'A' && el.getAttribute('href')) {
+                                window.location.href = el.getAttribute('href');
+                            }
+                        }
+                        clickCount = 0;
+                    }, 500); 
+                });
+            });
+        });
+    </script>
+</body>
+</html>
