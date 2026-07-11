@@ -8,15 +8,19 @@ const generateId = () => require('crypto').randomUUID ? require('crypto').random
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Database Setup
-const DB_DIR = path.join(__dirname, 'database');
+// Database Setup - Handle read-only filesystems on Vercel by using /tmp if necessary
+const DB_DIR = process.env.VERCEL ? path.join('/tmp', 'database') : path.join(__dirname, 'database');
 const REPORTS_FILE = path.join(DB_DIR, 'reports.json');
 
-if (!fs.existsSync(DB_DIR)) {
-    fs.mkdirSync(DB_DIR);
-}
-if (!fs.existsSync(REPORTS_FILE)) {
-    fs.writeFileSync(REPORTS_FILE, JSON.stringify([]));
+try {
+    if (!fs.existsSync(DB_DIR)) {
+        fs.mkdirSync(DB_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(REPORTS_FILE)) {
+        fs.writeFileSync(REPORTS_FILE, JSON.stringify([]));
+    }
+} catch (err) {
+    console.error("Warning: Could not initialize local database. (Expected on read-only serverless environments like Vercel).");
 }
 
 // Enable CORS for all routes so the frontend can make requests
@@ -117,6 +121,10 @@ app.delete('/api/delete-report/:id', (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
