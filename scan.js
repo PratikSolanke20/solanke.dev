@@ -4,9 +4,28 @@ let isFaceApiLoaded = false;
 let stream = null;
 let currentChart = null; // Store chart instance to destroy if re-running
 let lastAnalysisData = null; // Memory binding for PDF accuracy
+let patientDetails = { name: '', age: '', gender: '', phone: '' };
 
 document.addEventListener('DOMContentLoaded', async () => {
     const inputSelection = document.getElementById('input-selection');
+    const userInfoForm = document.getElementById('user-info-form');
+    const patientForm = document.getElementById('patient-form');
+    
+    // Handle Patient Form Submission
+    patientForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        patientDetails.name = document.getElementById('user-name').value;
+        patientDetails.age = document.getElementById('user-age').value;
+        patientDetails.gender = document.getElementById('user-gender').value;
+        patientDetails.phone = document.getElementById('user-phone').value;
+        
+        userInfoForm.classList.add('hidden');
+        inputSelection.classList.remove('hidden');
+        
+        // Update subtitle
+        const subtitle = document.querySelector('#analyze-section p');
+        if(subtitle) subtitle.innerText = "System ready. Capture or upload a frontal, well-lit photograph for microscopic tensor analysis.";
+    });
     const openCameraBtn = document.getElementById('open-camera-btn');
     const cameraContainer = document.getElementById('camera-container');
     const cameraVideo = document.getElementById('camera-video');
@@ -469,14 +488,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div id="infographic-capture-area" style="background-color: #020617; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 794px; height: 1122px; box-sizing: border-box; overflow: hidden; padding: 40px;">
                     
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #10b981; padding-bottom: 15px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 20px; margin-bottom: 25px;">
                         <div>
                             <h1 style="margin: 0; color: #34d399; font-size: 28px; font-weight: 800; letter-spacing: -1px;">AyurSkin PRO</h1>
                             <p style="margin: 3px 0 0 0; color: #10b981; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Clinical Microscopic Skin Audit</p>
                         </div>
-                        <div style="text-align: right;">
-                            <p style="margin: 0; color: #94a3b8; font-size: 11px;">Date: ${new Date().toLocaleDateString()}</p>
-                            <p style="margin: 3px 0 0 0; color: #94a3b8; font-size: 11px;">Report ID: ASN-${Math.floor(Math.random()*100000)}</p>
+                        <div style="text-align: right; background: #0f172a; padding: 12px 20px; border-radius: 12px; border: 1px solid #1e293b;">
+                            <div style="display: flex; gap: 20px;">
+                                <div style="text-align: left;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;">Patient Name</p>
+                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 13px; font-weight: bold;">${patientDetails.name || 'N/A'}</p>
+                                </div>
+                                <div style="width: 1px; background: #1e293b;"></div>
+                                <div style="text-align: left;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;">Age / Gender</p>
+                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 13px; font-weight: bold;">${patientDetails.age || 'N/A'} / ${patientDetails.gender || 'N/A'}</p>
+                                </div>
+                                <div style="width: 1px; background: #1e293b;"></div>
+                                <div style="text-align: left;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;">Contact</p>
+                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 13px; font-weight: bold;">${patientDetails.phone || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between;">
+                                <p style="margin: 0; color: #64748b; font-size: 9px;">Date: ${new Date().toLocaleDateString()}</p>
+                                <p style="margin: 0; color: #64748b; font-size: 9px;">Report ID: ASN-${Math.floor(Math.random()*100000)}</p>
+                            </div>
                         </div>
                     </div>
                     
