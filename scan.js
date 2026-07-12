@@ -11,13 +11,49 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userInfoForm = document.getElementById('user-info-form');
     const patientForm = document.getElementById('patient-form');
     
+    // Initialize intl-tel-input
+    let iti;
+    const phoneInput = document.querySelector("#user-phone");
+    if(phoneInput && window.intlTelInput) {
+        iti = window.intlTelInput(phoneInput, {
+            initialCountry: "auto",
+            geoIpLookup: function(success, failure) {
+                fetch("https://ipapi.co/json")
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) { success(data.country_code); })
+                    .catch(function() { success("us"); });
+            },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/19.2.1/js/utils.js",
+            strictMode: true,
+            autoPlaceholder: "polite"
+        });
+    }
+    
     // Handle Patient Form Submission
     patientForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        // Validate Phone Number
+        if (iti) {
+            const phoneError = document.getElementById('phone-error');
+            const phoneContainer = document.getElementById('user-phone');
+            if (!iti.isValidNumber()) {
+                phoneError.classList.remove('hidden');
+                phoneContainer.classList.add('border-red-500/50', 'shadow-[inset_0_0_10px_rgba(239,68,68,0.3)]');
+                phoneContainer.classList.remove('focus:border-emerald-500/50', 'hover:border-white/20');
+                return; // Stop form submission
+            } else {
+                phoneError.classList.add('hidden');
+                phoneContainer.classList.remove('border-red-500/50', 'shadow-[inset_0_0_10px_rgba(239,68,68,0.3)]');
+                phoneContainer.classList.add('focus:border-emerald-500/50', 'hover:border-white/20');
+            }
+        }
+
         patientDetails.name = document.getElementById('user-name').value;
         patientDetails.age = document.getElementById('user-age').value;
         patientDetails.gender = document.getElementById('user-gender').value;
-        patientDetails.phone = document.getElementById('user-phone').value;
+        // Save the full international number for the final report
+        patientDetails.phone = iti ? iti.getNumber() : document.getElementById('user-phone').value;
         
         userInfoForm.classList.add('hidden');
         inputSelection.classList.remove('hidden');
