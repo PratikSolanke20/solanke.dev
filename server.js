@@ -3,7 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const { kv } = require('@vercel/kv');
+const Redis = require('ioredis');
+
+// Initialize Redis if the URL is provided (Supports both Upstash and Vercel KV standard Redis URLs)
+const redisUrl = process.env.REDIS_URL || process.env.KV_URL;
+const redis = redisUrl ? new Redis(redisUrl) : null;
 
 const generateId = () => require('crypto').randomUUID ? require('crypto').randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
@@ -86,12 +90,13 @@ app.post('/api/save-report', async (req, res) => {
             userImgData   // Base64 of user's face photo
         };
 
-        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-            let currentData = await kv.get('ayurskin_reports') || [];
+        if (redis) {
+            let currentDataString = await redis.get('ayurskin_reports');
+            let currentData = currentDataString ? JSON.parse(currentDataString) : [];
             currentData.unshift(newReport);
             // Limit to 50 reports to avoid payload size limit issues
             if (currentData.length > 50) currentData = currentData.slice(0, 50);
-            await kv.set('ayurskin_reports', currentData);
+            await redis.set('ayurskin_reports', JSON.stringify(currentData));
         } else {
             const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
             currentData.unshift(newReport); // Add to beginning (newest first)
@@ -108,8 +113,9 @@ app.post('/api/save-report', async (req, res) => {
 // 2. Get All Reports (For Admin Dashboard)
 app.get('/api/reports', async (req, res) => {
     try {
-        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-            const currentData = await kv.get('ayurskin_reports') || [];
+        if (redis) {
+            const currentDataString = await redis.get('ayurskin_reports');
+            const currentData = currentDataString ? JSON.parse(currentDataString) : [];
             res.json(currentData);
         } else {
             const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
@@ -126,10 +132,11 @@ app.delete('/api/delete-report/:id', async (req, res) => {
     try {
         const { id } = req.params;
         
-        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-            const currentData = await kv.get('ayurskin_reports') || [];
-            const filteredData = currentData.filter(report => report.id !== id);
-            await kv.set('ayurskin_reports', filteredData);
+        if (redis) {
+            const currentDataString = await redis.get('ayurskin_reports');
+            let currentData = currentDataString ? JSON.parse(currentDataString) : [];
+            currentData = currentData.filter(report => report.id !== id);
+            await redis.set('ayurskin_reports', JSON.stringify(currentData));
         } else {
             const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
             const filteredData = currentData.filter(report => report.id !== id);
