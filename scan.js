@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error("Genuine API Error:", error);
-            showError(`API Error: Ensure the API Key is correct and quota is available.`);
+            showError(`Server is busy. Please wait 30 seconds and try again.`);
             return false;
         }
     }
