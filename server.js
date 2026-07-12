@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const { kv } = require('@vercel/kv');
+
 const generateId = () => require('crypto').randomUUID ? require('crypto').randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
 const app = express();
@@ -67,7 +69,7 @@ app.post('/api/analyze', async (req, res) => {
 // Admin Dashboard Endpoints
 
 // 1. Save Report Data (Silently called after scan)
-app.post('/api/save-report', (req, res) => {
+app.post('/api/save-report', async (req, res) => {
     try {
         const { patientDetails, analysisData, chartImgData, userImgData } = req.body;
         
@@ -84,9 +86,17 @@ app.post('/api/save-report', (req, res) => {
             userImgData   // Base64 of user's face photo
         };
 
-        const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
-        currentData.unshift(newReport); // Add to beginning (newest first)
-        fs.writeFileSync(REPORTS_FILE, JSON.stringify(currentData, null, 2));
+        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+            let currentData = await kv.get('ayurskin_reports') || [];
+            currentData.unshift(newReport);
+            // Limit to 50 reports to avoid payload size limit issues
+            if (currentData.length > 50) currentData = currentData.slice(0, 50);
+            await kv.set('ayurskin_reports', currentData);
+        } else {
+            const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+            currentData.unshift(newReport); // Add to beginning (newest first)
+            fs.writeFileSync(REPORTS_FILE, JSON.stringify(currentData, null, 2));
+        }
 
         res.json({ success: true, message: 'Report saved securely.' });
     } catch (error) {
@@ -96,10 +106,15 @@ app.post('/api/save-report', (req, res) => {
 });
 
 // 2. Get All Reports (For Admin Dashboard)
-app.get('/api/reports', (req, res) => {
+app.get('/api/reports', async (req, res) => {
     try {
-        const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
-        res.json(currentData);
+        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+            const currentData = await kv.get('ayurskin_reports') || [];
+            res.json(currentData);
+        } else {
+            const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+            res.json(currentData);
+        }
     } catch (error) {
         console.error("Error reading reports:", error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -107,13 +122,20 @@ app.get('/api/reports', (req, res) => {
 });
 
 // 3. Delete Report (To prevent exceeding free limits)
-app.delete('/api/delete-report/:id', (req, res) => {
+app.delete('/api/delete-report/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
-        const filteredData = currentData.filter(report => report.id !== id);
         
-        fs.writeFileSync(REPORTS_FILE, JSON.stringify(filteredData, null, 2));
+        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+            const currentData = await kv.get('ayurskin_reports') || [];
+            const filteredData = currentData.filter(report => report.id !== id);
+            await kv.set('ayurskin_reports', filteredData);
+        } else {
+            const currentData = JSON.parse(fs.readFileSync(REPORTS_FILE, 'utf8'));
+            const filteredData = currentData.filter(report => report.id !== id);
+            fs.writeFileSync(REPORTS_FILE, JSON.stringify(filteredData, null, 2));
+        }
+        
         res.json({ success: true, message: 'Report deleted successfully.' });
     } catch (error) {
         console.error("Error deleting report:", error);
