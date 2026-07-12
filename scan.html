@@ -22,21 +22,6 @@
         }
     </script>
     <link rel="stylesheet" href="style.css">
-    
-    <!-- intl-tel-input -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/19.2.1/css/intlTelInput.css">
-    <style>
-        .iti { width: 100%; display: block; }
-        .iti__country-list { background-color: #0f172a; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 1rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 100; overflow-y: auto; }
-        .iti__country.iti__highlight { background-color: rgba(16, 185, 129, 0.2); }
-        .iti__country.iti__active { background-color: rgba(16, 185, 129, 0.4); }
-        .iti__search-input { background-color: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 0.5rem; padding: 0.5rem; margin: 0.5rem; width: calc(100% - 1rem); }
-        .iti__selected-flag { border-radius: 1rem 0 0 1rem; padding: 0 16px; background-color: transparent !important; transition: all 0.2s; }
-        .iti__selected-flag:hover { background-color: rgba(255,255,255,0.05) !important; }
-        .iti__arrow { border-top-color: #94a3b8; }
-        .iti__arrow--up { border-bottom-color: #94a3b8; }
-        .iti__divider { border-bottom: 1px solid rgba(255,255,255,0.1); }
-    </style>
 </head>
 <body class="font-sans antialiased bg-[#020617] text-slate-200 selection:bg-emerald-500/30">
     <div class="ambient-glow"></div>
@@ -112,74 +97,37 @@
                 <p class="text-slate-400 mb-12">System ready. Enter patient details to proceed with microscopic tensor analysis.</p>
 
                 <!-- User Details Form -->
-                <!-- User Details Form -->
-                <div id="user-info-form" class="max-w-lg mx-auto bg-[#0b1121]/90 p-10 rounded-[40px] border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.8)] backdrop-blur-3xl mb-8 transition-all duration-700 relative overflow-hidden group hover:border-emerald-500/30">
-                    <div class="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/20 blur-[50px] rounded-full group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
-                    
-                    <div class="flex items-center gap-5 mb-10 relative z-10">
-                        <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl text-emerald-400 shadow-[inset_0_0_20px_rgba(16,185,129,0.2)]">
-                            <i class="fa-solid fa-clipboard-user"></i>
+                <div id="user-info-form" class="max-w-md mx-auto bg-slate-900/50 p-8 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-md mb-8 transition-all duration-500">
+                    <h3 class="text-xl font-bold text-white mb-6 font-heading text-left flex items-center gap-3"><i class="fa-solid fa-user-injured text-emerald-400"></i> Patient Details</h3>
+                    <form id="patient-form" class="space-y-5 text-left">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Full Name</label>
+                            <input type="text" id="user-name" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="E.g. John Doe">
                         </div>
-                        <div class="text-left">
-                            <h3 class="text-3xl font-bold text-white tracking-tight">Patient Details</h3>
-                            <p class="text-[11px] text-emerald-400 uppercase tracking-widest font-bold mt-1">Clinical Registration</p>
-                        </div>
-                    </div>
-
-                    <form id="patient-form" class="space-y-7 text-left relative z-10">
-                        <!-- Full Name -->
-                        <div class="relative group/input">
-                            <label class="block text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-2 pl-1 transition-colors group-focus-within/input:text-emerald-400">Full Name</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Age</label>
+                                <input type="number" id="user-age" required min="1" max="120" class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="25">
+                            </div>
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-emerald-400 transition-colors">
-                                    <i class="fa-solid fa-user"></i>
-                                </div>
-                                <input type="text" id="user-name" required class="w-full bg-black/40 border border-white/10 rounded-2xl pl-11 pr-4 py-4 text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-600 hover:border-white/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]" placeholder="Enter patient's full name">
-                            </div>
-                        </div>
-
-                        <!-- Age & Gender Grid -->
-                        <div class="grid grid-cols-2 gap-5">
-                            <div class="relative group/input">
-                                <label class="block text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-2 pl-1 transition-colors group-focus-within/input:text-emerald-400">Age</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-emerald-400 transition-colors">
-                                        <i class="fa-solid fa-calendar-days"></i>
-                                    </div>
-                                    <input type="number" id="user-age" required min="1" max="120" class="w-full bg-black/40 border border-white/10 rounded-2xl pl-11 pr-4 py-4 text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-600 hover:border-white/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]" placeholder="E.g. 25">
-                                </div>
-                            </div>
-
-                            <div class="relative group/input">
-                                <label class="block text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-2 pl-1 transition-colors group-focus-within/input:text-emerald-400">Gender</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-emerald-400 transition-colors z-10">
-                                        <i class="fa-solid fa-venus-mars"></i>
-                                    </div>
-                                    <select id="user-gender" required class="w-full bg-black/40 border border-white/10 rounded-2xl pl-11 pr-10 py-4 text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all appearance-none cursor-pointer hover:border-white/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]">
-                                        <option value="" disabled selected class="text-slate-500">Select...</option>
-                                        <option value="Male" class="text-slate-800">Male</option>
-                                        <option value="Female" class="text-slate-800">Female</option>
-                                        <option value="Other" class="text-slate-800">Other</option>
-                                    </select>
-                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within/input:text-emerald-400 transition-colors">
-                                        <i class="fa-solid fa-chevron-down text-xs"></i>
-                                    </div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Gender</label>
+                                <select id="user-gender" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer shadow-inner">
+                                    <option value="" disabled selected class="text-slate-500">Select...</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="absolute right-4 top-10 pointer-events-none text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Phone Number -->
-                        <div class="relative group/input">
-                            <label class="block text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-2 pl-1 transition-colors group-focus-within/input:text-emerald-400">Mobile Number</label>
-                            <input type="tel" id="user-phone" required class="w-full bg-black/40 border border-white/10 rounded-2xl py-4 text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all hover:border-white/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]">
-                            <p id="phone-error" class="hidden text-red-400 text-xs font-medium mt-2 pl-1"><i class="fa-solid fa-circle-exclamation mr-1"></i> Invalid phone number format for this country.</p>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Phone Number</label>
+                            <input type="tel" id="user-phone" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="+91 - 00000 - 00000">
                         </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="w-full py-4 mt-8 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_40px_rgba(16,185,129,0.5)] hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-3 group relative overflow-hidden">
-                            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                            <span class="relative z-10 flex items-center gap-2">Initialize Scanner <i class="fa-solid fa-bolt text-amber-300 group-hover:animate-pulse"></i></span>
+                        <button type="submit" class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-lg shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_10px_40px_rgba(16,185,129,0.5)] hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2 group">
+                            Continue to Scanner <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                         </button>
                     </form>
                 </div>
@@ -450,8 +398,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/19.2.1/js/intlTelInput.min.js"></script>
     <script src="scan.js"></script>
 
     <!-- Secret Admin Access -->
