@@ -100,34 +100,75 @@
                 <div id="user-info-form" class="max-w-md mx-auto bg-slate-900/50 p-8 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-md mb-8 transition-all duration-500">
                     <h3 class="text-xl font-bold text-white mb-6 font-heading text-left flex items-center gap-3"><i class="fa-solid fa-user-injured text-emerald-400"></i> Patient Details</h3>
                     <form id="patient-form" class="space-y-5 text-left">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Full Name</label>
-                            <input type="text" id="user-name" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="E.g. John Doe">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Age</label>
-                                <input type="number" id="user-age" required min="1" max="120" class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="25">
+                        <div class="relative group">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 transition-colors group-hover:text-emerald-400">Full Name</label>
+                            <div class="relative flex items-center transition-transform duration-300 group-hover:translate-x-1">
+                                <i class="fa-solid fa-user absolute left-4 text-slate-500 group-hover:text-emerald-400 transition-colors z-10"></i>
+                                <input type="text" id="user-name" required class="w-full bg-[#020617] border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-600 shadow-inner hover:border-white/20" placeholder="E.g. John Doe">
                             </div>
-                            <div class="relative">
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Gender</label>
-                                <select id="user-gender" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all appearance-none cursor-pointer shadow-inner">
-                                    <option value="" disabled selected class="text-slate-500">Select...</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <div class="absolute right-4 top-10 pointer-events-none text-slate-500">
-                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-4">
+                            <div class="relative group">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 transition-colors group-hover:text-emerald-400">Age</label>
+                                <div class="relative flex items-center transition-transform duration-300 group-hover:translate-x-1">
+                                    <i class="fa-solid fa-calendar-days absolute left-4 text-slate-500 group-hover:text-emerald-400 transition-colors z-10"></i>
+                                    <input type="number" id="user-age" required min="1" max="120" class="w-full bg-[#020617] border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-600 shadow-inner hover:border-white/20" placeholder="25">
+                                </div>
+                            </div>
+
+                            <div class="relative group">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 transition-colors group-hover:text-emerald-400">Gender</label>
+                                <div class="relative flex items-center transition-transform duration-300 group-hover:translate-x-1">
+                                    <i class="fa-solid fa-venus-mars absolute left-4 text-slate-500 group-hover:text-emerald-400 transition-colors z-10"></i>
+                                    <select id="user-gender" required class="w-full bg-[#020617] border border-white/10 rounded-xl pl-12 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all appearance-none cursor-pointer shadow-inner hover:border-white/20">
+                                        <option value="" disabled selected class="text-slate-500">Select...</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="absolute right-4 pointer-events-none text-slate-500 group-hover:text-emerald-400 transition-colors">
+                                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Phone Number</label>
-                            <input type="tel" id="user-phone" required class="w-full bg-[#020617] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all placeholder-slate-600 shadow-inner" placeholder="+91 - 00000 - 00000">
+
+                        <div class="relative group">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 transition-colors group-hover:text-emerald-400">Phone Number</label>
+                            <div class="relative flex items-center transition-transform duration-300 group-hover:translate-x-1">
+                                <div class="absolute left-0 top-0 bottom-0 flex items-center justify-center w-24 border-r border-white/10 text-slate-500 group-hover:text-emerald-400 group-hover:border-emerald-500/30 transition-colors rounded-l-xl bg-slate-800/30 z-10 backdrop-blur-sm">
+                                    <i class="fa-solid fa-phone text-xs mr-2"></i>
+                                    <span class="font-bold text-slate-300 group-hover:text-emerald-400 transition-colors">+91</span>
+                                </div>
+                                <input type="tel" id="user-phone" required pattern="[0-9]{10}" maxlength="10" title="Please enter exactly 10 digits" class="w-full bg-[#020617] border border-white/10 rounded-xl pl-[6.5rem] pr-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-600 shadow-inner hover:border-white/20 tracking-wider font-medium" placeholder="00000 00000">
+                            </div>
                         </div>
-                        <button type="submit" class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-lg shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_10px_40px_rgba(16,185,129,0.5)] hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2 group">
-                            Continue to Scanner <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+
+                        <!-- Data Declaration -->
+                        <label for="data-consent" class="block mt-8 p-4 md:p-5 rounded-2xl border border-white/5 bg-slate-900/30 hover:bg-slate-800/60 hover:border-emerald-500/40 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all duration-300 cursor-pointer group/decl backdrop-blur-sm transform hover:-translate-y-0.5">
+                            <div class="flex items-start gap-4">
+                                <div class="relative flex items-center justify-center mt-0.5 shrink-0">
+                                    <input type="checkbox" id="data-consent" required onchange="const btn = document.getElementById('submit-patient-btn'); if(this.checked) { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed', 'scale-[0.98]', 'grayscale'); btn.classList.add('hover:shadow-[0_10px_40px_rgba(16,185,129,0.5)]', 'hover:-translate-y-1', 'shadow-[0_10px_30px_rgba(16,185,129,0.3)]'); } else { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed', 'scale-[0.98]', 'grayscale'); btn.classList.remove('hover:shadow-[0_10px_40px_rgba(16,185,129,0.5)]', 'hover:-translate-y-1', 'shadow-[0_10px_30px_rgba(16,185,129,0.3)]'); }" class="peer appearance-none w-5 h-5 md:w-6 md:h-6 border-2 border-slate-500 rounded cursor-pointer checked:border-emerald-500 checked:bg-emerald-500 transition-all duration-300 shadow-inner group-hover/decl:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:ring-offset-1 focus:ring-offset-slate-900">
+                                    <i class="fa-solid fa-check absolute text-white text-xs md:text-sm opacity-0 peer-checked:opacity-100 pointer-events-none transition-all duration-300 peer-checked:scale-110 scale-50"></i>
+                                </div>
+                                <div class="text-xs md:text-sm text-slate-400 leading-relaxed group-hover/decl:text-slate-200 transition-colors select-none font-medium">
+                                    I declare that I know my data is safe and I trust this web application that no one will misuse my data.
+                                </div>
+                            </div>
+                        </label>
+
+                        <button type="submit" id="submit-patient-btn" disabled class="relative w-full py-4 mt-8 rounded-xl overflow-hidden group opacity-50 cursor-not-allowed scale-[0.98] grayscale transition-all duration-500">
+                            <!-- Background gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-400 transition-transform duration-500 group-hover:scale-[1.05]"></div>
+                            
+                            <!-- Glow overlay -->
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white mix-blend-overlay transition-opacity duration-500"></div>
+
+                            <div class="relative flex justify-center items-center gap-3 text-white font-bold text-lg tracking-wide z-10">
+                                Continue to Scanner 
+                                <i class="fa-solid fa-arrow-right-long group-hover:translate-x-2 transition-transform duration-300"></i>
+                            </div>
                         </button>
                     </form>
                 </div>
