@@ -295,9 +295,6 @@
                     </form>
                 </div>
 
-                    </form>
-                </div>
-
                 <!-- Questionnaire Form -->
                 <div id="questionnaire-section" class="hidden max-w-4xl mx-auto bg-slate-900/50 p-6 md:p-10 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-md mb-8 transition-all duration-500 text-left">
                     <div class="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
@@ -572,44 +569,7 @@
                 <div id="camera-container" class="hidden max-w-md mx-auto relative rounded-2xl overflow-hidden border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.3)] bg-black">
                     <video id="camera-video" class="w-full h-auto bg-black" autoplay playsinline></video>
                     <canvas id="camera-canvas" class="hidden"></canvas>
-                    
-                    <!-- Face Guide Overlay -->
-                    <div id="face-guide-overlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-10" style="padding-bottom: 80px;">
-                        <!-- Overlay message -->
-                        <div class="absolute top-6 text-emerald-400/90 text-[10px] sm:text-xs font-bold tracking-widest uppercase bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse flex items-center gap-2">
-                            <i class="fa-solid fa-expand"></i> Align Face Closely Within Frame
-                        </div>
-                        
-                        <!-- Futuristic Face Grid -->
-                        <div class="relative w-[65%] max-w-[260px] aspect-[3/4] flex items-center justify-center">
-                            <!-- SVG Face Outline -->
-                            <svg viewBox="0 0 200 260" class="absolute inset-0 w-full h-full drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]">
-                                <defs>
-                                    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#34d399" stop-opacity="0.8"/>
-                                        <stop offset="50%" stop-color="#10b981" stop-opacity="0.3"/>
-                                        <stop offset="100%" stop-color="#34d399" stop-opacity="0.8"/>
-                                    </linearGradient>
-                                </defs>
-                                <!-- Face Oval -->
-                                <ellipse cx="100" cy="130" rx="85" ry="115" fill="none" stroke="url(#glow)" stroke-width="2" stroke-dasharray="8 6"/>
-                                <!-- Eye Level Line -->
-                                <line x1="30" y1="100" x2="65" y2="100" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
-                                <line x1="135" y1="100" x2="170" y2="100" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
-                                <!-- Nose/Mouth center line -->
-                                <line x1="100" y1="115" x2="100" y2="190" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4"/>
-                                <!-- Top and Bottom Alignment Marks -->
-                                <path d="M 85 15 L 115 15 M 100 5 L 100 25" stroke="#34d399" stroke-width="2" opacity="0.8"/>
-                                <path d="M 85 245 L 115 245 M 100 235 L 100 255" stroke="#34d399" stroke-width="2" opacity="0.8"/>
-                            </svg>
 
-                            <!-- Scanning Line Animation -->
-                            <div class="absolute left-[10%] right-[10%] h-[2px] bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,1)] rounded-full animate-camera-scan z-20"></div>
-                            
-                            <!-- Scanning Gradient overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/10 to-transparent animate-camera-scan z-10" style="height: 20%; margin-top: -10%;"></div>
-                        </div>
-                    </div>
 
                     <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-4 z-20">
                         <button id="capture-btn" class="btn-magnetic pointer-events-auto rounded-full shadow-2xl px-8 py-4 transform hover:scale-105">
@@ -623,12 +583,8 @@
 
                 <!-- Processing / Preview -->
                 <div id="preview-container" class="hidden mt-8">
-                    <div class="relative mx-auto flex justify-center max-w-md">
-                        <div class="relative inline-block rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.2)] border border-emerald-500/30">
-                            <img id="image-preview" src="" alt="Subject" class="block w-full opacity-80" style="filter: contrast(1.05);">
-                            <div id="scan-line" class="scan-line hidden"></div>
-                            <div id="spots-container" class="absolute inset-0"></div>
-                        </div>
+                    <div id="multi-image-preview-grid" class="flex flex-wrap justify-center gap-4">
+                        <!-- Dynamically populated by JS -->
                     </div>
                     
                     <div id="error-message" class="hidden mt-6 text-red-400 text-sm font-medium bg-red-500/10 border border-red-500/20 p-4 rounded-xl inline-flex items-center justify-center gap-3 w-full max-w-md mx-auto">
@@ -855,7 +811,6 @@
     </script>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Chart.js -->
