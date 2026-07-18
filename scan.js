@@ -385,28 +385,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         const grid = document.getElementById('multi-image-preview-grid');
         grid.innerHTML = '';
         uploadedImages.forEach((img, i) => {
-            const dataUrl = \`data:image/jpeg;base64,\${img}\`;
-            grid.innerHTML += \`
+            const dataUrl = `data:image/jpeg;base64,${img}`;
+            grid.innerHTML += `
                 <div class="relative inline-block rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.2)] border border-emerald-500/30 max-w-sm w-full m-2">
-                    <img src="\${dataUrl}" class="block w-full opacity-80" style="filter: contrast(1.05);">
-                    <div id="spots-container-\${i}" class="absolute inset-0 pointer-events-none"></div>
+                    <img src="${dataUrl}" class="block w-full opacity-80" style="filter: contrast(1.05);">
+                    <div id="spots-container-${i}" class="absolute inset-0 pointer-events-none"></div>
                 </div>
-            \`;
+            `;
         });
         
         // 6A: Dynamic Spot Mapping
         data.spots.forEach((spot) => {
             if(spot.x && spot.y && spot.radius) {
                 const imageIndex = spot.imageIndex || 0;
-                const targetContainer = document.getElementById(\`spots-container-\${imageIndex}\`);
+                const targetContainer = document.getElementById(`spots-container-${imageIndex}`);
                 if (targetContainer) {
                     const circle = document.createElement('div');
                     circle.className = spot.shape === 'half-moon' ? 'spot-half-moon' : 'spot-circle';
-                    circle.style.left = \`\${spot.x}%\`;
-                    circle.style.top = \`\${spot.y}%\`;
-                    circle.style.width = \`\${spot.radius}%\`;
-                    circle.style.paddingBottom = \`\${spot.radius}%\`; 
-                    circle.style.animationDelay = \`\${(Math.random() * 2).toFixed(2)}s\`;
+                    circle.style.left = `${spot.x}%`;
+                    circle.style.top = `${spot.y}%`;
+                    circle.style.width = `${spot.radius}%`;
+                    circle.style.paddingBottom = `${spot.radius}%`; 
+                    circle.style.animationDelay = `${(Math.random() * 2).toFixed(2)}s`;
                     targetContainer.appendChild(circle);
                 }
             }
