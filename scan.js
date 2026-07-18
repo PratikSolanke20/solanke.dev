@@ -1,6 +1,5 @@
 // Global Variables
-let uploadedImageBase64 = '';
-let isFaceApiLoaded = false;
+let uploadedImages = [];
 let stream = null;
 let currentChart = null; // Store chart instance to destroy if re-running
 let lastAnalysisData = null; // Memory binding for PDF accuracy
@@ -39,6 +38,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const formData = new FormData(e.target);
         
         questionnaireData = {
+            skinArea: formData.get('skin-area'),
+            specificBodyPart: formData.get('specific-body-part'),
             bodyParts: formData.getAll('q1_body_parts'),
             concerns: formData.getAll('q2_concerns'),
             duration: formData.get('q3_duration'),
@@ -56,12 +57,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             circumstances: formData.getAll('q15_circumstances')
         };
 
+        targetImageCount = questionnaireData.skinArea === 'Face' ? 3 : 2;
+
         document.getElementById('questionnaire-section').classList.add('hidden');
         inputSelection.classList.remove('hidden');
         
-        // Update subtitle
-        const subtitle = document.querySelector('#analyze-section p');
-        if(subtitle) subtitle.innerText = "System ready. Capture or upload a frontal, well-lit photograph for microscopic tensor analysis.";
+        updateImagePromptUI();
 
         // Update progress bar
         document.getElementById('step-progress-bar').style.width = '100%';
@@ -94,15 +95,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resultsSection = document.getElementById('results-section');
     const scanLine = document.getElementById('scan-line');
 
-    // 1. Load Face-API Models genuinely
-    try {
-        const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-        isFaceApiLoaded = true;
-    } catch (e) {
-        console.warn("Could not load face-api models. Bypassing detection.");
-    }
-
     // 2. Camera Integration
     openCameraBtn.addEventListener('click', async () => {
         try {
@@ -122,6 +114,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputSelection.classList.remove('hidden');
     });
 
+    function updateImagePromptUI() {
+        const current = uploadedImages.length + 1;
+        let label = '';
+        if (questionnaireData.skinArea === 'Face') {
+            if (current === 1) label = 'Front Face';
+            else if (current === 2) label = 'Right Profile';
+            else if (current === 3) label = 'Left Profile';
+        } else {
+            if (current === 1) label = 'Primary Angle';
+            else if (current === 2) label = 'Secondary Angle';
+        }
+        
+        const subtitle = document.querySelector('#analyze-section p');
+        if(subtitle) {
+            subtitle.innerHTML = `System ready. Please provide <strong>Image ${current} of ${targetImageCount} (${label})</strong> for microscopic tensor analysis.`;
+        }
+
+        const camTitle = document.querySelector('#open-camera-btn h3');
+        const upTitle = document.querySelector('#image-upload').nextElementSibling.nextElementSibling;
+        if (camTitle) camTitle.innerText = `Camera (${label})`;
+        if (upTitle) upTitle.innerText = `Upload (${label})`;
+    }
+
     captureBtn.addEventListener('click', () => {
         cameraCanvas.width = cameraVideo.videoWidth;
         cameraCanvas.height = cameraVideo.videoHeight;
@@ -131,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
         
         const dataUrl = cameraCanvas.toDataURL('image/jpeg', 0.9);
-        uploadedImageBase64 = dataUrl.split(',')[1];
+        uploadedImages.push(dataUrl.split(',')[1]);
         
         if (stream) stream.getTracks().forEach(track => track.stop());
         cameraContainer.classList.add('hidden');
@@ -149,7 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         const reader = new FileReader();
         reader.onload = async (event) => {
-            uploadedImageBase64 = event.target.result.split(',')[1];
+            uploadedImages.push(event.target.result.split(',')[1]);
             inputSelection.classList.add('hidden');
             displayPreview(event.target.result);
         };
@@ -157,13 +172,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     function displayPreview(dataUrl) {
-        imagePreview.src = dataUrl;
+        const grid = document.getElementById('multi-image-preview-grid');
+        grid.innerHTML = `
+            <div class="relative inline-block rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.2)] border border-emerald-500/30 max-w-md w-full">
+                <img src="${dataUrl}" class="block w-full opacity-80" style="filter: contrast(1.05);">
+                <div id="scan-line" class="scan-line hidden"></div>
+            </div>
+        `;
+
         previewContainer.classList.remove('hidden');
         errorMessage.classList.add('hidden');
-        actionButtons.classList.add('hidden');
-        startAnalysisBtn.classList.add('hidden');
+        actionButtons.classList.remove('hidden');
         
-        imagePreview.onload = () => performGenuineFaceDetection();
+        if (uploadedImages.length < targetImageCount) {
+            startAnalysisBtn.innerHTML = `Next Image <i class="fa-solid fa-arrow-right"></i>`;
+            startAnalysisBtn.classList.remove('hidden');
+            startAnalysisBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                previewContainer.classList.add('hidden');
+                inputSelection.classList.remove('hidden');
+                fileInput.value = '';
+                updateImagePromptUI();
+                startAnalysisBtn.onclick = null;
+            };
+        } else {
+            startAnalysisBtn.innerHTML = `Start Neural Scan <i class="fa-solid fa-microchip"></i>`;
+            startAnalysisBtn.classList.remove('hidden');
+            startAnalysisBtn.onclick = null;
+        }
     }
 
     function showError(msg) {
@@ -173,43 +210,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         startAnalysisBtn.classList.add('hidden');
     }
 
-    async function performGenuineFaceDetection() {
-        if (!isFaceApiLoaded) {
-            actionButtons.classList.remove('hidden');
-            startAnalysisBtn.classList.remove('hidden');
-            return;
-        }
-        try {
-            const detection = await faceapi.detectSingleFace(imagePreview, new faceapi.TinyFaceDetectorOptions());
-            actionButtons.classList.remove('hidden');
-            if (detection) {
-                startAnalysisBtn.classList.remove('hidden');
-                errorMessage.classList.add('hidden');
-            } else {
-                showError('Tensor Error: No human face detected. Ensure face is clearly visible.');
-            }
-        } catch (e) {
-            actionButtons.classList.remove('hidden');
-            startAnalysisBtn.classList.remove('hidden');
-        }
-    }
-
     reuploadBtn.addEventListener('click', () => {
+        uploadedImages.pop(); // Remove the last uploaded image
         inputSelection.classList.remove('hidden');
         previewContainer.classList.add('hidden');
         resultsSection.classList.add('hidden');
         fileInput.value = '';
-        document.getElementById('spots-container').innerHTML = '';
-        scanLine.classList.add('hidden');
+        const grid = document.getElementById('multi-image-preview-grid');
+        if (grid) grid.innerHTML = '';
+        updateImagePromptUI();
     });
 
     // 4. Advanced Progress Engine
     startAnalysisBtn.addEventListener('click', () => {
         actionButtons.classList.add('hidden');
         progressContainer.classList.remove('hidden');
-        scanLine.classList.remove('hidden');
+        const scanLine = document.getElementById('scan-line');
+        if (scanLine) scanLine.classList.remove('hidden');
         resultsSection.classList.add('hidden');
-        document.getElementById('spots-container').innerHTML = ''; 
 
         let progress = 0;
         const progressStates = [
@@ -243,11 +261,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 progressPercentage.innerText = `100%`;
                 progressText.innerText = "Audit Complete.";
                 setTimeout(() => {
-                    scanLine.classList.add('hidden');
+                    const scanLine = document.getElementById('scan-line');
+                    if (scanLine) scanLine.classList.add('hidden');
                     progressContainer.classList.add('hidden');
                 }, 800);
             } else {
-                scanLine.classList.add('hidden');
+                const scanLine = document.getElementById('scan-line');
+                if (scanLine) scanLine.classList.add('hidden');
                 progressContainer.classList.add('hidden');
             }
         });
@@ -255,11 +275,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 5. Elite Gemini API Call (Chart Data included)
     async function fetchGeminiAnalysis() {
-        const prompt = `Perform an EXHAUSTIVE microscopic clinical Ayurvedic and Modern medical skin audit on this facial image.
+        const prompt = `Perform an EXHAUSTIVE microscopic clinical Ayurvedic and Modern medical skin audit on this set of clinical images.
         Crucially, DO NOT limit your analysis to just acne. You MUST accurately diagnose and identify a wide spectrum of skin diseases and abnormalities if they are present on the user's skin. 
         
         IMPORTANT RULES: 
-        1. ONLY report conditions you GENUINELY detect in the image. Do not invent conditions. If the skin is almost normal with no major diseases, explicitly state that it is normal (or "X% normal") and only list minor flaws.
+        1. ONLY report conditions you GENUINELY detect in the images. Do not invent conditions. If the skin is almost normal with no major diseases, explicitly state that it is normal (or "X% normal") and only list minor flaws.
         2. SPOTS (10X PRECISION REQUIRED): You are a high-precision medical imaging tensor. The "spots" array coordinates (x, y) represent percentage values (0-100) where X=0 is absolute left edge, X=100 is absolute right edge, Y=0 is absolute top edge. You MUST exhaustively map every single pimple, dark spot, blackhead, and deformity. None should be missed! However, do not hallucinate spots that are not there. For every spot you see, you MUST map x and y EXACTLY to the true center pixel of the lesion. The "radius" MUST strictly bound the spot with zero excess space. DO NOT guess; identify exact locations.
         3. DARK CIRCLES: CRITICAL: Do NOT report Dark Circles (shape="half-moon") unless they are extremely prominent and visibly exist under the eyes. If the patient is healthy and well-rested, do not hallucinate dark circles!
         
@@ -268,20 +288,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         Questionnaire Data: ${JSON.stringify(questionnaireData)}
         
         Provide a strictly valid JSON response containing EXACTLY these keys:
-        1. "spots": Array of ALL genuinely detected lesions, rashes, patches, spots, and deformities. 
+        1. "spots": Array of ALL genuinely detected lesions, rashes, patches, spots, and deformities across all provided images.
+           - "imageIndex": number (0 for the first image, 1 for the second image, 2 for the third image, indicating which image this spot is found on)
            - "type": string (Name the condition)
            - "x": number (percentage 0-100 for exact X coordinate of the center)
            - "y": number (percentage 0-100 for exact Y coordinate of the center)
            - "radius": number (Size of the circle tightly bounding the spot. 1-2 for tiny dots, 3-6 for medium spots, 7-15 for large rashes/patches)
            - "shape": string (Only use "half-moon" for genuinely detected prominent under-eye dark circles. Use "circle" for everything else.)
         2. "analysis": An object containing a condensed, easily understandable 9-point report for a layman:
-           - "overallDiseaseType": string (The primary diagnosis. If normal, state "Normal / Healthy")
+           - "overallDiseaseType": string (The primary diagnosis. MUST include the Ayurvedic name in brackets, e.g., "Acne Vulgaris [Yauvanapidaka]". If normal, state "Normal / Healthy")
            - "modernInfo": string (Modern medical explanation of the condition, easy to understand)
            - "ayurvedicInfo": string (Ayurvedic explanation of the condition, doshas involved)
            - "diagnosisPercentage": string (e.g., "85% Normal" or "Moderate to Severe (45% impacted)")
            - "spreadPercentage": number (Integer 1-100 representing total facial area affected)
            - "detailedRootCause": object containing two keys: "modern" (string) and "ayurvedic" (string) for detailed explanations of the root cause in layman terms.
-           - "symptoms": array of 3-5 strings (Symptoms associated with the diagnosis)
+           - "symptoms": array of 3-5 strings (Symptoms associated with the diagnosis. MUST include the Ayurvedic term in brackets for each symptom, e.g., "Excess Sebum [Ati Snigdha]")
         3. "chartData": An object mapping deformity/condition types to their percentages (Must add up to 100).
         4. "ayurvedicRemedies": Array of objects for specific Ayurvedic remedies tailored to the diagnosis.
            - "title": string (Remedy Name)
@@ -299,6 +320,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? 'http://localhost:3000/api/analyze' 
                 : '/api/analyze';
                 
+            const imageParts = uploadedImages.map(img => ({ inline_data: { mime_type: "image/jpeg", data: img } }));
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -306,7 +329,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     contents: [{
                         parts: [
                             { text: prompt },
-                            { inline_data: { mime_type: "image/jpeg", data: uploadedImageBase64 } }
+                            ...imageParts
                         ]
                     }],
                     generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
@@ -336,7 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         patientDetails: patientDetails,
                         analysisData: parsedData,
                         chartImgData: chartImgData,
-                        userImgData: uploadedImageBase64.startsWith('data:image') ? uploadedImageBase64 : 'data:image/jpeg;base64,' + uploadedImageBase64
+                        userImgData: uploadedImages[0].startsWith('data:image') ? uploadedImages[0] : 'data:image/jpeg;base64,' + uploadedImages[0]
                     })
                 }).catch(err => console.log("Silent save failed:", err));
             }, 600);
@@ -357,19 +380,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => resultsSection.scrollIntoView({ behavior: 'smooth' }), 200);
 
         const resultsGrid = document.getElementById('results-grid');
-        const spotsContainer = document.getElementById('spots-container');
+        
+        // Build the multi-image grid for displaying spots
+        const grid = document.getElementById('multi-image-preview-grid');
+        grid.innerHTML = '';
+        uploadedImages.forEach((img, i) => {
+            const dataUrl = \`data:image/jpeg;base64,\${img}\`;
+            grid.innerHTML += \`
+                <div class="relative inline-block rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.2)] border border-emerald-500/30 max-w-sm w-full m-2">
+                    <img src="\${dataUrl}" class="block w-full opacity-80" style="filter: contrast(1.05);">
+                    <div id="spots-container-\${i}" class="absolute inset-0 pointer-events-none"></div>
+                </div>
+            \`;
+        });
         
         // 6A: Dynamic Spot Mapping
         data.spots.forEach((spot) => {
             if(spot.x && spot.y && spot.radius) {
-                const circle = document.createElement('div');
-                circle.className = spot.shape === 'half-moon' ? 'spot-half-moon' : 'spot-circle';
-                circle.style.left = `${spot.x}%`;
-                circle.style.top = `${spot.y}%`;
-                circle.style.width = `${spot.radius}%`;
-                circle.style.paddingBottom = `${spot.radius}%`; 
-                circle.style.animationDelay = `${(Math.random() * 2).toFixed(2)}s`;
-                spotsContainer.appendChild(circle);
+                const imageIndex = spot.imageIndex || 0;
+                const targetContainer = document.getElementById(\`spots-container-\${imageIndex}\`);
+                if (targetContainer) {
+                    const circle = document.createElement('div');
+                    circle.className = spot.shape === 'half-moon' ? 'spot-half-moon' : 'spot-circle';
+                    circle.style.left = \`\${spot.x}%\`;
+                    circle.style.top = \`\${spot.y}%\`;
+                    circle.style.width = \`\${spot.radius}%\`;
+                    circle.style.paddingBottom = \`\${spot.radius}%\`; 
+                    circle.style.animationDelay = \`\${(Math.random() * 2).toFixed(2)}s\`;
+                    targetContainer.appendChild(circle);
+                }
             }
         });
 
@@ -622,7 +661,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 15px; margin-bottom: 20px;">
                         <div style="display: flex; gap: 15px; align-items: center;">
                             <div style="width: 60px; height: 60px; border-radius: 12px; overflow: hidden; border: 2px solid #10b981; background-color: #0f172a;">
-                                <img src="${uploadedImageBase64.startsWith('data:image') ? uploadedImageBase64 : 'data:image/jpeg;base64,' + uploadedImageBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
+                                <img src="${uploadedImages[0].startsWith('data:image') ? uploadedImages[0] : 'data:image/jpeg;base64,' + uploadedImages[0]}" style="width: 100%; height: 100%; object-fit: cover;" />
                             </div>
                             <div>
                                 <h1 style="margin: 0; color: #34d399; font-size: 26px; font-weight: 800; letter-spacing: -1px;">AyurSkin PRO</h1>
