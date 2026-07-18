@@ -5,6 +5,7 @@ let stream = null;
 let currentChart = null; // Store chart instance to destroy if re-running
 let lastAnalysisData = null; // Memory binding for PDF accuracy
 let patientDetails = { name: '', age: '', gender: '', phone: '' };
+let questionnaireData = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
     const inputSelection = document.getElementById('input-selection');
@@ -20,11 +21,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         patientDetails.phone = document.getElementById('user-phone').value;
         
         userInfoForm.classList.add('hidden');
+        document.getElementById('questionnaire-section').classList.remove('hidden');
+        
+        // Update progress bar
+        document.getElementById('step-progress-bar').style.width = '50%';
+        document.getElementById('step-1-indicator').classList.add('opacity-50');
+        document.getElementById('step-2-indicator').classList.remove('opacity-50');
+        document.getElementById('step-2-indicator').querySelector('.step-icon').classList.replace('bg-slate-800', 'bg-emerald-500');
+        document.getElementById('step-2-indicator').querySelector('.step-icon').classList.replace('text-slate-400', 'text-white');
+        document.getElementById('step-2-indicator').querySelector('.step-icon').classList.add('shadow-[0_0_20px_rgba(16,185,129,0.4)]');
+        document.getElementById('step-2-indicator').querySelector('span').classList.replace('text-slate-400', 'text-emerald-400');
+    });
+
+    // Handle Questionnaire Submission
+    document.getElementById('questionnaire-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        questionnaireData = {
+            bodyParts: formData.getAll('q1_body_parts'),
+            concerns: formData.getAll('q2_concerns'),
+            duration: formData.get('q3_duration'),
+            progression: formData.get('q4_progression'),
+            symptoms: formData.getAll('q5_symptoms'),
+            triggers: formData.getAll('q6_triggers'),
+            treatments: formData.getAll('q7_treatments'),
+            history: formData.get('q8_history'),
+            conditions: formData.getAll('q9_conditions'),
+            familyHistory: formData.get('q10_family'),
+            skinType: formData.get('q11_skin_type'),
+            diet: formData.getAll('q12_diet'),
+            digestion: formData.get('q13_digestion'),
+            lifestyle: formData.getAll('q14_lifestyle'),
+            circumstances: formData.getAll('q15_circumstances')
+        };
+
+        document.getElementById('questionnaire-section').classList.add('hidden');
         inputSelection.classList.remove('hidden');
         
         // Update subtitle
         const subtitle = document.querySelector('#analyze-section p');
         if(subtitle) subtitle.innerText = "System ready. Capture or upload a frontal, well-lit photograph for microscopic tensor analysis.";
+
+        // Update progress bar
+        document.getElementById('step-progress-bar').style.width = '100%';
+        document.getElementById('step-2-indicator').classList.add('opacity-50');
+        document.getElementById('step-3-indicator').classList.remove('opacity-50');
+        document.getElementById('step-3-indicator').querySelector('.step-icon').classList.replace('bg-slate-800', 'bg-emerald-500');
+        document.getElementById('step-3-indicator').querySelector('.step-icon').classList.replace('text-slate-400', 'text-white');
+        document.getElementById('step-3-indicator').querySelector('.step-icon').classList.add('shadow-[0_0_20px_rgba(16,185,129,0.4)]');
+        document.getElementById('step-3-indicator').querySelector('span').classList.replace('text-slate-400', 'text-emerald-400');
     });
     const openCameraBtn = document.getElementById('open-camera-btn');
     const cameraContainer = document.getElementById('camera-container');
@@ -209,34 +255,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 5. Elite Gemini API Call (Chart Data included)
     async function fetchGeminiAnalysis() {
-        const prompt = `Perform an EXHAUSTIVE microscopic clinical Ayurvedic skin audit on this facial image.
+        const prompt = `Perform an EXHAUSTIVE microscopic clinical Ayurvedic and Modern medical skin audit on this facial image.
         Crucially, DO NOT limit your analysis to just acne. You MUST accurately diagnose and identify a wide spectrum of skin diseases and abnormalities if they are present on the user's skin. 
-        Look closely for:
-        - Acne & Eruptions: Pimples (Yauvana Pidaka), Blackheads/Whiteheads (Mukhadushika), Papules/Pustules (Pidaka), Nodules, Boils (Vidradhi).
-        - Pigmentation & Color: Hyperpigmentation/Melasma/Sun Spots (Vyanga), Freckles (Neelika), Dark Circles (Shyawata), Vitiligo (Shwitra), Redness (Raktadushti), Pallor.
-        - Inflammation & Rashes: Eczema/Dermatitis (Vicharchika), Psoriasis (Ekakushtha), Rosacea (Mukharunata), Urticaria (Sheetapitta), Fungal/Ringworm (Dadru).
-        - Texture & Aging: Enlarged Pores (Romakupa Vistara), Wrinkles (Vali), Fine Lines, Sagging (Twacha Shaithilya), Scars (Vrana Chihna), Roughness.
-        - Other: Warts (Charmakeela), Moles (Tilakalaka), Cysts (Granthi), Swelling/Edema (Shotha), Dryness (Ruksha Twacha), Excess Oil (Snigdha Twacha).
         
-        ONLY report conditions you GENUINELY detect in the image based on proper clinical analysis. Do not invent conditions.
-
+        IMPORTANT RULES: 
+        1. ONLY report conditions you GENUINELY detect in the image. Do not invent conditions. If the skin is almost normal with no major diseases, explicitly state that it is normal (or "X% normal") and only list minor flaws.
+        2. SPOTS: For the "spots" array, the x and y coordinates MUST map EXACTLY to the exact center point of the lesion/pimple/scar. The "radius" MUST be a tight bound exactly matching the size of the spot. Do not make the circles arbitrarily large.
+        3. DARK CIRCLES: CRITICAL: Do NOT report Dark Circles (shape="half-moon") unless they are extremely prominent and visibly exist under the eyes. If the patient is healthy and well-rested, do not hallucinate dark circles!
+        
+        Use the following patient details and clinical questionnaire data to contextualize your diagnosis:
+        Patient Details: ${JSON.stringify(patientDetails)}
+        Questionnaire Data: ${JSON.stringify(questionnaireData)}
+        
         Provide a strictly valid JSON response containing EXACTLY these keys:
-        1. "spots": Array of ALL detected lesions, rashes, patches, spots, and deformities. You must return a massive array (up to 50 items) mapping EVERY single affected area.
-           - "type": string (Name the condition, e.g., "Acne", "Melasma", "Eczema Patch", "Wrinkle", "Large Pore", "Redness", "Fungal Lesion")
-           - "x": number (percentage 0-100 for X coordinate)
-           - "y": number (percentage 0-100 for Y coordinate)
-           - "radius": number (Size of the circle. 1-2 for tiny dots, 3-6 for medium spots, 7-15 for large rashes/patches)
-        2. "analysis": An object containing:
-           - "overallDiseaseType": string (The primary Ayurvedic diagnosis, e.g., "Severe Mukhadushika", "Vicharchika (Eczema)", "Vyanga (Melasma)")
-           - "causes": array of 3-5 strings (Keep these SHORT, punchy, like "High Pitta Dosha", "UV Damage", "Fungal Overgrowth")
+        1. "spots": Array of ALL genuinely detected lesions, rashes, patches, spots, and deformities. 
+           - "type": string (Name the condition)
+           - "x": number (percentage 0-100 for exact X coordinate of the center)
+           - "y": number (percentage 0-100 for exact Y coordinate of the center)
+           - "radius": number (Size of the circle tightly bounding the spot. 1-2 for tiny dots, 3-6 for medium spots, 7-15 for large rashes/patches)
+           - "shape": string (Only use "half-moon" for genuinely detected prominent under-eye dark circles. Use "circle" for everything else.)
+        2. "analysis": An object containing a condensed, easily understandable 9-point report for a layman:
+           - "overallDiseaseType": string (The primary diagnosis. If normal, state "Normal / Healthy")
+           - "modernInfo": string (Modern medical explanation of the condition, easy to understand)
+           - "ayurvedicInfo": string (Ayurvedic explanation of the condition, doshas involved)
+           - "diagnosisPercentage": string (e.g., "85% Normal" or "Moderate to Severe (45% impacted)")
            - "spreadPercentage": number (Integer 1-100 representing total facial area affected)
-           - "symptoms": array of 3-5 short strings (e.g. "Inflamed pores", "Flaky red patches", "Severe hyperpigmentation")
+           - "detailedRootCause": string (Detailed but layman-friendly explanation of the root cause)
+           - "symptoms": array of 3-5 strings (Symptoms associated with the diagnosis)
         3. "chartData": An object mapping deformity/condition types to their percentages (Must add up to 100).
-           - e.g. {"Eczema": 40, "Pigmentation": 30, "Wrinkles": 20, "Pores": 10}
-        4. "treatments": Array of objects for specific Ayurvedic remedies tailored to the EXACT diagnosis.
+        4. "ayurvedicRemedies": Array of objects for specific Ayurvedic remedies tailored to the diagnosis.
            - "title": string (Remedy Name)
-           - "instructions": string (Exact steps, short and punchy)
-           - "icon": string (A font-awesome class name, e.g. "fa-solid fa-leaf", "fa-solid fa-droplet", "fa-solid fa-mortar-pestle", "fa-solid fa-spa")
+           - "instructions": string (Exact steps)
+           - "icon": string (A font-awesome class name, e.g. "fa-solid fa-leaf")
+        5. "modernRemedies": Array of objects for specific Modern science dermatological remedies (e.g. Salicylic acid).
+           - "title": string (Remedy Name)
+           - "instructions": string (Exact steps)
+           - "icon": string (A font-awesome class name, e.g. "fa-solid fa-flask")
         Do not wrap in markdown \`\`\`json. Return pure JSON only.`;
 
         try {
@@ -309,7 +363,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         data.spots.forEach((spot) => {
             if(spot.x && spot.y && spot.radius) {
                 const circle = document.createElement('div');
-                circle.className = 'spot-circle';
+                circle.className = spot.shape === 'half-moon' ? 'spot-half-moon' : 'spot-circle';
                 circle.style.left = `${spot.x}%`;
                 circle.style.top = `${spot.y}%`;
                 circle.style.width = `${spot.radius}%`;
@@ -320,13 +374,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // 6B: BENTO BOX HTML Generation
-        let causesBentoHtml = data.analysis.causes.map(c => `
-            <div class="glass p-4 rounded-2xl border border-white/5 hover:border-amber-500/50 hover:bg-amber-500/10 transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 shadow-lg group cursor-default">
-                <div class="text-amber-500 text-xl mb-2 group-hover:scale-110 transition-transform"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <p class="text-sm font-medium text-slate-200">${c}</p>
-            </div>
-        `).join('');
-
         let symptomsBentoHtml = data.analysis.symptoms.map(s => `
             <div class="bg-white/5 p-3 rounded-xl border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-300 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] flex items-start gap-3 cursor-default">
                 <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
@@ -334,13 +381,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `).join('');
 
-        let treatmentsBentoHtml = data.treatments.map(t => `
-            <div class="glass-card p-6 rounded-3xl border border-emerald-500/20 hover:border-emerald-400 hover:shadow-[0_20px_40px_rgba(16,185,129,0.2)] transition-all duration-300 transform hover:-translate-y-2 group">
-                <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:bg-emerald-400 group-hover:text-white transition-all">
+        let ayurvedicBentoHtml = (data.ayurvedicRemedies || []).map(t => `
+            <div class="glass-card p-5 rounded-3xl border border-emerald-500/20 hover:border-emerald-400 hover:shadow-[0_20px_40px_rgba(16,185,129,0.2)] transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 group-hover:bg-emerald-400 group-hover:text-white transition-all">
                     <i class="${t.icon || 'fa-solid fa-leaf'}"></i>
                 </div>
-                <h5 class="text-white font-bold mb-2 text-lg group-hover:text-emerald-400 transition-colors">${t.title}</h5>
-                <p class="text-sm text-slate-400 leading-relaxed">${t.instructions}</p>
+                <h5 class="text-white font-bold mb-1 text-sm group-hover:text-emerald-400 transition-colors">${t.title}</h5>
+                <p class="text-xs text-slate-400 leading-relaxed">${t.instructions}</p>
+            </div>
+        `).join('');
+
+        let modernBentoHtml = (data.modernRemedies || []).map(t => `
+            <div class="glass-card p-5 rounded-3xl border border-blue-500/20 hover:border-blue-400 hover:shadow-[0_20px_40px_rgba(59,130,246,0.2)] transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 group-hover:bg-blue-400 group-hover:text-white transition-all">
+                    <i class="${t.icon || 'fa-solid fa-flask'}"></i>
+                </div>
+                <h5 class="text-white font-bold mb-1 text-sm group-hover:text-blue-400 transition-colors">${t.title}</h5>
+                <p class="text-xs text-slate-400 leading-relaxed">${t.instructions}</p>
             </div>
         `).join('');
 
@@ -379,16 +436,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <!-- Diagnosis Card -->
                 <div class="glass-card p-8 rounded-3xl border border-white/10 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
                     <div class="absolute -right-5 -top-5 text-white/5 text-[100px] group-hover:scale-110 group-hover:text-emerald-500/10 transition-all"><i class="fa-solid fa-microscope"></i></div>
-                    <h3 class="font-heading text-slate-400 uppercase tracking-widest text-[10px] font-bold mb-1">Primary Diagnosis</h3>
-                    <h4 class="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all">${data.analysis.overallDiseaseType}</h4>
+                    <div class="flex justify-between items-start mb-1">
+                        <h3 class="font-heading text-slate-400 uppercase tracking-widest text-[10px] font-bold">Primary Diagnosis</h3>
+                        <span class="px-3 py-1 rounded-full bg-slate-800 text-xs font-bold text-white border border-white/10 shadow-inner">${data.analysis.diagnosisPercentage}</span>
+                    </div>
+                    <h4 class="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all mb-4">${data.analysis.overallDiseaseType}</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5 shadow-inner">
+                            <h5 class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-stethoscope"></i> Modern Science</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">${data.analysis.modernInfo}</p>
+                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5 shadow-inner">
+                            <h5 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-leaf"></i> Ayurveda</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">${data.analysis.ayurvedicInfo}</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Bento Grid: Causes & Symptoms -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <h3 class="font-heading text-slate-400 uppercase tracking-widest text-[10px] font-bold pl-2">Root Causes</h3>
-                        <div class="grid grid-cols-1 gap-3">
-                            ${causesBentoHtml}
+                    <div class="glass-card p-6 rounded-3xl border border-white/10 flex flex-col justify-center">
+                        <h3 class="font-heading text-slate-400 uppercase tracking-widest text-[10px] font-bold pl-2 mb-4">Detailed Root Cause</h3>
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5">
+                            <p class="text-sm font-medium text-slate-200 leading-relaxed">${data.analysis.detailedRootCause}</p>
                         </div>
                     </div>
                     <div class="space-y-4">
@@ -400,20 +471,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>
 
-            <!-- Right Column: Ayurvedic Protocol (Bento Grid) -->
-            <div class="lg:col-span-6 flex flex-col gap-6">
-                <div class="glass p-8 rounded-3xl border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.05)] flex items-center justify-between">
+            <!-- Right Column: Protocols (Bento Grid) -->
+            <div class="lg:col-span-6 flex flex-col gap-5">
+                
+                <!-- Ayurvedic Protocol -->
+                <div class="glass p-5 rounded-3xl border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.05)] flex items-center justify-between">
                     <div>
-                        <h3 class="font-heading text-2xl font-bold text-white mb-1">Ayurvedic Protocol</h3>
-                        <p class="text-emerald-400 text-xs font-medium uppercase tracking-widest">Prescribed Regimen</p>
+                        <h3 class="font-heading text-lg font-bold text-white mb-1">Ayurvedic Protocol</h3>
+                        <p class="text-emerald-400 text-[10px] font-medium uppercase tracking-widest">Natural Regimen</p>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                        <i class="fa-solid fa-star-of-life"></i>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                        <i class="fa-solid fa-leaf"></i>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    ${treatmentsBentoHtml}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    ${ayurvedicBentoHtml}
+                </div>
+
+                <!-- Modern Protocol -->
+                <div class="glass p-5 mt-2 rounded-3xl border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.05)] flex items-center justify-between">
+                    <div>
+                        <h3 class="font-heading text-lg font-bold text-white mb-1">Modern Science</h3>
+                        <p class="text-blue-400 text-[10px] font-medium uppercase tracking-widest">Dermatological Regimen</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                        <i class="fa-solid fa-flask"></i>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    ${modernBentoHtml}
                 </div>
             </div>
         `;
@@ -465,9 +553,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Extract accurate data from memory, completely bypassing DOM animation states (fixes 0% bug)
             const spread = lastAnalysisData.analysis.spreadPercentage;
             const diseaseType = lastAnalysisData.analysis.overallDiseaseType;
-            const causes = lastAnalysisData.analysis.causes;
+            const modernInfo = lastAnalysisData.analysis.modernInfo;
+            const ayurvedicInfo = lastAnalysisData.analysis.ayurvedicInfo;
+            const diagnosisPercentage = lastAnalysisData.analysis.diagnosisPercentage;
+            const detailedRootCause = lastAnalysisData.analysis.detailedRootCause;
             const symptoms = lastAnalysisData.analysis.symptoms;
-            const treatments = lastAnalysisData.treatments;
+            const ayurvedicRemedies = lastAnalysisData.ayurvedicRemedies || [];
+            const modernRemedies = lastAnalysisData.modernRemedies || [];
             
             // Capture the Chart.js canvas as an image so the PDF engine renders it perfectly
             const chartCanvas = document.getElementById('deformity-pie-chart');
@@ -478,22 +570,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             const circleCircumference = 2 * Math.PI * 15.9155; 
             const strokeDashOffset = circleCircumference - (spread / 100) * circleCircumference;
 
-            // Condense Ayurvedic Treatments to top 3 max to perfectly fit on a single page
-            const topTreatments = treatments.slice(0, 3);
-            let treatmentsHtml = '';
-            topTreatments.forEach((t) => {
-                treatmentsHtml += `
-                <div style="background-color: #0f172a; border-left: 4px solid #10b981; border-radius: 0 8px 8px 0; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                        <h4 style="margin: 0; color: #34d399; font-size: 14px; font-weight: bold;">${t.title}</h4>
+            // Condense Ayurvedic Treatments to top 2 max to perfectly fit on a single page
+            const topAyurvedic = ayurvedicRemedies.slice(0, 2);
+            let ayurvedicHtml = '';
+            topAyurvedic.forEach((t) => {
+                ayurvedicHtml += `
+                <div style="background-color: #0f172a; border-left: 4px solid #10b981; border-radius: 0 8px 8px 0; padding: 10px; margin-bottom: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                        <h4 style="margin: 0; color: #34d399; font-size: 11px; font-weight: bold;">${t.title}</h4>
                     </div>
-                    <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">${t.instructions}</p>
+                    <p style="margin: 0; font-size: 9px; color: #94a3b8; line-height: 1.3;">${t.instructions}</p>
+                </div>`;
+            });
+
+            // Condense Modern Treatments to top 2 max to perfectly fit on a single page
+            const topModern = modernRemedies.slice(0, 2);
+            let modernHtml = '';
+            topModern.forEach((t) => {
+                modernHtml += `
+                <div style="background-color: #0f172a; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 10px; margin-bottom: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                        <h4 style="margin: 0; color: #60a5fa; font-size: 11px; font-weight: bold;">${t.title}</h4>
+                    </div>
+                    <p style="margin: 0; font-size: 9px; color: #94a3b8; line-height: 1.3;">${t.instructions}</p>
                 </div>`;
             });
 
             // Compact lists
-            const causesList = causes.map(c => `<li style="margin-bottom: 4px; padding-left: 8px; border-left: 2px solid #ef4444;">${c}</li>`).join('');
-            const symptomsList = symptoms.map(s => `<li style="margin-bottom: 4px; padding-left: 8px; border-left: 2px solid #f59e0b;">${s}</li>`).join('');
+            const symptomsList = symptoms.map(s => `<li style="margin-bottom: 3px; padding-left: 6px; border-left: 2px solid #f59e0b; font-size: 10px;">${s}</li>`).join('');
 
             // Build the Infographic HTML template (Exact A4 Dimensions)
             const printContainer = document.createElement('div');
@@ -510,96 +614,126 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div id="infographic-capture-area" style="background-color: #020617; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 794px; height: 1122px; box-sizing: border-box; overflow: hidden; padding: 40px;">
                     
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 20px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 15px; margin-bottom: 20px;">
                         <div style="display: flex; gap: 15px; align-items: center;">
                             <div style="width: 60px; height: 60px; border-radius: 12px; overflow: hidden; border: 2px solid #10b981; background-color: #0f172a;">
                                 <img src="${uploadedImageBase64.startsWith('data:image') ? uploadedImageBase64 : 'data:image/jpeg;base64,' + uploadedImageBase64}" style="width: 100%; height: 100%; object-fit: cover;" />
                             </div>
                             <div>
-                                <h1 style="margin: 0; color: #34d399; font-size: 28px; font-weight: 800; letter-spacing: -1px;">AyurSkin PRO</h1>
-                                <p style="margin: 3px 0 0 0; color: #10b981; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Clinical Microscopic Skin Audit</p>
+                                <h1 style="margin: 0; color: #34d399; font-size: 26px; font-weight: 800; letter-spacing: -1px;">AyurSkin PRO</h1>
+                                <p style="margin: 2px 0 0 0; color: #10b981; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Clinical Skin Audit</p>
                             </div>
                         </div>
-                        <div style="text-align: right; background: #0f172a; padding: 12px 20px; border-radius: 12px; border: 1px solid #1e293b;">
-                            <div style="display: flex; gap: 20px;">
+                        <div style="text-align: right; background: #0f172a; padding: 10px 15px; border-radius: 12px; border: 1px solid #1e293b;">
+                            <div style="display: flex; gap: 15px;">
                                 <div style="text-align: left;">
-                                    <p style="margin: 0; color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;">Patient Name</p>
-                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 13px; font-weight: bold;">${patientDetails.name || 'N/A'}</p>
+                                    <p style="margin: 0; color: #94a3b8; font-size: 8px; text-transform: uppercase; letter-spacing: 1px;">Patient Name</p>
+                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 11px; font-weight: bold;">${patientDetails.name || 'N/A'}</p>
                                 </div>
                                 <div style="width: 1px; background: #1e293b;"></div>
                                 <div style="text-align: left;">
-                                    <p style="margin: 0; color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;">Age / Gender</p>
-                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 13px; font-weight: bold;">${patientDetails.age || 'N/A'} / ${patientDetails.gender || 'N/A'}</p>
+                                    <p style="margin: 0; color: #94a3b8; font-size: 8px; text-transform: uppercase; letter-spacing: 1px;">Age/Gender</p>
+                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 11px; font-weight: bold;">${patientDetails.age || 'N/A'} / ${patientDetails.gender || 'N/A'}</p>
                                 </div>
                                 <div style="width: 1px; background: #1e293b;"></div>
                                 <div style="text-align: left;">
-                                    <p style="margin: 0; color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;">Contact</p>
-                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 13px; font-weight: bold;">${patientDetails.phone || 'N/A'}</p>
+                                    <p style="margin: 0; color: #94a3b8; font-size: 8px; text-transform: uppercase; letter-spacing: 1px;">Contact</p>
+                                    <p style="margin: 2px 0 0 0; color: #f8fafc; font-size: 11px; font-weight: bold;">${patientDetails.phone || 'N/A'}</p>
                                 </div>
                             </div>
-                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between;">
-                                <p style="margin: 0; color: #64748b; font-size: 9px;">Date: ${new Date().toLocaleDateString()}</p>
-                                <p style="margin: 0; color: #64748b; font-size: 9px;">Report ID: ASN-${Math.floor(Math.random()*100000)}</p>
+                            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between;">
+                                <p style="margin: 0; color: #64748b; font-size: 8px;">Date: ${new Date().toLocaleDateString()}</p>
+                                <p style="margin: 0; color: #64748b; font-size: 8px;">ID: ASN-${Math.floor(Math.random()*100000)}</p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Diagnosis & Charts Row (Compact 3 columns) -->
-                    <div style="display: flex; gap: 15px; margin-bottom: 25px; height: 140px;">
+                    <!-- Diagnosis & Charts Row -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px; height: 130px;">
                         <!-- Primary Diagnosis Box -->
-                        <div style="flex: 2; background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); border: 1px solid #059669; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center;">
-                            <h2 style="margin: 0 0 8px 0; color: #6ee7b7; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Primary Diagnosis</h2>
-                            <h3 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold; line-height: 1.1;">${diseaseType}</h3>
+                        <div style="flex: 2; background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); border: 1px solid #059669; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                                <h2 style="margin: 0; color: #6ee7b7; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Primary Diagnosis</h2>
+                                <div style="background: #020617; padding: 4px 10px; border-radius: 20px; border: 1px solid #10b981; font-size: 10px; font-weight: bold; color: #34d399; white-space: nowrap;">${diagnosisPercentage}</div>
+                            </div>
+                            <h3 style="margin: 0; color: #ffffff; font-size: 20px; font-weight: bold; line-height: 1.2;">${diseaseType}</h3>
                         </div>
 
                         <!-- Infection Spread Ring SVG -->
-                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <h2 style="margin: 0 0 10px 0; color: #94a3b8; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Spread</h2>
-                            <div style="width: 70px; height: 70px; position: relative;">
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <h2 style="margin: 0 0 5px 0; color: #94a3b8; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Spread</h2>
+                            <div style="width: 60px; height: 60px; position: relative;">
                                 <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
                                     <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#1e293b" stroke-width="3"/>
                                     <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${severityColorCode}" stroke-width="3" stroke-dasharray="${circleCircumference}, ${circleCircumference}" stroke-dashoffset="${strokeDashOffset}"/>
                                 </svg>
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: ${severityColorCode};">${spread}%</div>
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: ${severityColorCode};">${spread}%</div>
                             </div>
                         </div>
 
                         <!-- Pie Chart Image -->
-                        <div style="flex: 1.5; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <h2 style="margin: 0 0 10px 0; color: #94a3b8; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Deformities</h2>
-                            <img src="${chartImgData}" style="width: 100%; max-height: 80px; object-fit: contain;" />
+                        <div style="flex: 1.5; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <h2 style="margin: 0 0 5px 0; color: #94a3b8; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Deformities</h2>
+                            <img src="${chartImgData}" style="width: 100%; max-height: 75px; object-fit: contain;" />
                         </div>
                     </div>
                     
-                    <!-- Causes & Symptoms Row -->
-                    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px;">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 2px solid #ef4444; padding-bottom: 8px;">
-                                <h2 style="margin: 0; color: #f8fafc; font-size: 14px; font-weight: bold;">Root Causes</h2>
+                    <!-- Modern & Ayurvedic Perspectives Row -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 2px solid #3b82f6; padding-bottom: 6px;">
+                                <h2 style="margin: 0; color: #60a5fa; font-size: 12px; font-weight: bold; text-transform: uppercase;">Modern Science</h2>
                             </div>
-                            <ul style="color: #cbd5e1; font-size: 11px; list-style-type: none; padding: 0; margin: 0;">${causesList}</ul>
+                            <p style="color: #cbd5e1; font-size: 10px; margin: 0; line-height: 1.4;">${modernInfo}</p>
                         </div>
-                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px;">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 2px solid #f59e0b; padding-bottom: 8px;">
-                                <h2 style="margin: 0; color: #f8fafc; font-size: 14px; font-weight: bold;">Clinical Symptoms</h2>
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 2px solid #10b981; padding-bottom: 6px;">
+                                <h2 style="margin: 0; color: #34d399; font-size: 12px; font-weight: bold; text-transform: uppercase;">Ayurveda</h2>
                             </div>
-                            <ul style="color: #cbd5e1; font-size: 11px; list-style-type: none; padding: 0; margin: 0;">${symptomsList}</ul>
+                            <p style="color: #cbd5e1; font-size: 10px; margin: 0; line-height: 1.4;">${ayurvedicInfo}</p>
+                        </div>
+                    </div>
+
+                    <!-- Causes & Symptoms Row -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 2px solid #ef4444; padding-bottom: 6px;">
+                                <h2 style="margin: 0; color: #f8fafc; font-size: 12px; font-weight: bold;">Detailed Root Cause</h2>
+                            </div>
+                            <p style="color: #cbd5e1; font-size: 10px; margin: 0; line-height: 1.4;">${detailedRootCause}</p>
+                        </div>
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 2px solid #f59e0b; padding-bottom: 6px;">
+                                <h2 style="margin: 0; color: #f8fafc; font-size: 12px; font-weight: bold;">Clinical Symptoms</h2>
+                            </div>
+                            <ul style="color: #cbd5e1; font-size: 10px; list-style-type: none; padding: 0; margin: 0;">${symptomsList}</ul>
                         </div>
                     </div>
                     
                     <!-- Treatments Section -->
-                    <div style="background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 25px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;">
-                            <h2 style="color: #f8fafc; font-size: 16px; font-weight: bold; margin: 0;">Ayurvedic Recovery Protocol</h2>
-                            <span style="background: #064e3b; color: #34d399; padding: 4px 12px; border-radius: 12px; font-size: 9px; font-weight: bold;">AI Prescribed</span>
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
+                                <h2 style="color: #f8fafc; font-size: 12px; font-weight: bold; margin: 0;">Ayurvedic Remedies</h2>
+                                <span style="background: #064e3b; color: #34d399; padding: 3px 8px; border-radius: 12px; font-size: 7px; font-weight: bold;">Natural</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
+                                ${ayurvedicHtml}
+                            </div>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
-                            ${treatmentsHtml}
+                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
+                                <h2 style="color: #f8fafc; font-size: 12px; font-weight: bold; margin: 0;">Modern Science</h2>
+                                <span style="background: #1e3a8a; color: #60a5fa; padding: 3px 8px; border-radius: 12px; font-size: 7px; font-weight: bold;">Dermatological</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
+                                ${modernHtml}
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Footer -->
-                    <div style="position: absolute; bottom: 40px; left: 40px; right: 40px; text-align: center; color: #475569; font-size: 9px; border-top: 1px solid #1e293b; padding-top: 15px;">
+                    <div style="position: absolute; bottom: 30px; left: 40px; right: 40px; text-align: center; color: #475569; font-size: 8px; border-top: 1px solid #1e293b; padding-top: 10px;">
                         <p style="margin: 0;">Generated by AyurSkin Neural Tensors. This document is for informational purposes only and does not substitute professional medical advice.</p>
                         <p style="margin: 3px 0 0 0;">AyurSkin PRO • Diagnostic Terminal</p>
                     </div>
