@@ -118,12 +118,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const current = uploadedImages.length + 1;
         let label = '';
         if (questionnaireData.skinArea === 'Face') {
-            if (current === 1) label = 'Front Face';
-            else if (current === 2) label = 'Right Profile';
-            else if (current === 3) label = 'Left Profile';
+            if (current === 1) label = 'front face image';
+            else if (current === 2) label = 'right face image';
+            else if (current === 3) label = 'left face image';
         } else {
-            if (current === 1) label = 'Primary Angle';
-            else if (current === 2) label = 'Secondary Angle';
+            if (current === 1) label = 'first image of the affected skin';
+            else if (current === 2) label = 'second image of the affected skin';
         }
         
         const subtitle = document.querySelector('#analyze-section p');
@@ -223,6 +223,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 4. Advanced Progress Engine
     startAnalysisBtn.addEventListener('click', () => {
+        if (uploadedImages.length < targetImageCount) return; // Prevent early scan
+        
         actionButtons.classList.add('hidden');
         progressContainer.classList.remove('hidden');
         const scanLine = document.getElementById('scan-line');
