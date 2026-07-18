@@ -120,19 +120,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const circleCircumference = 2 * Math.PI * 15.9155; 
         const strokeDashOffset = circleCircumference - (spread / 100) * circleCircumference;
 
-        const causesList = a.causes.map(c => `<li class="mb-1 pl-2 border-l-2 border-red-500 text-slate-300 text-sm">${c}</li>`).join('');
-        const symptomsList = a.symptoms.map(s => `<li class="mb-1 pl-2 border-l-2 border-amber-500 text-slate-300 text-sm">${s}</li>`).join('');
+        let causesHtml = '';
+        if (a.detailedRootCause && typeof a.detailedRootCause === 'object') {
+            causesHtml = `
+                <h4 class="text-blue-400 text-xs font-bold mb-1"><i class="fa-solid fa-stethoscope"></i> Modern Aspect</h4>
+                <p class="text-slate-300 text-sm mb-3">${a.detailedRootCause.modern}</p>
+                <h4 class="text-emerald-400 text-xs font-bold mb-1"><i class="fa-solid fa-leaf"></i> Ayurvedic Aspect</h4>
+                <p class="text-slate-300 text-sm">${a.detailedRootCause.ayurvedic}</p>
+            `;
+        } else if (a.causes && Array.isArray(a.causes)) {
+            causesHtml = `<ul class="space-y-1">` + a.causes.map(c => `<li class="mb-1 pl-2 border-l-2 border-red-500 text-slate-300 text-sm">${c}</li>`).join('') + `</ul>`;
+        } else {
+            causesHtml = `<p class="text-slate-300 text-sm">${a.detailedRootCause || 'N/A'}</p>`;
+        }
+
+        const symptomsList = (a.symptoms || []).map(s => `<li class="mb-1 pl-2 border-l-2 border-amber-500 text-slate-300 text-sm">${s}</li>`).join('');
         
         let treatmentsHtml = '';
-        report.analysisData.treatments.forEach((t) => {
-            treatmentsHtml += `
-            <div class="bg-[#0f172a] border-l-4 border-emerald-500 rounded-r-xl p-4 mb-3 shadow-lg">
-                <h4 class="text-emerald-400 text-sm font-bold mb-1 flex items-center gap-2">
-                    <i class="${t.icon || 'fa-solid fa-leaf'}"></i> ${t.title}
-                </h4>
-                <p class="text-xs text-slate-400 leading-relaxed">${t.instructions}</p>
-            </div>`;
-        });
+        if (report.analysisData.ayurvedicRemedies) {
+            treatmentsHtml += `<h4 class="text-emerald-400 font-bold mb-2 mt-4 text-sm">Ayurvedic Remedies</h4>`;
+            report.analysisData.ayurvedicRemedies.forEach((t) => {
+                treatmentsHtml += `
+                <div class="bg-[#0f172a] border-l-4 border-emerald-500 rounded-r-xl p-4 mb-3 shadow-lg">
+                    <h4 class="text-emerald-400 text-sm font-bold mb-1 flex items-center gap-2">
+                        <i class="${t.icon || 'fa-solid fa-leaf'}"></i> ${t.title}
+                    </h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">${t.instructions}</p>
+                </div>`;
+            });
+        }
+        if (report.analysisData.modernRemedies) {
+            treatmentsHtml += `<h4 class="text-blue-400 font-bold mb-2 mt-4 text-sm">Modern Science</h4>`;
+            report.analysisData.modernRemedies.forEach((t) => {
+                treatmentsHtml += `
+                <div class="bg-[#0f172a] border-l-4 border-blue-500 rounded-r-xl p-4 mb-3 shadow-lg">
+                    <h4 class="text-blue-400 text-sm font-bold mb-1 flex items-center gap-2">
+                        <i class="${t.icon || 'fa-solid fa-flask'}"></i> ${t.title}
+                    </h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">${t.instructions}</p>
+                </div>`;
+            });
+        }
 
         // Reconstruct the PDF look directly in HTML
         modalBody.innerHTML = `
@@ -181,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-slate-900 border border-white/10 rounded-2xl p-6">
                         <h3 class="text-white text-sm font-bold mb-4 border-b border-red-500/30 pb-2">Root Causes</h3>
-                        <ul class="space-y-1">${causesList}</ul>
+                        ${causesHtml}
                     </div>
                     <div class="bg-slate-900 border border-white/10 rounded-2xl p-6">
                         <h3 class="text-white text-sm font-bold mb-4 border-b border-amber-500/30 pb-2">Clinical Symptoms</h3>

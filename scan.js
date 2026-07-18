@@ -764,20 +764,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div style="display: flex; gap: 15px;">
                         <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
-                                <h2 style="color: #f8fafc; font-size: 12px; font-weight: bold; margin: 0;">Ayurvedic Remedies</h2>
-                                <span style="background: #064e3b; color: #34d399; padding: 3px 8px; border-radius: 12px; font-size: 7px; font-weight: bold;">Natural</span>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
-                                ${ayurvedicHtml}
-                            </div>
-                        </div>
-                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
                                 <h2 style="color: #f8fafc; font-size: 12px; font-weight: bold; margin: 0;">Modern Science</h2>
                                 <span style="background: #1e3a8a; color: #60a5fa; padding: 3px 8px; border-radius: 12px; font-size: 7px; font-weight: bold;">Dermatological</span>
                             </div>
                             <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
                                 ${modernHtml}
+                            </div>
+                        </div>
+                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 6px;">
+                                <h2 style="color: #f8fafc; font-size: 12px; font-weight: bold; margin: 0;">Ayurvedic Remedies</h2>
+                                <span style="background: #064e3b; color: #34d399; padding: 3px 8px; border-radius: 12px; font-size: 7px; font-weight: bold;">Natural</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
+                                ${ayurvedicHtml}
                             </div>
                         </div>
                     </div>
