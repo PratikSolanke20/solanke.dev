@@ -16,7 +16,17 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Outfit', 'sans-serif'] },
-                    colors: { emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669', 900: '#064e3b' } }
+                    colors: { emerald: { 400: '#34d399', 500: '#10b981', 600: '#059669', 900: '#064e3b' } },
+                    keyframes: {
+                        cameraScan: {
+                            '0%, 100%': { top: '5%', opacity: 0 },
+                            '10%, 90%': { opacity: 1 },
+                            '50%': { top: '95%' }
+                        }
+                    },
+                    animation: {
+                        'camera-scan': 'cameraScan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite'
+                    }
                 }
             }
         }
@@ -96,6 +106,38 @@
                 <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">Diagnostic Terminal</h2>
                 <p class="text-slate-400 mb-12">System ready. Enter patient details to proceed with microscopic tensor analysis.</p>
 
+                <!-- Progress Stepper -->
+                <div class="max-w-3xl mx-auto mb-12">
+                    <div class="relative flex justify-between items-center w-full">
+                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-white/10 rounded-full z-0"></div>
+                        <div id="step-progress-bar" class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-emerald-500 rounded-full z-0 transition-all duration-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 0%;"></div>
+                        
+                        <!-- Step 1 -->
+                        <div id="step-1-indicator" class="step-indicator relative z-10 flex flex-col items-center gap-3 w-1/3" data-step="1">
+                            <div class="step-icon w-12 h-12 rounded-full flex items-center justify-center bg-emerald-500 text-white font-bold text-lg border-4 border-[#020617] shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all duration-500">
+                                1
+                            </div>
+                            <span class="text-xs sm:text-sm font-semibold text-emerald-400 tracking-wider uppercase">Details</span>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div id="step-2-indicator" class="step-indicator relative z-10 flex flex-col items-center gap-3 w-1/3 opacity-50" data-step="2">
+                            <div class="step-icon w-12 h-12 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 font-bold text-lg border-4 border-[#020617] transition-all duration-500">
+                                2
+                            </div>
+                            <span class="text-xs sm:text-sm font-semibold text-slate-400 tracking-wider uppercase transition-colors duration-500">Questionnaire</span>
+                        </div>
+                        
+                        <!-- Step 3 -->
+                        <div id="step-3-indicator" class="step-indicator relative z-10 flex flex-col items-center gap-3 w-1/3 opacity-50" data-step="3">
+                            <div class="step-icon w-12 h-12 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 font-bold text-lg border-4 border-[#020617] transition-all duration-500">
+                                3
+                            </div>
+                            <span class="text-xs sm:text-sm font-semibold text-slate-400 tracking-wider uppercase transition-colors duration-500">Scan</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- User Details Form -->
                 <div id="user-info-form" class="max-w-md mx-auto bg-slate-900/50 p-8 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-md mb-8 transition-all duration-500">
                     <h3 class="text-xl font-bold text-white mb-6 font-heading text-left flex items-center gap-3"><i class="fa-solid fa-user-injured text-emerald-400"></i> Patient Details</h3>
@@ -145,6 +187,86 @@
                             </div>
                         </div>
 
+                        <!-- Skin Part Question -->
+                        <div class="relative group">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 transition-colors group-hover:text-emerald-400">Affected Skin Area</label>
+                            <div class="relative flex flex-col gap-3">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <label class="relative flex items-center justify-center p-3 rounded-xl border border-white/10 bg-[#020617] cursor-pointer hover:border-emerald-500/30 transition-all shadow-inner group/radio">
+                                        <input type="radio" name="skin-area" value="Face" class="peer sr-only" required onchange="document.getElementById('other-body-parts').classList.remove('max-h-[500px]', 'opacity-100'); document.getElementById('other-body-parts').classList.add('max-h-0', 'opacity-0'); document.getElementById('specific-body-part').required = false;">
+                                        <span class="text-sm font-medium text-slate-400 peer-checked:text-emerald-400 transition-colors">Face</span>
+                                        <div class="absolute inset-0 border-2 border-transparent peer-checked:border-emerald-500/50 rounded-xl pointer-events-none transition-all shadow-[0_0_10px_rgba(16,185,129,0)_inset] peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.1)_inset]"></div>
+                                    </label>
+                                    
+                                    <label class="relative flex items-center justify-center p-3 rounded-xl border border-white/10 bg-[#020617] cursor-pointer hover:border-emerald-500/30 transition-all shadow-inner group/radio">
+                                        <input type="radio" name="skin-area" value="Neck" class="peer sr-only" onchange="document.getElementById('other-body-parts').classList.remove('max-h-[500px]', 'opacity-100'); document.getElementById('other-body-parts').classList.add('max-h-0', 'opacity-0'); document.getElementById('specific-body-part').required = false;">
+                                        <span class="text-sm font-medium text-slate-400 peer-checked:text-emerald-400 transition-colors">Neck</span>
+                                        <div class="absolute inset-0 border-2 border-transparent peer-checked:border-emerald-500/50 rounded-xl pointer-events-none transition-all shadow-[0_0_10px_rgba(16,185,129,0)_inset] peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.1)_inset]"></div>
+                                    </label>
+
+                                    <label class="relative flex items-center justify-center p-3 rounded-xl border border-white/10 bg-[#020617] cursor-pointer hover:border-emerald-500/30 transition-all shadow-inner group/radio">
+                                        <input type="radio" name="skin-area" value="Hands" class="peer sr-only" onchange="document.getElementById('other-body-parts').classList.remove('max-h-[500px]', 'opacity-100'); document.getElementById('other-body-parts').classList.add('max-h-0', 'opacity-0'); document.getElementById('specific-body-part').required = false;">
+                                        <span class="text-sm font-medium text-slate-400 peer-checked:text-emerald-400 transition-colors">Hands</span>
+                                        <div class="absolute inset-0 border-2 border-transparent peer-checked:border-emerald-500/50 rounded-xl pointer-events-none transition-all shadow-[0_0_10px_rgba(16,185,129,0)_inset] peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.1)_inset]"></div>
+                                    </label>
+
+                                    <label class="relative flex items-center justify-center p-3 rounded-xl border border-white/10 bg-[#020617] cursor-pointer hover:border-emerald-500/30 transition-all shadow-inner group/radio">
+                                        <input type="radio" name="skin-area" value="Others" class="peer sr-only" onchange="document.getElementById('other-body-parts').classList.remove('max-h-0', 'opacity-0'); document.getElementById('other-body-parts').classList.add('max-h-[500px]', 'opacity-100'); document.getElementById('specific-body-part').required = true;">
+                                        <span class="text-sm font-medium text-slate-400 peer-checked:text-emerald-400 transition-colors">Others</span>
+                                        <div class="absolute inset-0 border-2 border-transparent peer-checked:border-emerald-500/50 rounded-xl pointer-events-none transition-all shadow-[0_0_10px_rgba(16,185,129,0)_inset] peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.1)_inset]"></div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Hidden Other Body Parts Section -->
+                                <div id="other-body-parts" class="max-h-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out">
+                                    <div class="pt-3">
+                                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 transition-colors">Define the exact part</label>
+                                        <div class="relative flex items-center transition-transform duration-300">
+                                            <i class="fa-solid fa-child-reaching absolute left-4 text-slate-500 z-10"></i>
+                                            <select id="specific-body-part" class="w-full bg-[#020617] border border-white/10 rounded-xl pl-12 pr-10 py-3 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all appearance-none cursor-pointer shadow-inner hover:border-white/20">
+                                                <option value="" disabled selected class="text-slate-500">Select exact body part...</option>
+                                                <optgroup label="Head & Neck">
+                                                    <option value="Scalp">Scalp</option>
+                                                    <option value="Forehead">Forehead</option>
+                                                    <option value="Cheeks">Cheeks</option>
+                                                    <option value="Nose">Nose</option>
+                                                    <option value="Chin">Chin</option>
+                                                    <option value="Ears">Ears</option>
+                                                    <option value="Back of Neck">Back of Neck</option>
+                                                </optgroup>
+                                                <optgroup label="Torso">
+                                                    <option value="Chest">Chest</option>
+                                                    <option value="Upper Back">Upper Back</option>
+                                                    <option value="Lower Back">Lower Back</option>
+                                                    <option value="Abdomen">Abdomen</option>
+                                                    <option value="Shoulders">Shoulders</option>
+                                                </optgroup>
+                                                <optgroup label="Upper Limbs">
+                                                    <option value="Upper Arms">Upper Arms</option>
+                                                    <option value="Forearms">Forearms</option>
+                                                    <option value="Wrists">Wrists</option>
+                                                    <option value="Back of Hands">Back of Hands</option>
+                                                    <option value="Palms">Palms</option>
+                                                    <option value="Fingers">Fingers</option>
+                                                </optgroup>
+                                                <optgroup label="Lower Limbs">
+                                                    <option value="Thighs">Thighs</option>
+                                                    <option value="Knees">Knees</option>
+                                                    <option value="Calves">Calves</option>
+                                                    <option value="Ankles">Ankles</option>
+                                                    <option value="Feet">Feet</option>
+                                                    <option value="Toes">Toes</option>
+                                                </optgroup>
+                                            </select>
+                                            <div class="absolute right-4 pointer-events-none text-slate-500 transition-colors">
+                                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Data Declaration -->
                         <label for="data-consent" class="block mt-8 p-4 md:p-5 rounded-2xl border border-white/5 bg-slate-900/30 hover:bg-slate-800/60 hover:border-emerald-500/40 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all duration-300 cursor-pointer group/decl backdrop-blur-sm transform hover:-translate-y-0.5">
                             <div class="flex items-start gap-4">
@@ -166,15 +288,273 @@
                             <div class="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white mix-blend-overlay transition-opacity duration-500"></div>
 
                             <div class="relative flex justify-center items-center gap-3 text-white font-bold text-lg tracking-wide z-10">
-                                Continue to Scanner 
+                                Continue to Questionnaire 
                                 <i class="fa-solid fa-arrow-right-long group-hover:translate-x-2 transition-transform duration-300"></i>
                             </div>
                         </button>
                     </form>
                 </div>
 
+                    </form>
+                </div>
+
+                <!-- Questionnaire Form -->
+                <div id="questionnaire-section" class="hidden max-w-4xl mx-auto bg-slate-900/50 p-6 md:p-10 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-md mb-8 transition-all duration-500 text-left">
+                    <div class="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white font-heading">Clinical Questionnaire</h3>
+                            <p class="text-sm text-slate-400 mt-1">Please answer accurately for a precise Ayurvedic & Modern diagnosis.</p>
+                        </div>
+                    </div>
+
+                    <form id="questionnaire-form" class="space-y-8">
+                        
+                        <!-- Q1 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-emerald-400">01.</span> Tick all body parts affected <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-3">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Face" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Face</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Scalp" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Scalp</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Neck" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Neck</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Chest" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Chest</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Back" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Back</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Arms" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Arms</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Hands" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Hands</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Abdomen" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Abdomen</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Groin" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Groin</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Thighs" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Thighs</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Legs" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Legs</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Feet" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Feet</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q1_body_parts" value="Other" class="peer sr-only"><div class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-emerald-500/20 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none shadow-inner peer-checked:shadow-[0_0_15px_rgba(16,185,129,0.15)]">Other</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-amber-400">02.</span> What best describes your skin concern? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Acne / Pimples" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Acne / Pimples</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Dark spots" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Dark spots</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Pigmentation" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Pigmentation</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Rash" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Rash</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Itching" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Itching</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Dry skin" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Dry skin</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Oily skin" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Oily skin</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="White patches" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">White patches</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Redness" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Redness</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Swelling" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Swelling</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Scaling" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Scaling</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Blisters" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Blisters</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Pus" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Pus</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Hair loss" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Hair loss</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Dandruff" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Dandruff</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Wrinkles" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Wrinkles</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Enlarged pores" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Enlarged pores</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Scar" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Scar</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Mole / Growth" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Mole / Growth</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Nail changes" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Nail changes</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q2_concerns" value="Other" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-amber-500/20 peer-checked:border-amber-500/50 peer-checked:text-amber-400 transition-all hover:bg-slate-700/50 select-none peer-checked:shadow-[0_0_15px_rgba(245,158,11,0.15)]">Other</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-blue-400">03.</span> How long has this problem been present?</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q3_duration" value="Less than 1 week" required class="peer sr-only"><div class="px-4 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-blue-500/10 peer-checked:border-blue-500/50 peer-checked:text-blue-400 transition-all hover:bg-slate-700/50 shadow-inner peer-checked:shadow-[0_0_15px_rgba(59,130,246,0.15)] flex flex-col items-center justify-center gap-2 h-full"><span class="font-medium">Less than 1 week</span></div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q3_duration" value="1–4 weeks" required class="peer sr-only"><div class="px-4 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-blue-500/10 peer-checked:border-blue-500/50 peer-checked:text-blue-400 transition-all hover:bg-slate-700/50 shadow-inner peer-checked:shadow-[0_0_15px_rgba(59,130,246,0.15)] flex flex-col items-center justify-center gap-2 h-full"><span class="font-medium">1–4 weeks</span></div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q3_duration" value="1–6 months" required class="peer sr-only"><div class="px-4 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-blue-500/10 peer-checked:border-blue-500/50 peer-checked:text-blue-400 transition-all hover:bg-slate-700/50 shadow-inner peer-checked:shadow-[0_0_15px_rgba(59,130,246,0.15)] flex flex-col items-center justify-center gap-2 h-full"><span class="font-medium">1–6 months</span></div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q3_duration" value="More than 6 months" required class="peer sr-only"><div class="px-4 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-sm text-slate-300 peer-checked:bg-blue-500/10 peer-checked:border-blue-500/50 peer-checked:text-blue-400 transition-all hover:bg-slate-700/50 shadow-inner peer-checked:shadow-[0_0_15px_rgba(59,130,246,0.15)] flex flex-col items-center justify-center gap-2 h-full"><span class="font-medium">More than 6 months</span></div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-purple-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(168,85,247,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-purple-400">04.</span> Is it getting worse?</label>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q4_progression" value="Improving" required class="peer sr-only"><div class="px-3 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-purple-500/10 peer-checked:border-purple-500/50 peer-checked:text-purple-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Improving</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q4_progression" value="Same" required class="peer sr-only"><div class="px-3 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-purple-500/10 peer-checked:border-purple-500/50 peer-checked:text-purple-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Same</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q4_progression" value="Slowly worsening" required class="peer sr-only"><div class="px-3 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-purple-500/10 peer-checked:border-purple-500/50 peer-checked:text-purple-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Slowly worsening</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q4_progression" value="Rapidly worsening" required class="peer sr-only"><div class="px-3 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-purple-500/10 peer-checked:border-purple-500/50 peer-checked:text-purple-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Rapidly worsening</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q4_progression" value="Comes and goes" required class="peer sr-only"><div class="px-3 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-purple-500/10 peer-checked:border-purple-500/50 peer-checked:text-purple-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Comes and goes</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q5 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-red-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-red-400">05.</span> Which symptoms are present? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Itching" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Itching</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Pain" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Pain</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Burning" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Burning</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Dryness" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Dryness</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Bleeding" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Bleeding</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Oozing" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Oozing</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Peeling" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Peeling</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Crusting" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Crusting</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="Bad smell" class="peer sr-only" onchange="if(this.checked) document.querySelector('input[name=q5_symptoms][value=None]').checked = false;"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">Bad smell</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q5_symptoms" value="None" class="peer sr-only" onchange="if(this.checked) document.querySelectorAll('input[name=q5_symptoms]').forEach(cb => { if(cb !== this) cb.checked = false; })"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-red-500/10 peer-checked:border-red-500/50 peer-checked:text-red-400 transition-all hover:bg-slate-700/50 select-none">None</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q6 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-orange-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(249,115,22,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-orange-400">06.</span> Does anything make it worse? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Sunlight" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Sunlight</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Sweat" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Sweat</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Heat" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Heat</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Cold" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Cold</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Stress" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Stress</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Menstrual cycle" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Menstrual cycle</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Exercise" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Exercise</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Cosmetics" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Cosmetics</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Soap" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Soap</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Shampoo" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Shampoo</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Detergent" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Detergent</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Certain foods" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Certain foods</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Medicines" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Medicines</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q6_triggers" value="Nothing noticed" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-orange-500/10 peer-checked:border-orange-500/50 peer-checked:text-orange-400 transition-all hover:bg-slate-700/50 select-none">Nothing noticed</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q7 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-emerald-400/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(52,211,153,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-emerald-400">07.</span> Have you used any treatment? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="None" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">None</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Ayurvedic" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Ayurvedic</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Home remedies" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Home remedies</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Antibiotic" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Antibiotic</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Antifungal" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Antifungal</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Steroid cream" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Steroid cream</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Moisturizer" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Moisturizer</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Cosmetic treatment" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Cosmetic treatment</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q7_treatments" value="Other" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 select-none">Other</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q8 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-blue-300/30 transition-colors shadow-lg flex justify-between items-center flex-wrap gap-4">
+                            <label class="text-sm font-bold text-slate-200 flex gap-2"><span class="text-blue-300">08.</span> Have you had this problem before?</label>
+                            <div class="flex bg-slate-800/50 rounded-xl p-1 border border-white/10">
+                                <label class="cursor-pointer"><input type="radio" name="q8_history" value="Yes" required class="peer sr-only"><div class="px-6 py-2 rounded-lg text-sm text-slate-400 peer-checked:bg-blue-500 peer-checked:text-white transition-all font-semibold">Yes</div></label>
+                                <label class="cursor-pointer"><input type="radio" name="q8_history" value="No" class="peer sr-only"><div class="px-6 py-2 rounded-lg text-sm text-slate-400 peer-checked:bg-slate-600 peer-checked:text-white transition-all font-semibold">No</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q9 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-indigo-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(99,102,241,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-indigo-400">09.</span> Do you have any of these medical conditions? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="Diabetes" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">Diabetes</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="PCOS" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">PCOS</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="Thyroid disorder" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">Thyroid disorder</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="Asthma" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">Asthma</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="Autoimmune disease" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">Autoimmune disease</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="Allergies" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">Allergies</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="High stress" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">High stress</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q9_conditions" value="None" class="peer sr-only"><div class="px-4 py-2 rounded-full bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-indigo-500/10 peer-checked:border-indigo-500/50 peer-checked:text-indigo-400 transition-all hover:bg-slate-700/50 select-none">None</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q10 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-pink-500/30 transition-colors shadow-lg flex justify-between items-center flex-wrap gap-4 hover:shadow-[0_0_20px_rgba(236,72,153,0.1)]">
+                            <label class="text-sm font-bold text-slate-200 flex gap-2"><span class="text-pink-400">10.</span> Does anyone in family have similar skin problems?</label>
+                            <div class="flex bg-slate-800/50 rounded-xl p-1 border border-white/10 w-fit">
+                                <label class="cursor-pointer"><input type="radio" name="q10_family" value="Yes" required class="peer sr-only"><div class="px-4 py-2 rounded-lg text-sm text-slate-400 peer-checked:bg-pink-500 peer-checked:text-white transition-all font-semibold">Yes</div></label>
+                                <label class="cursor-pointer"><input type="radio" name="q10_family" value="No" class="peer sr-only"><div class="px-4 py-2 rounded-lg text-sm text-slate-400 peer-checked:bg-slate-600 peer-checked:text-white transition-all font-semibold">No</div></label>
+                                <label class="cursor-pointer"><input type="radio" name="q10_family" value="Don't know" class="peer sr-only"><div class="px-4 py-2 rounded-lg text-sm text-slate-400 peer-checked:bg-slate-600 peer-checked:text-white transition-all font-semibold">Don't know</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q11 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-cyan-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-cyan-400">11.</span> How would you describe your skin?</label>
+                            <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q11_skin_type" value="Very oily" required class="peer sr-only"><div class="px-2 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-cyan-500/10 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Very oily</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q11_skin_type" value="Oily" required class="peer sr-only"><div class="px-2 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-cyan-500/10 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Oily</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q11_skin_type" value="Combination" required class="peer sr-only"><div class="px-2 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-cyan-500/10 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Combination</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q11_skin_type" value="Normal" required class="peer sr-only"><div class="px-2 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-cyan-500/10 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Normal</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q11_skin_type" value="Dry" required class="peer sr-only"><div class="px-2 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-cyan-500/10 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Dry</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q11_skin_type" value="Very dry" required class="peer sr-only"><div class="px-2 py-3 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-cyan-500/10 peer-checked:border-cyan-500/50 peer-checked:text-cyan-400 transition-all hover:bg-slate-700/50 flex flex-col items-center justify-center h-full">Very dry</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q12 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-yellow-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(234,179,8,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-yellow-400">12.</span> Which foods do you eat frequently? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Spicy food" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Spicy food</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Fried food" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Fried food</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Dairy" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Dairy</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Sweets" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Sweets</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Fast food" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Fast food</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Cold drinks" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Cold drinks</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Seafood" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Seafood</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="Fruits & vegetables" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">Fruits & vegetables</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q12_diet" value="None of these" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-yellow-500/10 peer-checked:border-yellow-500/50 peer-checked:text-yellow-400 transition-all hover:bg-slate-700/50 select-none">None of these</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q13 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-emerald-400">13.</span> How is your digestion?</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q13_digestion" value="Excellent" required class="peer sr-only"><div class="px-3 py-2 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 h-full flex items-center justify-center">Excellent</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q13_digestion" value="Normal" required class="peer sr-only"><div class="px-3 py-2 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 h-full flex items-center justify-center">Normal</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q13_digestion" value="Constipation" required class="peer sr-only"><div class="px-3 py-2 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 h-full flex items-center justify-center">Constipation</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q13_digestion" value="Loose stools" required class="peer sr-only"><div class="px-3 py-2 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 h-full flex items-center justify-center">Loose stools</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q13_digestion" value="Gas/Bloating" required class="peer sr-only"><div class="px-3 py-2 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 h-full flex items-center justify-center">Gas/Bloating</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q13_digestion" value="Acidity" required class="peer sr-only"><div class="px-3 py-2 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 h-full flex items-center justify-center">Acidity</div></label>
+                                <label class="relative cursor-pointer group/radio"><input type="radio" name="q13_digestion" value="Poor appetite" required class="peer sr-only"><div class="px-3 py-2 text-center rounded-xl bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-emerald-500/10 peer-checked:border-emerald-500/50 peer-checked:text-emerald-400 transition-all hover:bg-slate-700/50 h-full flex items-center justify-center">Poor appetite</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q14 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-rose-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(244,63,94,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-rose-400">14.</span> During the last month, how would you describe your lifestyle? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="Poor sleep" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">Poor sleep</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="High stress" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">High stress</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="Night shifts" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">Night shifts</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="Excess sweating" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">Excess sweating</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="Regular exercise" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">Regular exercise</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="Smoking" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">Smoking</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="Alcohol" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">Alcohol</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q14_lifestyle" value="None" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-rose-500/10 peer-checked:border-rose-500/50 peer-checked:text-rose-400 transition-all hover:bg-slate-700/50 select-none">None</div></label>
+                            </div>
+                        </div>
+
+                        <!-- Q15 -->
+                        <div class="question-block group bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-fuchsia-500/30 transition-colors shadow-lg hover:shadow-[0_0_20px_rgba(217,70,239,0.1)]">
+                            <label class="block text-sm font-bold text-slate-200 mb-4 flex gap-2"><span class="text-fuchsia-400">15.</span> Are there any special circumstances? <span class="text-xs text-slate-500 font-normal self-end mb-0.5">(Multi-select)</span></label>
+                            <div class="flex flex-wrap gap-2.5">
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q15_circumstances" value="Pregnancy" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-fuchsia-500/10 peer-checked:border-fuchsia-500/50 peer-checked:text-fuchsia-400 transition-all hover:bg-slate-700/50 select-none">Pregnancy</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q15_circumstances" value="Breastfeeding" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-fuchsia-500/10 peer-checked:border-fuchsia-500/50 peer-checked:text-fuchsia-400 transition-all hover:bg-slate-700/50 select-none">Breastfeeding</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q15_circumstances" value="Menstrual irregularity" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-fuchsia-500/10 peer-checked:border-fuchsia-500/50 peer-checked:text-fuchsia-400 transition-all hover:bg-slate-700/50 select-none">Menstrual irregularity</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q15_circumstances" value="Recent illness" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-fuchsia-500/10 peer-checked:border-fuchsia-500/50 peer-checked:text-fuchsia-400 transition-all hover:bg-slate-700/50 select-none">Recent illness</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q15_circumstances" value="New medicines" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-fuchsia-500/10 peer-checked:border-fuchsia-500/50 peer-checked:text-fuchsia-400 transition-all hover:bg-slate-700/50 select-none">New medicines</div></label>
+                                <label class="relative cursor-pointer"><input type="checkbox" name="q15_circumstances" value="None" class="peer sr-only"><div class="px-4 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-xs text-slate-300 peer-checked:bg-fuchsia-500/10 peer-checked:border-fuchsia-500/50 peer-checked:text-fuchsia-400 transition-all hover:bg-slate-700/50 select-none">None</div></label>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submit-questionnaire-btn" class="relative w-full py-4 mt-8 rounded-xl overflow-hidden group transition-all duration-500 hover:shadow-[0_10px_40px_rgba(16,185,129,0.5)] hover:-translate-y-1 shadow-[0_10px_30px_rgba(16,185,129,0.3)]">
+                            <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-400 transition-transform duration-500 group-hover:scale-[1.05]"></div>
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white mix-blend-overlay transition-opacity duration-500"></div>
+                            <div class="relative flex justify-center items-center gap-3 text-white font-bold text-lg tracking-wide z-10">
+                                Proceed to Photo Upload 
+                                <i class="fa-solid fa-camera group-hover:scale-110 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+
                 <!-- Input Selection -->
-                <div id="input-selection" class="hidden flex flex-col md:flex-row justify-center gap-6 mb-8">
+                <div id="input-selection" class="hidden flex flex-col md:flex-row justify-center gap-6 mb-8 mt-16">
                     <button id="open-camera-btn" class="flex-1 max-w-xs mx-auto bg-slate-900/50 p-8 rounded-3xl border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-300 transform hover:-translate-y-2 group shadow-xl hover:shadow-[0_15px_30px_rgba(16,185,129,0.2)]">
                         <div class="text-4xl text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300"><i class="fa-solid fa-camera"></i></div>
                         <h3 class="text-lg font-bold text-white mb-2">Live Camera</h3>
@@ -189,14 +569,53 @@
                 </div>
 
                 <!-- Live Camera UI -->
-                <div id="camera-container" class="hidden max-w-md mx-auto relative rounded-2xl overflow-hidden border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+                <div id="camera-container" class="hidden max-w-md mx-auto relative rounded-2xl overflow-hidden border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.3)] bg-black">
                     <video id="camera-video" class="w-full h-auto bg-black" autoplay playsinline></video>
                     <canvas id="camera-canvas" class="hidden"></canvas>
-                    <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-4">
-                        <button id="capture-btn" class="btn-magnetic rounded-full shadow-2xl px-8 py-4 transform hover:scale-105">
+                    
+                    <!-- Face Guide Overlay -->
+                    <div id="face-guide-overlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center z-10" style="padding-bottom: 80px;">
+                        <!-- Overlay message -->
+                        <div class="absolute top-6 text-emerald-400/90 text-[10px] sm:text-xs font-bold tracking-widest uppercase bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse flex items-center gap-2">
+                            <i class="fa-solid fa-expand"></i> Align Face Closely Within Frame
+                        </div>
+                        
+                        <!-- Futuristic Face Grid -->
+                        <div class="relative w-[65%] max-w-[260px] aspect-[3/4] flex items-center justify-center">
+                            <!-- SVG Face Outline -->
+                            <svg viewBox="0 0 200 260" class="absolute inset-0 w-full h-full drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]">
+                                <defs>
+                                    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#34d399" stop-opacity="0.8"/>
+                                        <stop offset="50%" stop-color="#10b981" stop-opacity="0.3"/>
+                                        <stop offset="100%" stop-color="#34d399" stop-opacity="0.8"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Face Oval -->
+                                <ellipse cx="100" cy="130" rx="85" ry="115" fill="none" stroke="url(#glow)" stroke-width="2" stroke-dasharray="8 6"/>
+                                <!-- Eye Level Line -->
+                                <line x1="30" y1="100" x2="65" y2="100" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+                                <line x1="135" y1="100" x2="170" y2="100" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+                                <!-- Nose/Mouth center line -->
+                                <line x1="100" y1="115" x2="100" y2="190" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4"/>
+                                <!-- Top and Bottom Alignment Marks -->
+                                <path d="M 85 15 L 115 15 M 100 5 L 100 25" stroke="#34d399" stroke-width="2" opacity="0.8"/>
+                                <path d="M 85 245 L 115 245 M 100 235 L 100 255" stroke="#34d399" stroke-width="2" opacity="0.8"/>
+                            </svg>
+
+                            <!-- Scanning Line Animation -->
+                            <div class="absolute left-[10%] right-[10%] h-[2px] bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,1)] rounded-full animate-camera-scan z-20"></div>
+                            
+                            <!-- Scanning Gradient overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/10 to-transparent animate-camera-scan z-10" style="height: 20%; margin-top: -10%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-4 z-20">
+                        <button id="capture-btn" class="btn-magnetic pointer-events-auto rounded-full shadow-2xl px-8 py-4 transform hover:scale-105">
                             <i class="fa-solid fa-camera mr-2"></i> Capture Scan
                         </button>
-                        <button id="close-camera-btn" class="px-5 py-4 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/40 border border-red-500/30 transition-all shadow-xl">
+                        <button id="close-camera-btn" class="px-5 py-4 pointer-events-auto bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/40 border border-red-500/30 transition-all shadow-xl">
                             <i class="fa-solid fa-xmark text-xl"></i>
                         </button>
                     </div>
