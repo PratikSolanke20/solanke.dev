@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             circumstances: formData.getAll('q15_circumstances')
         };
 
-        targetImageCount = questionnaireData.skinArea === 'Face' ? 3 : 2;
+        targetImageCount = 3; // 3 images required for all scans
 
         document.getElementById('questionnaire-section').classList.add('hidden');
         inputSelection.classList.remove('hidden');
@@ -118,12 +118,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const current = uploadedImages.length + 1;
         let label = '';
         if (questionnaireData.skinArea === 'Face') {
-            if (current === 1) label = 'front face image';
-            else if (current === 2) label = 'right face image';
-            else if (current === 3) label = 'left face image';
+            if (current === 1) label = 'Upload the front face image';
+            else if (current === 2) label = 'Upload the right face image';
+            else if (current === 3) label = 'Upload the left face image';
         } else {
-            if (current === 1) label = 'first image of the affected skin';
-            else if (current === 2) label = 'second image of the affected skin';
+            if (current === 1) label = 'Upload the First image';
+            else if (current === 2) label = 'Upload the second image';
+            else if (current === 3) label = 'Upload the 3rd image';
         }
         
         const subtitle = document.querySelector('#analyze-section p');
@@ -197,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 startAnalysisBtn.onclick = null;
             };
         } else {
-            startAnalysisBtn.innerHTML = `Start Neural Scan <i class="fa-solid fa-microchip"></i>`;
+            startAnalysisBtn.innerHTML = `Execute Scan <i class="fa-solid fa-microchip"></i>`;
             startAnalysisBtn.classList.remove('hidden');
             startAnalysisBtn.onclick = null;
         }
