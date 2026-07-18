@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         IMPORTANT RULES: 
         1. ONLY report conditions you GENUINELY detect in the image. Do not invent conditions. If the skin is almost normal with no major diseases, explicitly state that it is normal (or "X% normal") and only list minor flaws.
-        2. SPOTS: For the "spots" array, the x and y coordinates MUST map EXACTLY to the exact center point of the lesion/pimple/scar. The "radius" MUST be a tight bound exactly matching the size of the spot. Do not make the circles arbitrarily large.
+        2. SPOTS (10X PRECISION REQUIRED): You are a high-precision medical imaging tensor. The "spots" array coordinates (x, y) represent percentage values (0-100) where X=0 is absolute left edge, X=100 is absolute right edge, Y=0 is absolute top edge. You MUST exhaustively map every single pimple, dark spot, blackhead, and deformity. None should be missed! However, do not hallucinate spots that are not there. For every spot you see, you MUST map x and y EXACTLY to the true center pixel of the lesion. The "radius" MUST strictly bound the spot with zero excess space. DO NOT guess; identify exact locations.
         3. DARK CIRCLES: CRITICAL: Do NOT report Dark Circles (shape="half-moon") unless they are extremely prominent and visibly exist under the eyes. If the patient is healthy and well-rested, do not hallucinate dark circles!
         
         Use the following patient details and clinical questionnaire data to contextualize your diagnosis:
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', async () => {
            - "ayurvedicInfo": string (Ayurvedic explanation of the condition, doshas involved)
            - "diagnosisPercentage": string (e.g., "85% Normal" or "Moderate to Severe (45% impacted)")
            - "spreadPercentage": number (Integer 1-100 representing total facial area affected)
-           - "detailedRootCause": string (Detailed but layman-friendly explanation of the root cause)
+           - "detailedRootCause": object containing two keys: "modern" (string) and "ayurvedic" (string) for detailed explanations of the root cause in layman terms.
            - "symptoms": array of 3-5 strings (Symptoms associated with the diagnosis)
         3. "chartData": An object mapping deformity/condition types to their percentages (Must add up to 100).
         4. "ayurvedicRemedies": Array of objects for specific Ayurvedic remedies tailored to the diagnosis.
@@ -458,8 +458,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="glass-card p-6 rounded-3xl border border-white/10 flex flex-col justify-center">
                         <h3 class="font-heading text-slate-400 uppercase tracking-widest text-[10px] font-bold pl-2 mb-4">Detailed Root Cause</h3>
-                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5">
-                            <p class="text-sm font-medium text-slate-200 leading-relaxed">${data.analysis.detailedRootCause}</p>
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5 shadow-inner">
+                                <h5 class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-stethoscope"></i> Modern Aspect</h5>
+                                <p class="text-xs font-medium text-slate-300 leading-relaxed">${data.analysis.detailedRootCause?.modern || data.analysis.detailedRootCause}</p>
+                            </div>
+                            <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5 shadow-inner">
+                                <h5 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-leaf"></i> Ayurvedic Aspect</h5>
+                                <p class="text-xs font-medium text-slate-300 leading-relaxed">${data.analysis.detailedRootCause?.ayurvedic || data.analysis.detailedRootCause}</p>
+                            </div>
                         </div>
                     </div>
                     <div class="space-y-4">
@@ -570,29 +577,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             const circleCircumference = 2 * Math.PI * 15.9155; 
             const strokeDashOffset = circleCircumference - (spread / 100) * circleCircumference;
 
-            // Condense Ayurvedic Treatments to top 2 max to perfectly fit on a single page
-            const topAyurvedic = ayurvedicRemedies.slice(0, 2);
+            // Generate Ayurvedic Treatments (No Truncation)
             let ayurvedicHtml = '';
-            topAyurvedic.forEach((t) => {
+            ayurvedicRemedies.forEach((t) => {
                 ayurvedicHtml += `
-                <div style="background-color: #0f172a; border-left: 4px solid #10b981; border-radius: 0 8px 8px 0; padding: 10px; margin-bottom: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div style="background-color: #0f172a; border-left: 3px solid #10b981; border-radius: 0 6px 6px 0; padding: 6px; margin-bottom: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
-                        <h4 style="margin: 0; color: #34d399; font-size: 11px; font-weight: bold;">${t.title}</h4>
+                        <h4 style="margin: 0; color: #34d399; font-size: 10px; font-weight: bold;">${t.title}</h4>
                     </div>
-                    <p style="margin: 0; font-size: 9px; color: #94a3b8; line-height: 1.3;">${t.instructions}</p>
+                    <p style="margin: 0; font-size: 8px; color: #94a3b8; line-height: 1.2;">${t.instructions}</p>
                 </div>`;
             });
 
-            // Condense Modern Treatments to top 2 max to perfectly fit on a single page
-            const topModern = modernRemedies.slice(0, 2);
+            // Generate Modern Treatments (No Truncation)
             let modernHtml = '';
-            topModern.forEach((t) => {
+            modernRemedies.forEach((t) => {
                 modernHtml += `
-                <div style="background-color: #0f172a; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 10px; margin-bottom: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div style="background-color: #0f172a; border-left: 3px solid #3b82f6; border-radius: 0 6px 6px 0; padding: 6px; margin-bottom: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
-                        <h4 style="margin: 0; color: #60a5fa; font-size: 11px; font-weight: bold;">${t.title}</h4>
+                        <h4 style="margin: 0; color: #60a5fa; font-size: 10px; font-weight: bold;">${t.title}</h4>
                     </div>
-                    <p style="margin: 0; font-size: 9px; color: #94a3b8; line-height: 1.3;">${t.instructions}</p>
+                    <p style="margin: 0; font-size: 8px; color: #94a3b8; line-height: 1.2;">${t.instructions}</p>
                 </div>`;
             });
 
@@ -700,7 +705,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 2px solid #ef4444; padding-bottom: 6px;">
                                 <h2 style="margin: 0; color: #f8fafc; font-size: 12px; font-weight: bold;">Detailed Root Cause</h2>
                             </div>
-                            <p style="color: #cbd5e1; font-size: 10px; margin: 0; line-height: 1.4;">${detailedRootCause}</p>
+                            <h3 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 9px; font-weight: bold;">Modern Aspect:</h3>
+                            <p style="color: #cbd5e1; font-size: 9px; margin: 0 0 6px 0; line-height: 1.3;">${detailedRootCause?.modern || detailedRootCause}</p>
+                            <h3 style="margin: 0 0 2px 0; color: #34d399; font-size: 9px; font-weight: bold;">Ayurvedic Aspect:</h3>
+                            <p style="color: #cbd5e1; font-size: 9px; margin: 0; line-height: 1.3;">${detailedRootCause?.ayurvedic || detailedRootCause}</p>
                         </div>
                         <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 15px;">
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 2px solid #f59e0b; padding-bottom: 6px;">
