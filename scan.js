@@ -116,16 +116,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateImagePromptUI() {
         const current = uploadedImages.length + 1;
-        let label = '';
-        if (questionnaireData.skinArea === 'Face') {
-            if (current === 1) label = 'Upload the front face image';
-            else if (current === 2) label = 'Upload the right face image';
-            else if (current === 3) label = 'Upload the left face image';
-        } else {
-            if (current === 1) label = 'Upload the First image';
-            else if (current === 2) label = 'Upload the second image';
-            else if (current === 3) label = 'Upload the 3rd image';
+        
+        let selectedPart = "affected area";
+        const skinAreaRadio = document.querySelector('input[name="skin-area"]:checked');
+        if (skinAreaRadio) {
+            if (skinAreaRadio.value === 'Others') {
+                const specificPartSelect = document.getElementById('specific-body-part');
+                if (specificPartSelect && specificPartSelect.value) {
+                    selectedPart = specificPartSelect.value;
+                }
+            } else {
+                selectedPart = skinAreaRadio.value;
+            }
         }
+
+        let label = '';
+        if (current === 1) label = `upload the front side ${selectedPart} photo`;
+        else if (current === 2) label = `upload the Right side ${selectedPart} photo`;
+        else if (current === 3) label = `upload the left side ${selectedPart} photo`;
+        else label = `upload the ${selectedPart} photo`;
         
         const subtitle = document.querySelector('#analyze-section p');
         if(subtitle) {
