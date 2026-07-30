@@ -114,6 +114,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputSelection.classList.remove('hidden');
     });
 
+    // 2A. High-Fidelity Image Compression Helper
+    function compressImage(dataUrl, callback) {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const max_dimension = 1600; // High max dimension to retain extreme detail for clinical diagnosis (10X precision)
+            
+            if (width > height && width > max_dimension) {
+                height = Math.round(height * max_dimension / width);
+                width = max_dimension;
+            } else if (height > max_dimension) {
+                width = Math.round(width * max_dimension / height);
+                height = max_dimension;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // High compression quality (0.85) to retain clinical clarity while slashing payload size
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            callback(compressedDataUrl);
+        };
+        img.src = dataUrl;
+    }
+
     function updateImagePromptUI() {
         const current = uploadedImages.length + 1;
         
@@ -155,13 +184,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.scale(-1, 1);
         ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
         
-        const dataUrl = cameraCanvas.toDataURL('image/jpeg', 0.9);
-        uploadedImages.push(dataUrl.split(',')[1]);
+        const rawDataUrl = cameraCanvas.toDataURL('image/jpeg', 0.95);
         
         if (stream) stream.getTracks().forEach(track => track.stop());
         cameraContainer.classList.add('hidden');
         
-        displayPreview(dataUrl);
+        compressImage(rawDataUrl, (compressedDataUrl) => {
+            uploadedImages.push(compressedDataUrl.split(',')[1]);
+            displayPreview(compressedDataUrl);
+        });
     });
 
     // 3. Upload Integration
@@ -174,9 +205,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         const reader = new FileReader();
         reader.onload = async (event) => {
-            uploadedImages.push(event.target.result.split(',')[1]);
-            inputSelection.classList.add('hidden');
-            displayPreview(event.target.result);
+            compressImage(event.target.result, (compressedDataUrl) => {
+                uploadedImages.push(compressedDataUrl.split(',')[1]);
+                inputSelection.classList.add('hidden');
+                displayPreview(compressedDataUrl);
+            });
         };
         reader.readAsDataURL(file);
     });
