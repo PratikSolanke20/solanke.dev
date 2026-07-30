@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const max_dimension = 1600; // High max dimension to retain extreme detail for clinical diagnosis (10X precision)
+            const max_dimension = 1024; // Balanced dimension to retain excellent clinical clarity while ensuring fast 4-5s processing speed
             
             if (width > height && width > max_dimension) {
                 height = Math.round(height * max_dimension / width);
@@ -136,8 +136,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            // High compression quality (0.85) to retain clinical clarity while slashing payload size
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            // Compression quality set to 0.8 to optimize token usage and processing speed
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.80);
             callback(compressedDataUrl);
         };
         img.src = dataUrl;
@@ -360,29 +360,108 @@ document.addEventListener('DOMContentLoaded', async () => {
         Do not wrap in markdown \`\`\`json. Return pure JSON only.`;
 
         try {
-            // Automatically switch between local development and production URLs
-            const apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                ? 'http://localhost:3000/api/analyze' 
-                : '/api/analyze';
+            // Securely fetch API key from backend config endpoint
+            const configUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
+                ? 'http://localhost:3000/api/config' 
+                : '/api/config';
+            
+            const configRes = await fetch(configUrl);
+            if (!configRes.ok) throw new Error("Could not fetch configuration");
+            const { apiKey } = await configRes.json();
+            
+            if (!apiKey) throw new Error("API Key is missing");
                 
             const imageParts = uploadedImages.map(img => ({ inline_data: { mime_type: "image/jpeg", data: img } }));
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            ...imageParts
-                        ]
-                    }],
-                    generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
-                })
+            const requestBody = JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        ...imageParts
+                    ]
+                }],
+                generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
             });
 
-            if (!response.ok) throw new Error("API failed");
-            const data = await response.json();
+            const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-flash-lite-latest'];
+            let response;
+            let data = null;
+            let finalError = "";
+            let success = false;
+
+            for (const model of modelsToTry) {
+                let attempt = 0;
+                const maxRetries = 3;
+                const baseDelays = [5000, 10000, 20000]; 
+                
+                const progressText = document.getElementById('progress-text');
+                if (progressText) {
+                    progressText.innerText = `Connecting to ${model}...`;
+                }
+
+                while (attempt <= maxRetries) {
+                    // Direct call to Gemini API bypassing Vercel timeout!
+                    response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: requestBody
+                    });
+
+                    if (response.ok) {
+                        data = await response.json();
+                        success = true;
+                        break; 
+                    }
+
+                    const errorText = await response.text();
+                    let exactError = `Status ${response.status}`;
+                    try {
+                        const errJson = JSON.parse(errorText);
+                        if (errJson.error && errJson.error.message) exactError = errJson.error.message;
+                    } catch(e) {}
+                    
+                    if (response.status === 429 && attempt < maxRetries) {
+                        let delay = baseDelays[attempt];
+                        
+                        // Parse EXACT retry time from Google if provided (e.g. "retry in 278.31ms" or "retry in 20.49s")
+                        const msMatch = exactError.match(/retry in ([\d\.]+)ms/);
+                        const sMatch = exactError.match(/retry in ([\d\.]+)s/);
+                        
+                        if (msMatch && msMatch[1]) {
+                            delay = Math.max(delay, parseFloat(msMatch[1]) + 2000); // 2s buffer
+                        } else if (sMatch && sMatch[1]) {
+                            delay = Math.max(delay, parseFloat(sMatch[1]) * 1000 + 2000); // convert to ms + 2s buffer
+                        }
+
+                        if (progressText) {
+                            progressText.innerText = `${model} busy. Retrying in ${(delay/1000).toFixed(1)}s...`;
+                            progressText.style.color = "#f59e0b"; // Warning amber color
+                        }
+                        console.log(`[${model} Attempt ${attempt + 1}] Rate limited. Retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        
+                        if (progressText) progressText.style.color = "";
+                        attempt++;
+                    } else if (response.status === 429 || response.status === 404 || response.status === 400 || response.status === 403) {
+                        if (response.status === 429 || finalError === "") {
+                            finalError = exactError; // Prioritize quota errors over 404s
+                        }
+                        console.warn(`${model} failed or quota exhausted: ${exactError}. Falling back to next model...`);
+                        break; 
+                    } else {
+                        if (finalError === "") finalError = exactError;
+                        break; 
+                    }
+                }
+
+                if (success) {
+                    break; // Break the model loop if we got a successful response!
+                }
+            }
+
+            if (!success) {
+                throw new Error(`All models exhausted. Last Error: ${finalError}`);
+            }
             const aiText = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsedData = JSON.parse(aiText);
             
@@ -413,7 +492,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error("Genuine API Error:", error);
-            showError(`Server is busy. Please wait 30 seconds and try again.`);
+            showError(`Scan Failed: ${error.message}. Check console for more details.`);
             return false;
         }
     }
