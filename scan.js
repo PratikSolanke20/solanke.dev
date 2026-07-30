@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const max_dimension = 1600; // High max dimension to retain extreme detail for clinical diagnosis (10X precision)
+            const max_dimension = 1024; // Balanced dimension to retain excellent clinical clarity while ensuring fast 4-5s processing speed
             
             if (width > height && width > max_dimension) {
                 height = Math.round(height * max_dimension / width);
@@ -136,8 +136,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            // High compression quality (0.85) to retain clinical clarity while slashing payload size
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            // Compression quality set to 0.8 to optimize token usage and processing speed
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.80);
             callback(compressedDataUrl);
         };
         img.src = dataUrl;
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
             });
 
-            const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+            const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-flash-lite-latest'];
             let response;
             let data = null;
             let finalError = "";
@@ -443,11 +443,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (progressText) progressText.style.color = "";
                         attempt++;
                     } else if (response.status === 429 || response.status === 404 || response.status === 400 || response.status === 403) {
-                        finalError = exactError;
+                        if (response.status === 429 || finalError === "") {
+                            finalError = exactError; // Prioritize quota errors over 404s
+                        }
                         console.warn(`${model} failed or quota exhausted: ${exactError}. Falling back to next model...`);
                         break; 
                     } else {
-                        finalError = exactError;
+                        if (finalError === "") finalError = exactError;
                         break; 
                     }
                 }
