@@ -385,8 +385,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             let response;
             let attempt = 0;
-            const maxRetries = 3;
-            const baseDelay = 2000;
+            const maxRetries = 4;
+            const delays = [5000, 10000, 20000, 30000]; // Increased wait times to clear the 15 RPM free tier limit
 
             while (attempt <= maxRetries) {
                 // Direct call to Gemini API bypassing Vercel timeout!
@@ -397,16 +397,35 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 if (response.status === 429 && attempt < maxRetries) {
-                    const delay = baseDelay * Math.pow(2, attempt);
+                    const delay = delays[attempt];
+                    const progressText = document.getElementById('progress-text');
+                    if (progressText) {
+                        progressText.innerText = `API heavily loaded. Retrying in ${delay/1000}s...`;
+                        progressText.style.color = "#f59e0b"; // Warning amber color
+                    }
                     console.log(`[Attempt ${attempt + 1}] Rate limited by Gemini API. Retrying in ${delay}ms...`);
                     await new Promise(resolve => setTimeout(resolve, delay));
+                    
+                    if (progressText) progressText.style.color = "";
                     attempt++;
                 } else {
                     break;
                 }
             }
 
-            if (!response.ok) throw new Error("API failed with status " + response.status);
+            if (!response.ok) {
+                const errorText = await response.text();
+                let exactError = `Status ${response.status}`;
+                try {
+                    const errJson = JSON.parse(errorText);
+                    if (errJson.error && errJson.error.message) exactError = errJson.error.message;
+                } catch(e) {}
+                
+                if (response.status === 429) {
+                    throw new Error("Free Tier Quota Exceeded (15 RPM or Daily Limit reached). " + exactError);
+                }
+                throw new Error(exactError);
+            }
             const data = await response.json();
             const aiText = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsedData = JSON.parse(aiText);
