@@ -383,50 +383,79 @@ document.addEventListener('DOMContentLoaded', async () => {
                 generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
             });
 
+            const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
             let response;
-            let attempt = 0;
-            const maxRetries = 4;
-            const delays = [5000, 10000, 20000, 30000]; // Increased wait times to clear the 15 RPM free tier limit
+            let data = null;
+            let finalError = "";
+            let success = false;
 
-            while (attempt <= maxRetries) {
-                // Direct call to Gemini API bypassing Vercel timeout!
-                response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: requestBody
-                });
-
-                if (response.status === 429 && attempt < maxRetries) {
-                    const delay = delays[attempt];
-                    const progressText = document.getElementById('progress-text');
-                    if (progressText) {
-                        progressText.innerText = `API heavily loaded. Retrying in ${delay/1000}s...`;
-                        progressText.style.color = "#f59e0b"; // Warning amber color
-                    }
-                    console.log(`[Attempt ${attempt + 1}] Rate limited by Gemini API. Retrying in ${delay}ms...`);
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    
-                    if (progressText) progressText.style.color = "";
-                    attempt++;
-                } else {
-                    break;
-                }
-            }
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                let exactError = `Status ${response.status}`;
-                try {
-                    const errJson = JSON.parse(errorText);
-                    if (errJson.error && errJson.error.message) exactError = errJson.error.message;
-                } catch(e) {}
+            for (const model of modelsToTry) {
+                let attempt = 0;
+                const maxRetries = 3;
+                const baseDelays = [5000, 10000, 20000]; 
                 
-                if (response.status === 429) {
-                    throw new Error("Free Tier Quota Exceeded (15 RPM or Daily Limit reached). " + exactError);
+                const progressText = document.getElementById('progress-text');
+                if (progressText) {
+                    progressText.innerText = `Connecting to ${model}...`;
                 }
-                throw new Error(exactError);
+
+                while (attempt <= maxRetries) {
+                    // Direct call to Gemini API bypassing Vercel timeout!
+                    response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: requestBody
+                    });
+
+                    if (response.ok) {
+                        data = await response.json();
+                        success = true;
+                        break; 
+                    }
+
+                    const errorText = await response.text();
+                    let exactError = `Status ${response.status}`;
+                    try {
+                        const errJson = JSON.parse(errorText);
+                        if (errJson.error && errJson.error.message) exactError = errJson.error.message;
+                    } catch(e) {}
+                    
+                    if (response.status === 429 && attempt < maxRetries) {
+                        let delay = baseDelays[attempt];
+                        
+                        // Parse EXACT retry time from Google if provided (e.g. "Please retry in 278.31ms")
+                        const retryMatch = exactError.match(/retry in ([\d\.]+)ms/);
+                        if (retryMatch && retryMatch[1]) {
+                            delay = Math.max(delay, parseFloat(retryMatch[1]) + 2000); // 2s buffer
+                        }
+
+                        if (progressText) {
+                            progressText.innerText = `${model} busy. Retrying in ${(delay/1000).toFixed(1)}s...`;
+                            progressText.style.color = "#f59e0b"; // Warning amber color
+                        }
+                        console.log(`[${model} Attempt ${attempt + 1}] Rate limited. Retrying in ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        
+                        if (progressText) progressText.style.color = "";
+                        attempt++;
+                    } else if (response.status === 429 || response.status === 404 || response.status === 400 || response.status === 403) {
+                        finalError = exactError;
+                        console.warn(`${model} failed or quota exhausted: ${exactError}. Falling back to next model...`);
+                        break; 
+                    } else {
+                        finalError = exactError;
+                        break; 
+                    }
+                }
+
+                if (success) {
+                    break; // Break the model loop if we got a successful response!
+                }
             }
-            const data = await response.json();
+
+            if (!success) {
+                throw new Error(`All models exhausted. Last Error: ${finalError}`);
+            }
             const aiText = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsedData = JSON.parse(aiText);
             
