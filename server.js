@@ -48,12 +48,28 @@ app.post('/api/analyze', async (req, res) => {
              return res.status(500).json({ error: 'API key is missing or not configured on the server.' });
         }
 
-        // We forward the exact same payload to Google's API
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents, generationConfig })
-        });
+        // We forward the exact same payload to Google's API with exponential backoff for 429 errors
+        let response;
+        let attempt = 0;
+        const maxRetries = 3;
+        const baseDelay = 2000; // 2 seconds
+
+        while (attempt <= maxRetries) {
+            response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents, generationConfig })
+            });
+
+            if (response.status === 429 && attempt < maxRetries) {
+                const delay = baseDelay * Math.pow(2, attempt);
+                console.log(`[Attempt ${attempt + 1}] Rate limited by Gemini API. Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                attempt++;
+            } else {
+                break;
+            }
+        }
 
         if (!response.ok) {
             const errorData = await response.text();
