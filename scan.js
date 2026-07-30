@@ -360,28 +360,53 @@ document.addEventListener('DOMContentLoaded', async () => {
         Do not wrap in markdown \`\`\`json. Return pure JSON only.`;
 
         try {
-            // Automatically switch between local development and production URLs
-            const apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                ? 'http://localhost:3000/api/analyze' 
-                : '/api/analyze';
+            // Securely fetch API key from backend config endpoint
+            const configUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
+                ? 'http://localhost:3000/api/config' 
+                : '/api/config';
+            
+            const configRes = await fetch(configUrl);
+            if (!configRes.ok) throw new Error("Could not fetch configuration");
+            const { apiKey } = await configRes.json();
+            
+            if (!apiKey) throw new Error("API Key is missing");
                 
             const imageParts = uploadedImages.map(img => ({ inline_data: { mime_type: "image/jpeg", data: img } }));
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            ...imageParts
-                        ]
-                    }],
-                    generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
-                })
+            const requestBody = JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        ...imageParts
+                    ]
+                }],
+                generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
             });
 
-            if (!response.ok) throw new Error("API failed");
+            let response;
+            let attempt = 0;
+            const maxRetries = 3;
+            const baseDelay = 2000;
+
+            while (attempt <= maxRetries) {
+                // Direct call to Gemini API bypassing Vercel timeout!
+                response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: requestBody
+                });
+
+                if (response.status === 429 && attempt < maxRetries) {
+                    const delay = baseDelay * Math.pow(2, attempt);
+                    console.log(`[Attempt ${attempt + 1}] Rate limited by Gemini API. Retrying in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    attempt++;
+                } else {
+                    break;
+                }
+            }
+
+            if (!response.ok) throw new Error("API failed with status " + response.status);
             const data = await response.json();
             const aiText = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsedData = JSON.parse(aiText);
