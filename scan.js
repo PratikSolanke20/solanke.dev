@@ -423,10 +423,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (response.status === 429 && attempt < maxRetries) {
                         let delay = baseDelays[attempt];
                         
-                        // Parse EXACT retry time from Google if provided (e.g. "Please retry in 278.31ms")
-                        const retryMatch = exactError.match(/retry in ([\d\.]+)ms/);
-                        if (retryMatch && retryMatch[1]) {
-                            delay = Math.max(delay, parseFloat(retryMatch[1]) + 2000); // 2s buffer
+                        // Parse EXACT retry time from Google if provided (e.g. "retry in 278.31ms" or "retry in 20.49s")
+                        const msMatch = exactError.match(/retry in ([\d\.]+)ms/);
+                        const sMatch = exactError.match(/retry in ([\d\.]+)s/);
+                        
+                        if (msMatch && msMatch[1]) {
+                            delay = Math.max(delay, parseFloat(msMatch[1]) + 2000); // 2s buffer
+                        } else if (sMatch && sMatch[1]) {
+                            delay = Math.max(delay, parseFloat(sMatch[1]) * 1000 + 2000); // convert to ms + 2s buffer
                         }
 
                         if (progressText) {
