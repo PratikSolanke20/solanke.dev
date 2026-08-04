@@ -38,29 +38,126 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 50);
     });
 
-    // Handle Questionnaire Submission
+    // Initialize Dynamic "Other" input animation & toggle handlers
+    function initOtherToggles() {
+        document.querySelectorAll('.other-toggle').forEach(input => {
+            input.addEventListener('change', () => {
+                const targetId = input.getAttribute('data-target');
+                const targetBox = document.getElementById(targetId);
+                if (!targetBox) return;
+
+                if (input.checked) {
+                    targetBox.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none');
+                    targetBox.classList.add('max-h-28', 'opacity-100', 'pointer-events-auto');
+                    const textInput = targetBox.querySelector('input[type="text"]');
+                    if (textInput) {
+                        setTimeout(() => textInput.focus(), 100);
+                    }
+                } else {
+                    targetBox.classList.add('max-h-0', 'opacity-0', 'pointer-events-none');
+                    targetBox.classList.remove('max-h-28', 'opacity-100', 'pointer-events-auto');
+                    const textInput = targetBox.querySelector('input[type="text"]');
+                    if (textInput) textInput.value = '';
+                }
+            });
+        });
+
+        // Handle radio groups: collapse "Other" box if a non-other radio is selected
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            if (!radio.classList.contains('other-toggle')) {
+                radio.addEventListener('change', () => {
+                    const otherRadio = document.querySelector(`input[type="radio"][name="${radio.name}"].other-toggle`);
+                    if (otherRadio) {
+                        const targetId = otherRadio.getAttribute('data-target');
+                        const targetBox = document.getElementById(targetId);
+                        if (targetBox) {
+                            targetBox.classList.add('max-h-0', 'opacity-0', 'pointer-events-none');
+                            targetBox.classList.remove('max-h-28', 'opacity-100', 'pointer-events-auto');
+                            const textInput = targetBox.querySelector('input[type="text"]');
+                            if (textInput) textInput.value = '';
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    initOtherToggles();
+
+    // Helper functions for questionnaire extraction with "Other" integration
+    function getFieldValues(formData, fieldName, otherFieldName) {
+        const values = formData.getAll(fieldName);
+        const otherText = (formData.get(otherFieldName) || '').trim();
+        return values.map(val => {
+            if (val === 'Other') {
+                return otherText ? `Other (${otherText})` : 'Other';
+            }
+            return val;
+        });
+    }
+
+    function getSingleFieldValue(formData, fieldName, otherFieldName) {
+        const val = formData.get(fieldName) || '';
+        if (val === 'Other') {
+            const otherText = (formData.get(otherFieldName) || '').trim();
+            return otherText ? `Other (${otherText})` : 'Other';
+        }
+        return val;
+    }
+
+    // Handle 20-Question Questionnaire Submission
     document.getElementById('questionnaire-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         
+        // Validate required multi-select questions
+        const requiredMulti = [
+            { name: 'q1_body_parts', blockId: 'q-block-1', label: 'Affected Body Part(s)' },
+            { name: 'q2_concerns', blockId: 'q-block-2', label: 'Main Skin Concern(s)' },
+            { name: 'q5_symptoms', blockId: 'q-block-5', label: 'Primary Symptoms' },
+            { name: 'q13_diet', blockId: 'q-block-13', label: 'Dietary Preferences' },
+            { name: 'q14_digestion', blockId: 'q-block-14', label: 'Digestion & Bowel Habit' },
+            { name: 'q16_sleep', blockId: 'q-block-16', label: 'Sleep Pattern & Duration' }
+        ];
+
+        for (const req of requiredMulti) {
+            const vals = formData.getAll(req.name);
+            if (!vals || vals.length === 0) {
+                const block = document.getElementById(req.blockId);
+                if (block) {
+                    block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    block.classList.add('ring-2', 'ring-rose-500', 'animate-pulse');
+                    setTimeout(() => {
+                        block.classList.remove('animate-pulse');
+                        setTimeout(() => block.classList.remove('ring-2', 'ring-rose-500'), 3000);
+                    }, 1000);
+                }
+                alert(`Please select at least one option for question: "${req.label}"`);
+                return;
+            }
+        }
+
         questionnaireData = {
-            skinArea: formData.get('skin-area'),
-            specificBodyPart: formData.get('specific-body-part'),
-            bodyParts: formData.getAll('q1_body_parts'),
-            concerns: formData.getAll('q2_concerns'),
-            duration: formData.get('q3_duration'),
-            progression: formData.get('q4_progression'),
-            symptoms: formData.getAll('q5_symptoms'),
-            triggers: formData.getAll('q6_triggers'),
-            treatments: formData.getAll('q7_treatments'),
-            history: formData.get('q8_history'),
-            conditions: formData.getAll('q9_conditions'),
-            familyHistory: formData.get('q10_family'),
-            skinType: formData.get('q11_skin_type'),
-            diet: formData.getAll('q12_diet'),
-            digestion: formData.get('q13_digestion'),
-            lifestyle: formData.getAll('q14_lifestyle'),
-            circumstances: formData.getAll('q15_circumstances')
+            affectedBodyParts: getFieldValues(formData, 'q1_body_parts', 'q1_other_text'),
+            mainConcerns: getFieldValues(formData, 'q2_concerns', 'q2_other_text'),
+            duration: getSingleFieldValue(formData, 'q3_duration', ''),
+            progression: getSingleFieldValue(formData, 'q4_progression', 'q4_other_text'),
+            symptoms: getFieldValues(formData, 'q5_symptoms', 'q5_other_text'),
+            triggers: getFieldValues(formData, 'q6_triggers', 'q6_other_text'),
+            treatments: getFieldValues(formData, 'q7_treatments', 'q7_other_text'),
+            allergies: getFieldValues(formData, 'q8_allergies', 'q8_other_text'),
+            familyHistory: getFieldValues(formData, 'q9_family', 'q9_other_text'),
+            medicalConditions: getFieldValues(formData, 'q10_conditions', 'q10_other_text'),
+            medications: getFieldValues(formData, 'q11_medications', 'q11_other_text'),
+            skinType: getSingleFieldValue(formData, 'q12_skin_type', ''),
+            diet: getFieldValues(formData, 'q13_diet', 'q13_other_text'),
+            digestion: getFieldValues(formData, 'q14_digestion', 'q14_other_text'),
+            waterIntake: getSingleFieldValue(formData, 'q15_water', ''),
+            sleep: getFieldValues(formData, 'q16_sleep', 'q16_other_text'),
+            exercise: getSingleFieldValue(formData, 'q17_exercise', ''),
+            environment: getFieldValues(formData, 'q18_environment', 'q18_other_text'),
+            habits: getFieldValues(formData, 'q19_habits', 'q19_other_text'),
+            femaleHealth: getFieldValues(formData, 'q20_female_health', 'q20_other_text')
         };
 
         targetImageCount = 3; // 3 images required for all scans
@@ -335,16 +432,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 5. Elite Gemini API Call (Chart Data included)
     async function fetchGeminiAnalysis() {
         const prompt = `Perform an EXHAUSTIVE microscopic clinical Ayurvedic and Modern medical skin audit on this set of clinical images.
-        Crucially, DO NOT limit your analysis to just acne. You MUST accurately diagnose and identify a wide spectrum of skin diseases and abnormalities if they are present on the user's skin. 
+        Crucially, DO NOT limit your analysis to just acne. You MUST accurately diagnose and identify a wide spectrum of skin diseases and abnormalities if they are present on the user's skin (e.g., Acne Vulgaris, Eczema/Vicharchika, Psoriasis/Kitibha, Melasma/Vyanga, Rosacea, Contact Dermatitis, Seborrheic Dermatitis, Fungal Infection/Dadru, Urticaria/Shitapitta, Hyper-pigmentation, Vitiligo/Shwitra, Alopecia, Folliculitis, or Normal/Healthy skin). 
         
         IMPORTANT RULES: 
-        1. ONLY report conditions you GENUINELY detect in the images. Do not invent conditions. If the skin is almost normal with no major diseases, explicitly state that it is normal (or "X% normal") and only list minor flaws.
+        1. ONLY report conditions you GENUINELY detect in the images or that are strongly evidenced by the clinical findings. Do not invent conditions. If the skin is almost normal with no major diseases, explicitly state that it is normal (or "X% normal") and only list minor flaws.
         2. SPOTS (10X PRECISION REQUIRED): You are a high-precision medical imaging tensor. The "spots" array coordinates (x, y) represent percentage values (0-100) where X=0 is absolute left edge, X=100 is absolute right edge, Y=0 is absolute top edge. You MUST exhaustively map every single pimple, dark spot, blackhead, and deformity. None should be missed! However, do not hallucinate spots that are not there. For every spot you see, you MUST map x and y EXACTLY to the true center pixel of the lesion. The "radius" MUST strictly bound the spot with zero excess space. DO NOT guess; identify exact locations.
         3. DARK CIRCLES: CRITICAL: Do NOT report Dark Circles (shape="half-moon") unless they are extremely prominent and visibly exist under the eyes. If the patient is healthy and well-rested, do not hallucinate dark circles!
+        4. MULTI-MODAL SYNTHESIS OF 20-QUESTION CLINICAL DOSSIER:
+        You are provided with BOTH 3 high-resolution patient images AND a comprehensive 20-point clinical Ayurvedic/Modern intake dossier.
+        You MUST deeply cross-analyze and correlate the visual skin findings with the user's questionnaire responses:
+        - Affected body parts & main skin concerns
+        - Duration, progression rate, and primary clinical symptoms
+        - Known triggers & aggravators, previous treatments, allergies, and family history
+        - Diagnosed medical conditions, current medications, and skin type (Prakriti / Vikriti)
+        - Dietary preferences & digestion / bowel habits (Ahara, Agni & Koshtha state, Ama accumulation)
+        - Hydration level, sleep duration & pattern (Nidra), exercise level (Vyayama), environmental factors, lifestyle habits, and female hormonal profile (PCOS, cycle regularity, etc.)
+        Synthesize this holistic clinical picture to pinpoint the exact Dosha vitiation (Vata, Pitta, Kapha, Tridosha, or Rakta Dhatu Dushti), modern dermatological diagnosis, comprehensive root causes, and tailored dual (Ayurvedic natural remedies + Modern dermatological science) recovery protocols.
         
-        Use the following patient details and clinical questionnaire data to contextualize your diagnosis:
         Patient Details: ${JSON.stringify(patientDetails)}
-        Questionnaire Data: ${JSON.stringify(questionnaireData)}
+        Comprehensive 20-Question Clinical Dossier: ${JSON.stringify(questionnaireData, null, 2)}
         
         Provide a strictly valid JSON response containing EXACTLY these keys:
         1. "spots": Array of ALL genuinely detected lesions, rashes, patches, spots, and deformities across all provided images.
@@ -495,6 +601,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         patientDetails: patientDetails,
+                        questionnaireData: questionnaireData,
                         analysisData: parsedData,
                         chartImgData: chartImgData,
                         userImgData: uploadedImages[0].startsWith('data:image') ? uploadedImages[0] : 'data:image/jpeg;base64,' + uploadedImages[0]
