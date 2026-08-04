@@ -115,9 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             { name: 'q1_body_parts', blockId: 'q-block-1', label: 'Affected Body Part(s)' },
             { name: 'q2_concerns', blockId: 'q-block-2', label: 'Main Skin Concern(s)' },
             { name: 'q5_symptoms', blockId: 'q-block-5', label: 'Primary Symptoms' },
-            { name: 'q13_diet', blockId: 'q-block-13', label: 'Dietary Preferences' },
-            { name: 'q14_digestion', blockId: 'q-block-14', label: 'Digestion & Bowel Habit' },
-            { name: 'q16_sleep', blockId: 'q-block-16', label: 'Sleep Pattern & Duration' }
+            { name: 'q14_digestion', blockId: 'q-block-14', label: 'Digestion' }
         ];
 
         for (const req of requiredMulti) {
@@ -150,14 +148,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             medicalConditions: getFieldValues(formData, 'q10_conditions', 'q10_other_text'),
             medications: getFieldValues(formData, 'q11_medications', 'q11_other_text'),
             skinType: getSingleFieldValue(formData, 'q12_skin_type', ''),
-            diet: getFieldValues(formData, 'q13_diet', 'q13_other_text'),
-            digestion: getFieldValues(formData, 'q14_digestion', 'q14_other_text'),
-            waterIntake: getSingleFieldValue(formData, 'q15_water', ''),
-            sleep: getFieldValues(formData, 'q16_sleep', 'q16_other_text'),
-            exercise: getSingleFieldValue(formData, 'q17_exercise', ''),
-            environment: getFieldValues(formData, 'q18_environment', 'q18_other_text'),
-            habits: getFieldValues(formData, 'q19_habits', 'q19_other_text'),
-            femaleHealth: getFieldValues(formData, 'q20_female_health', 'q20_other_text')
+            dietType: getSingleFieldValue(formData, 'q13_diet_type', ''),
+            consumedFoods: getFieldValues(formData, 'q13_consumed_foods', 'q13_foods_other_text'),
+            digestion: getFieldValues(formData, 'q14_digestion', ''),
+            bowelHabit: getSingleFieldValue(formData, 'q15_bowel_habit', ''),
+            lifestyle: getFieldValues(formData, 'q16_lifestyle', 'q16_other_text'),
+            habits: getFieldValues(formData, 'q17_habits', 'q17_other_text'),
+            sleepDuration: getSingleFieldValue(formData, 'q18_sleep_duration', ''),
+            sleepQuality: getSingleFieldValue(formData, 'q18_sleep_quality', ''),
+            generalExamination: {
+                weightKg: (formData.get('q19_weight') || '').trim(),
+                pulseBpm: (formData.get('q19_pulse') || '').trim(),
+                bpMmHg: (formData.get('q19_bp') || '').trim()
+            },
+            specialConditions: getFieldValues(formData, 'q20_special_conditions', 'q20_other_text')
         };
 
         targetImageCount = 3; // 3 images required for all scans
@@ -176,11 +180,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('step-3-indicator').querySelector('.step-icon').classList.add('shadow-[0_0_20px_rgba(16,185,129,0.4)]');
         document.getElementById('step-3-indicator').querySelector('span').classList.replace('text-slate-400', 'text-emerald-400');
 
-        // Automatically scroll to the top where the photo upload buttons are located
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Automatically scroll to the top of the photo uploading section
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+
+        const analyzeSection = document.getElementById('analyze-section');
+        if (analyzeSection) {
+            analyzeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
         setTimeout(() => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 50);
+            if (analyzeSection) {
+                analyzeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
     });
     const openCameraBtn = document.getElementById('open-camera-btn');
     const cameraContainer = document.getElementById('camera-container');
@@ -441,13 +460,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         4. MULTI-MODAL SYNTHESIS OF 20-QUESTION CLINICAL DOSSIER:
         You are provided with BOTH 3 high-resolution patient images AND a comprehensive 20-point clinical Ayurvedic/Modern intake dossier.
         You MUST deeply cross-analyze and correlate the visual skin findings with the user's questionnaire responses:
-        - Affected body parts & main skin concerns
-        - Duration, progression rate, and primary clinical symptoms
-        - Known triggers & aggravators, previous treatments, allergies, and family history
-        - Diagnosed medical conditions, current medications, and skin type (Prakriti / Vikriti)
-        - Dietary preferences & digestion / bowel habits (Ahara, Agni & Koshtha state, Ama accumulation)
-        - Hydration level, sleep duration & pattern (Nidra), exercise level (Vyayama), environmental factors, lifestyle habits, and female hormonal profile (PCOS, cycle regularity, etc.)
-        Synthesize this holistic clinical picture to pinpoint the exact Dosha vitiation (Vata, Pitta, Kapha, Tridosha, or Rakta Dhatu Dushti), modern dermatological diagnosis, comprehensive root causes, and tailored dual (Ayurvedic natural remedies + Modern dermatological science) recovery protocols.
+        - Q1: Affected body parts & Q2: Main skin concerns
+        - Q3: Duration, Q4: Progression rate & Q5: Primary clinical symptoms
+        - Q6: Known triggers & aggravators, Q7: Previous treatments, Q8: Allergies & Q9: Family history
+        - Q10: Diagnosed medical conditions, Q11: Current medications & Q12: Skin type (Prakriti / Vikriti)
+        - Q13: Diet Type & Frequently Consumed Foods (Ahara, Viruddha Ahara, Rasa balance)
+        - Q14: Digestion Status (Agni - Mandagni/Tikshnagni/Vishamagni/Samagni, Ama accumulation)
+        - Q15: Bowel Habit (Koshtha - Mridu/Madhyama/Krura Koshtha)
+        - Q16: Lifestyle & Daily Routine (Vihara, Vyayama, Stress, Sun exposure, Work environment)
+        - Q17: Personal Habits & Addictions (Smoking, Alcohol, Tobacco, etc.)
+        - Q18: Sleep Duration & Sleep Quality (Nidra, Ratrijagarana)
+        - Q19: General Examination Vitals (Weight/BMI, Pulse Rate, Blood Pressure)
+        - Q20: Special Conditions (Pregnancy, Lactation, Hormonal/Menstrual profile, Chemical/Occupational exposures)
+        
+        Synthesize this holistic clinical picture to pinpoint the exact Dosha vitiation (Vata, Pitta, Kapha, Tridosha, or Rakta Dhatu Dushti), modern dermatological diagnosis, comprehensive root causes (Pathophysiology & Nidana/Samprapti), and tailored dual (Ayurvedic natural remedies + Modern dermatological science) recovery protocols.
         
         Patient Details: ${JSON.stringify(patientDetails)}
         Comprehensive 20-Question Clinical Dossier: ${JSON.stringify(questionnaireData, null, 2)}
