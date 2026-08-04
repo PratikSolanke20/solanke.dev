@@ -162,6 +162,71 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const q = report.questionnaireData || {};
+        const qItems = [
+            { num: 1, title: 'Affected Body Part(s)', val: q.affectedBodyParts, icon: 'fa-solid fa-child-reaching' },
+            { num: 2, title: 'Main Skin Concern(s)', val: q.mainConcerns, icon: 'fa-solid fa-triangle-exclamation' },
+            { num: 3, title: 'Duration of Problem', val: q.duration, icon: 'fa-solid fa-clock-rotate-left' },
+            { num: 4, title: 'Progression Rate & Pattern', val: q.progression, icon: 'fa-solid fa-chart-line' },
+            { num: 5, title: 'Primary Clinical Symptoms', val: q.symptoms, icon: 'fa-solid fa-heart-pulse' },
+            { num: 6, title: 'Known Triggers & Aggravators', val: q.triggers, icon: 'fa-solid fa-fire' },
+            { num: 7, title: 'Previous Treatments Used', val: q.treatments, icon: 'fa-solid fa-prescription-bottle-medical' },
+            { num: 8, title: 'Allergies & Sensitivities', val: q.allergies, icon: 'fa-solid fa-shield-virus' },
+            { num: 9, title: 'Family History', val: q.familyHistory, icon: 'fa-solid fa-users' },
+            { num: 10, title: 'Existing Medical Conditions', val: q.medicalConditions, icon: 'fa-solid fa-notes-medical' },
+            { num: 11, title: 'Current Medications', val: q.medications, icon: 'fa-solid fa-capsules' },
+            { num: 12, title: 'Ayurvedic & Modern Skin Type', val: q.skinType, icon: 'fa-solid fa-hand-sparkles' },
+            { num: 13, title: 'Dietary Pattern (Ahara)', val: q.diet, icon: 'fa-solid fa-utensils' },
+            { num: 14, title: 'Digestion & Bowel (Agni / Koshtha)', val: q.digestion, icon: 'fa-solid fa-wind' },
+            { num: 15, title: 'Daily Water Intake (Jala)', val: q.waterIntake, icon: 'fa-solid fa-droplet' },
+            { num: 16, title: 'Sleep Pattern & Duration (Nidra)', val: q.sleep, icon: 'fa-solid fa-moon' },
+            { num: 17, title: 'Physical Activity (Vyayama)', val: q.exercise, icon: 'fa-solid fa-person-running' },
+            { num: 18, title: 'Environmental Exposures', val: q.environment, icon: 'fa-solid fa-sun-plant-wilt' },
+            { num: 19, title: 'Habits & Lifestyle Factors', val: q.habits, icon: 'fa-solid fa-smoking' },
+            { num: 20, title: 'Female Hormonal Profile', val: q.femaleHealth, icon: 'fa-solid fa-venus' }
+        ];
+
+        const answeredItems = qItems.filter(item => {
+            if (!item.val) return false;
+            if (Array.isArray(item.val) && item.val.length === 0) return false;
+            return true;
+        });
+
+        let questionnaireHtml = '';
+        if (answeredItems.length > 0) {
+            questionnaireHtml = `
+                <div class="bg-slate-900 border border-white/10 rounded-2xl p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-clipboard-list text-emerald-400 text-lg"></i>
+                            <div>
+                                <h3 class="text-white text-base font-bold">20-Point Clinical Intake Dossier</h3>
+                                <p class="text-slate-400 text-xs">Ayurvedic Prakriti, Vikriti, Agni, Ahara, and modern dermatological profile</p>
+                            </div>
+                        </div>
+                        <span class="bg-emerald-900/40 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">${answeredItems.length} Factors Logged</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        ${answeredItems.map(item => {
+                            const valArray = Array.isArray(item.val) ? item.val : [item.val];
+                            return `
+                                <div class="bg-[#020617]/80 p-3.5 rounded-xl border border-white/5 flex flex-col justify-between hover:border-white/10 transition-colors">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-emerald-400 font-bold text-xs">Q${item.num}.</span>
+                                        <i class="${item.icon} text-xs text-slate-400"></i>
+                                        <span class="text-slate-300 text-xs font-semibold">${item.title}</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5 pl-4">
+                                        ${valArray.map(v => `<span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-200 text-xs">${v}</span>`).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
         // Reconstruct the PDF look directly in HTML
         modalBody.innerHTML = `
             <div class="bg-[#020617] rounded-2xl p-6 md:p-8 border border-white/5 shadow-inner">
@@ -204,6 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 </div>
+
+                <!-- 20-Point Intake Questionnaire Dossier -->
+                ${questionnaireHtml}
 
                 <!-- Detailed Breakdown -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
