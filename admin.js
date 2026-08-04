@@ -185,7 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (q.generalExamination) {
             if (q.generalExamination.weightKg) genExamValue.push(`Weight: ${q.generalExamination.weightKg} kg`);
             if (q.generalExamination.pulseBpm) genExamValue.push(`Pulse: ${q.generalExamination.pulseBpm} bpm`);
-            if (q.generalExamination.bpMmHg) genExamValue.push(`BP: ${q.generalExamination.bpMmHg} mmHg`);
+            if (q.generalExamination.bpSystolic && q.generalExamination.bpDiastolic) {
+                genExamValue.push(`BP: ${q.generalExamination.bpSystolic}/${q.generalExamination.bpDiastolic} mmHg`);
+            } else if (q.generalExamination.bpMmHg) {
+                const bpClean = q.generalExamination.bpMmHg.replace(/\s*mmHg$/i, '');
+                genExamValue.push(`BP: ${bpClean} mmHg`);
+            }
         }
 
         const qItems = [
