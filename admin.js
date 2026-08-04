@@ -163,6 +163,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const q = report.questionnaireData || {};
+        
+        // Helper to format sub-section values for display
+        const dietValue = [];
+        if (q.dietType) dietValue.push(`Type: ${q.dietType}`);
+        if (q.consumedFoods && q.consumedFoods.length > 0) {
+            dietValue.push(...(Array.isArray(q.consumedFoods) ? q.consumedFoods : [q.consumedFoods]));
+        }
+        if (q.diet && dietValue.length === 0) {
+            dietValue.push(...(Array.isArray(q.diet) ? q.diet : [q.diet]));
+        }
+
+        const sleepValue = [];
+        if (q.sleepDuration) sleepValue.push(`Duration: ${q.sleepDuration}`);
+        if (q.sleepQuality) sleepValue.push(`Quality: ${q.sleepQuality}`);
+        if (q.sleep && sleepValue.length === 0) {
+            sleepValue.push(...(Array.isArray(q.sleep) ? q.sleep : [q.sleep]));
+        }
+
+        const genExamValue = [];
+        if (q.generalExamination) {
+            if (q.generalExamination.weightKg) genExamValue.push(`Weight: ${q.generalExamination.weightKg} kg`);
+            if (q.generalExamination.pulseBpm) genExamValue.push(`Pulse: ${q.generalExamination.pulseBpm} bpm`);
+            if (q.generalExamination.bpMmHg) genExamValue.push(`BP: ${q.generalExamination.bpMmHg} mmHg`);
+        }
+
         const qItems = [
             { num: 1, title: 'Affected Body Part(s)', val: q.affectedBodyParts, icon: 'fa-solid fa-child-reaching' },
             { num: 2, title: 'Main Skin Concern(s)', val: q.mainConcerns, icon: 'fa-solid fa-triangle-exclamation' },
@@ -176,14 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
             { num: 10, title: 'Existing Medical Conditions', val: q.medicalConditions, icon: 'fa-solid fa-notes-medical' },
             { num: 11, title: 'Current Medications', val: q.medications, icon: 'fa-solid fa-capsules' },
             { num: 12, title: 'Ayurvedic & Modern Skin Type', val: q.skinType, icon: 'fa-solid fa-hand-sparkles' },
-            { num: 13, title: 'Dietary Pattern (Ahara)', val: q.diet, icon: 'fa-solid fa-utensils' },
-            { num: 14, title: 'Digestion & Bowel (Agni / Koshtha)', val: q.digestion, icon: 'fa-solid fa-wind' },
-            { num: 15, title: 'Daily Water Intake (Jala)', val: q.waterIntake, icon: 'fa-solid fa-droplet' },
-            { num: 16, title: 'Sleep Pattern & Duration (Nidra)', val: q.sleep, icon: 'fa-solid fa-moon' },
-            { num: 17, title: 'Physical Activity (Vyayama)', val: q.exercise, icon: 'fa-solid fa-person-running' },
-            { num: 18, title: 'Environmental Exposures', val: q.environment, icon: 'fa-solid fa-sun-plant-wilt' },
-            { num: 19, title: 'Habits & Lifestyle Factors', val: q.habits, icon: 'fa-solid fa-smoking' },
-            { num: 20, title: 'Female Hormonal Profile', val: q.femaleHealth, icon: 'fa-solid fa-venus' }
+            { num: 13, title: 'Usual Diet (Ahara)', val: dietValue, icon: 'fa-solid fa-utensils' },
+            { num: 14, title: 'Digestion Status (Agni)', val: q.digestion, icon: 'fa-solid fa-wind' },
+            { num: 15, title: 'Bowel Habit (Koshtha)', val: q.bowelHabit, icon: 'fa-solid fa-arrows-spin' },
+            { num: 16, title: 'Lifestyle & Daily Vihara', val: q.lifestyle, icon: 'fa-solid fa-person-running' },
+            { num: 17, title: 'Personal Habits & Addictions', val: q.habits, icon: 'fa-solid fa-smoking' },
+            { num: 18, title: 'Sleep Pattern & Quality (Nidra)', val: sleepValue, icon: 'fa-solid fa-moon' },
+            { num: 19, title: 'General Examination (Vitals)', val: genExamValue, icon: 'fa-solid fa-heart-pulse' },
+            { num: 20, title: 'Special Conditions & Exposures', val: q.specialConditions || q.femaleHealth, icon: 'fa-solid fa-notes-medical' }
         ];
 
         const answeredItems = qItems.filter(item => {
