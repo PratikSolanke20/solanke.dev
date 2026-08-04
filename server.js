@@ -48,7 +48,7 @@ app.get('/api/config', (req, res) => {
 // 1. Save Report Data (Silently called after scan)
 app.post('/api/save-report', async (req, res) => {
     try {
-        const { patientDetails, analysisData, chartImgData, userImgData } = req.body;
+        const { patientDetails, questionnaireData, analysisData, chartImgData, userImgData } = req.body;
         
         if (!patientDetails || !analysisData) {
             return res.status(400).json({ error: 'Missing required data' });
@@ -58,6 +58,7 @@ app.post('/api/save-report', async (req, res) => {
             id: generateId(),
             timestamp: new Date().toISOString(),
             patientDetails,
+            questionnaireData: questionnaireData || {},
             analysisData,
             chartImgData, // Base64 of pie chart for recreating the PDF
             userImgData   // Base64 of user's face photo
