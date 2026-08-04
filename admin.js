@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 2. Single-Click Clinical Medical PDF Export for Any Patient
+    // 2. Single-Click 2-Page Clinical Medical PDF Export for Any Patient
     window.downloadPatientPDF = async function(id) {
         const report = allReports.find(r => r.id === id);
         if (!report) {
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const circleCircumference = 2 * Math.PI * 15.9155; 
         const strokeDashOffset = circleCircumference - (spread / 100) * circleCircumference;
 
-        // Remedies HTML
+        // Remedies HTML for Page 1
         let ayurvedicHtml = '';
         if (report.analysisData?.ayurvedicRemedies && report.analysisData.ayurvedicRemedies.length > 0) {
             report.analysisData.ayurvedicRemedies.slice(0, 2).forEach(t => {
@@ -298,15 +298,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Vitals formatting
-        const vitalsList = [];
-        if (genExam.weightKg) vitalsList.push(`Wt: ${genExam.weightKg}kg`);
-        if (genExam.pulseBpm) vitalsList.push(`Pulse: ${genExam.pulseBpm}bpm`);
+        const weightStr = genExam.weightKg ? `${genExam.weightKg} kg` : 'Not recorded';
+        const pulseStr = genExam.pulseBpm ? `${genExam.pulseBpm} bpm` : 'Not recorded';
+        let bpStr = 'Not recorded';
         if (genExam.bpSystolic && genExam.bpDiastolic) {
-            vitalsList.push(`BP: ${genExam.bpSystolic}/${genExam.bpDiastolic}mmHg`);
+            bpStr = `${genExam.bpSystolic} / ${genExam.bpDiastolic} mmHg`;
         } else if (genExam.bpMmHg) {
-            vitalsList.push(`BP: ${genExam.bpMmHg}`);
+            bpStr = genExam.bpMmHg;
         }
-        const vitalsDisplay = vitalsList.length > 0 ? vitalsList.join(' • ') : 'Vitals Standard';
+
+        // Helper to render pill tags on Page 2
+        const renderPillTags = (val, emptyText = 'None reported', bg = '#0f172a', border = '#1e293b', text = '#cbd5e1') => {
+            if (!val || (Array.isArray(val) && val.length === 0)) {
+                return `<span style="font-size: 7.5px; color: #64748b; font-style: italic;">${emptyText}</span>`;
+            }
+            const arr = Array.isArray(val) ? val : [val];
+            return arr.map(item => `
+                <span style="display: inline-block; background: ${bg}; border: 1px solid ${border}; color: ${text}; padding: 2px 5px; border-radius: 4px; font-size: 7px; font-weight: 500; margin: 0 2px 2px 0;">
+                    ${item}
+                </span>
+            `).join('');
+        };
+
+        // Format Diet & Sleep for Page 2
+        const dietTypeStr = q.dietType || (Array.isArray(q.diet) ? q.diet[0] : (q.diet || 'Standard'));
+        const consumedFoodsVal = q.consumedFoods && q.consumedFoods.length > 0 
+            ? q.consumedFoods 
+            : (Array.isArray(q.diet) && q.diet.length > 1 ? q.diet.slice(1) : []);
+
+        const sleepDurationStr = q.sleepDuration || (Array.isArray(q.sleep) ? q.sleep[0] : (q.sleep || '6-8 hrs'));
+        const sleepQualityStr = q.sleepQuality || (Array.isArray(q.sleep) && q.sleep.length > 1 ? q.sleep[1] : 'Normal');
 
         // Avatar Image
         const patientImgSrc = report.userImgData 
@@ -318,140 +339,345 @@ document.addEventListener('DOMContentLoaded', () => {
         printContainer.style.top = '-99999px';
         printContainer.style.left = '0';
         printContainer.style.width = '794px';
-        printContainer.style.height = '1122px';
         printContainer.style.zIndex = '999999';
         printContainer.style.backgroundColor = '#020617';
 
         printContainer.innerHTML = `
-            <div id="admin-pdf-capture-area" style="background-color: #020617; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 794px; height: 1122px; box-sizing: border-box; overflow: hidden; padding: 35px; position: relative;">
+            <div id="admin-pdf-capture-root" style="width: 794px; background-color: #020617; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0;">
                 
-                <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 12px; margin-bottom: 16px;">
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <div style="width: 55px; height: 55px; border-radius: 12px; overflow: hidden; border: 2px solid #10b981; background-color: #0f172a; display: flex; align-items: center; justify-content: center;">
-                            ${patientImgSrc ? `<img src="${patientImgSrc}" style="width: 100%; height: 100%; object-fit: cover;" />` : `<span style="font-size: 24px; color: #64748b;">👤</span>`}
+                <!-- ==================== PAGE 1: AI DIAGNOSTIC DOSSIER ==================== -->
+                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; page-break-after: always; break-after: page; overflow: hidden;">
+                    
+                    <!-- Page 1 Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 10px; margin-bottom: 14px;">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <div style="width: 52px; height: 52px; border-radius: 12px; overflow: hidden; border: 2px solid #10b981; background-color: #0f172a; display: flex; align-items: center; justify-content: center; shrink-0;">
+                                ${patientImgSrc ? `<img src="${patientImgSrc}" style="width: 100%; height: 100%; object-fit: cover;" />` : `<span style="font-size: 22px; color: #64748b;">👤</span>`}
+                            </div>
+                            <div>
+                                <h1 style="margin: 0; color: #34d399; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">AyurSkin PRO</h1>
+                                <p style="margin: 1px 0 0 0; color: #10b981; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Official Clinical Skin Dossier • Page 1 of 2</p>
+                            </div>
                         </div>
+                        <div style="text-align: right; background: #0f172a; padding: 6px 12px; border-radius: 10px; border: 1px solid #1e293b;">
+                            <div style="display: flex; gap: 10px;">
+                                <div style="text-align: left;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 7px; text-transform: uppercase;">Patient Name</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 10px; font-weight: bold;">${p.name || 'Anonymous'}</p>
+                                </div>
+                                <div style="width: 1px; background: #1e293b;"></div>
+                                <div style="text-align: left;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 7px; text-transform: uppercase;">Age / Gender</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 10px; font-weight: bold;">${p.age || '--'} / ${p.gender || '--'}</p>
+                                </div>
+                                <div style="width: 1px; background: #1e293b;"></div>
+                                <div style="text-align: left;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 7px; text-transform: uppercase;">Phone / City</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 10px; font-weight: bold;">${p.phone || 'N/A'} • ${p.city || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between;">
+                                <p style="margin: 0; color: #64748b; font-size: 7px;">Scan ID: ${report.id.substring(0, 8).toUpperCase()}</p>
+                                <p style="margin: 0; color: #64748b; font-size: 7px;">Date: ${report.timestamp ? new Date(report.timestamp).toLocaleDateString() : 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Diagnosis & Analytics Banner -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px; height: 105px;">
+                        <div style="flex: 2; background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); border: 1px solid #059669; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                                <h2 style="margin: 0; color: #6ee7b7; font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Primary Diagnosis</h2>
+                                <div style="background: #020617; padding: 2px 7px; border-radius: 20px; border: 1px solid #10b981; font-size: 8px; font-weight: bold; color: #34d399; white-space: nowrap;">${diagnosisPercentage}</div>
+                            </div>
+                            <h3 style="margin: 0; color: #ffffff; font-size: 16px; font-weight: bold; line-height: 1.2;">${diseaseType}</h3>
+                        </div>
+
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <h2 style="margin: 0 0 2px 0; color: #94a3b8; font-size: 7.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Spread Area</h2>
+                            <div style="width: 44px; height: 44px; position: relative;">
+                                <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#1e293b" stroke-width="3"/>
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${severityColorCode}" stroke-width="3" stroke-dasharray="${circleCircumference}, ${circleCircumference}" stroke-dashoffset="${strokeDashOffset}"/>
+                                </svg>
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: ${severityColorCode};">${spread}%</div>
+                            </div>
+                        </div>
+
+                        <div style="flex: 1.2; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <h2 style="margin: 0 0 2px 0; color: #94a3b8; font-size: 7.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Tensor Analytics</h2>
+                            ${report.chartImgData ? `<img src="${report.chartImgData}" style="width: 100%; max-height: 60px; object-fit: contain;" />` : `<p style="font-size: 7.5px; color: #64748b; margin: 0;">Multi-Modal Verified</p>`}
+                        </div>
+                    </div>
+                    
+                    <!-- Modern & Ayurvedic Dual Perspectives -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #3b82f6; padding-bottom: 3px;">
+                                <h2 style="margin: 0; color: #60a5fa; font-size: 9px; font-weight: bold; text-transform: uppercase;">Modern Dermatology</h2>
+                            </div>
+                            <p style="color: #cbd5e1; font-size: 8.5px; margin: 0; line-height: 1.35;">${modernInfo}</p>
+                        </div>
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #10b981; padding-bottom: 3px;">
+                                <h2 style="margin: 0; color: #34d399; font-size: 9px; font-weight: bold; text-transform: uppercase;">Ayurvedic Nidana</h2>
+                            </div>
+                            <p style="color: #cbd5e1; font-size: 8.5px; margin: 0; line-height: 1.35;">${ayurvedicInfo}</p>
+                        </div>
+                    </div>
+
+                    <!-- Causes & Symptoms Row -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #ef4444; padding-bottom: 3px;">
+                                <h2 style="margin: 0; color: #f8fafc; font-size: 9px; font-weight: bold;">Etiology & Root Causes</h2>
+                            </div>
+                            <h3 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 7.5px; font-weight: bold;">Modern Aspect:</h3>
+                            <p style="color: #cbd5e1; font-size: 7.5px; margin: 0 0 4px 0; line-height: 1.25;">${detailedRootCause.modern || 'Sebaceous hyperactivity & barrier shifts.'}</p>
+                            <h3 style="margin: 0 0 2px 0; color: #34d399; font-size: 7.5px; font-weight: bold;">Ayurvedic Aspect:</h3>
+                            <p style="color: #cbd5e1; font-size: 7.5px; margin: 0; line-height: 1.25;">${detailedRootCause.ayurvedic || 'Dosha aggravation & Ama Srotorodha.'}</p>
+                        </div>
+                        <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #f59e0b; padding-bottom: 3px;">
+                                <h2 style="margin: 0; color: #f8fafc; font-size: 9px; font-weight: bold;">Clinical Symptoms</h2>
+                            </div>
+                            <ul style="color: #cbd5e1; font-size: 8px; list-style-type: none; padding: 0; margin: 0; line-height: 1.35;">${symptomsList}</ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Dual Recovery Protocols -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 3px;">
+                                <h2 style="color: #f8fafc; font-size: 9px; font-weight: bold; margin: 0;">Modern Science Protocols</h2>
+                                <span style="background: #1e3a8a; color: #60a5fa; padding: 2px 6px; border-radius: 10px; font-size: 6.5px; font-weight: bold;">Dermatology</span>
+                            </div>
+                            <div>${modernHtml}</div>
+                        </div>
+                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 3px;">
+                                <h2 style="color: #f8fafc; font-size: 9px; font-weight: bold; margin: 0;">Ayurvedic Herbal Protocols</h2>
+                                <span style="background: #064e3b; color: #34d399; padding: 2px 6px; border-radius: 10px; font-size: 6.5px; font-weight: bold;">Natural Lepa</span>
+                            </div>
+                            <div>${ayurvedicHtml}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Page 1 Footer -->
+                    <div style="position: absolute; bottom: 20px; left: 35px; right: 35px; text-align: center; color: #475569; font-size: 7px; border-top: 1px solid #1e293b; padding-top: 6px; display: flex; justify-content: space-between;">
+                        <span>AyurSkin PRO Diagnostic Terminal • Confidential Medical Dossier</span>
+                        <span style="color: #10b981; font-weight: bold;">Page 1 of 2 • Continue to Page 2 for 20-Point Clinical Intake Dossier ➔</span>
+                    </div>
+                </div>
+
+
+                <!-- ==================== PAGE 2: 20-POINT CLINICAL INTAKE DOSSIER ==================== -->
+                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; overflow: hidden;">
+                    
+                    <!-- Page 2 Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; margin-bottom: 12px;">
                         <div>
-                            <h1 style="margin: 0; color: #34d399; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">AyurSkin PRO</h1>
-                            <p style="margin: 2px 0 0 0; color: #10b981; font-size: 8.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Official Clinical Skin Dossier</p>
+                            <h1 style="margin: 0; color: #60a5fa; font-size: 18px; font-weight: 800; letter-spacing: -0.5px;">Comprehensive Clinical Intake Dossier</h1>
+                            <p style="margin: 1px 0 0 0; color: #94a3b8; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px;">20-Point Multi-Modal Patient Record • Page 2 of 2</p>
                         </div>
-                    </div>
-                    <div style="text-align: right; background: #0f172a; padding: 8px 14px; border-radius: 10px; border: 1px solid #1e293b;">
-                        <div style="display: flex; gap: 12px;">
-                            <div style="text-align: left;">
-                                <p style="margin: 0; color: #94a3b8; font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.5px;">Patient Name</p>
-                                <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 10.5px; font-weight: bold;">${p.name || 'Anonymous'}</p>
-                            </div>
-                            <div style="width: 1px; background: #1e293b;"></div>
-                            <div style="text-align: left;">
-                                <p style="margin: 0; color: #94a3b8; font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.5px;">Age / Gender</p>
-                                <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 10.5px; font-weight: bold;">${p.age || '--'} / ${p.gender || '--'}</p>
-                            </div>
-                            <div style="width: 1px; background: #1e293b;"></div>
-                            <div style="text-align: left;">
-                                <p style="margin: 0; color: #94a3b8; font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.5px;">Contact</p>
-                                <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 10.5px; font-weight: bold;">${p.phone || 'N/A'}</p>
-                            </div>
-                        </div>
-                        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between;">
-                            <p style="margin: 0; color: #64748b; font-size: 7.5px;">Vitals: ${vitalsDisplay}</p>
-                            <p style="margin: 0; color: #64748b; font-size: 7.5px;">ID: ${report.id.substring(0, 8).toUpperCase()}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Diagnosis & Charts Row -->
-                <div style="display: flex; gap: 12px; margin-bottom: 16px; height: 115px;">
-                    <!-- Primary Diagnosis Box -->
-                    <div style="flex: 2; background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); border: 1px solid #059669; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; justify-content: center;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
-                            <h2 style="margin: 0; color: #6ee7b7; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Primary Diagnosis</h2>
-                            <div style="background: #020617; padding: 3px 8px; border-radius: 20px; border: 1px solid #10b981; font-size: 9px; font-weight: bold; color: #34d399; white-space: nowrap;">${diagnosisPercentage}</div>
-                        </div>
-                        <h3 style="margin: 0; color: #ffffff; font-size: 17px; font-weight: bold; line-height: 1.2;">${diseaseType}</h3>
-                    </div>
-
-                    <!-- Spread Ring SVG -->
-                    <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <h2 style="margin: 0 0 4px 0; color: #94a3b8; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Spread Area</h2>
-                        <div style="width: 50px; height: 50px; position: relative;">
-                            <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
-                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#1e293b" stroke-width="3"/>
-                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${severityColorCode}" stroke-width="3" stroke-dasharray="${circleCircumference}, ${circleCircumference}" stroke-dashoffset="${strokeDashOffset}"/>
-                            </svg>
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; color: ${severityColorCode};">${spread}%</div>
+                        <div style="text-align: right; background: #0f172a; padding: 5px 12px; border-radius: 8px; border: 1px solid #1e293b;">
+                            <span style="color: #f8fafc; font-size: 9px; font-weight: bold;">${p.name || 'Anonymous'}</span>
+                            <span style="color: #64748b; font-size: 8px; margin: 0 4px;">•</span>
+                            <span style="color: #38bdf8; font-size: 8px; font-family: monospace;">ID: ${report.id.substring(0,8).toUpperCase()}</span>
                         </div>
                     </div>
 
-                    <!-- Deformity Chart -->
-                    <div style="flex: 1.3; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <h2 style="margin: 0 0 4px 0; color: #94a3b8; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Tensor Analytics</h2>
-                        ${report.chartImgData ? `<img src="${report.chartImgData}" style="width: 100%; max-height: 65px; object-fit: contain;" />` : `<p style="font-size: 8px; color: #64748b; margin: 0;">Multi-Modal Verified</p>`}
-                    </div>
-                </div>
-                
-                <!-- Modern & Ayurvedic Perspectives -->
-                <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                    <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 12px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px; border-bottom: 2px solid #3b82f6; padding-bottom: 4px;">
-                            <h2 style="margin: 0; color: #60a5fa; font-size: 10px; font-weight: bold; text-transform: uppercase;">Modern Dermatology</h2>
+                    <!-- Bento Grid for 20 Questions (2 Columns x 3 Rows) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                        
+                        <!-- CARD 1: General Examination & Vitals (Q19) -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #3b82f6; padding-bottom: 3px;">
+                                <h3 style="margin: 0; color: #60a5fa; font-size: 8.5px; font-weight: bold;">#19. General Examination & Vitals</h3>
+                                <span style="background: #1e3a8a; color: #93c5fd; padding: 1px 5px; border-radius: 4px; font-size: 6.5px; font-weight: bold;">Physical</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px;">
+                                <div style="background: #020617; padding: 5px 7px; border-radius: 6px; border: 1px solid #1e293b;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; text-transform: uppercase;">Body Weight</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 9px; font-weight: bold;">${weightStr}</p>
+                                </div>
+                                <div style="background: #020617; padding: 5px 7px; border-radius: 6px; border: 1px solid #1e293b;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; text-transform: uppercase;">Pulse Rate</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 9px; font-weight: bold;">${pulseStr}</p>
+                                </div>
+                            </div>
+                            <div style="background: #020617; padding: 5px 7px; border-radius: 6px; border: 1px solid #1e293b;">
+                                <p style="margin: 0; color: #94a3b8; font-size: 6.5px; text-transform: uppercase;">Blood Pressure (Systolic / Diastolic)</p>
+                                <p style="margin: 1px 0 0 0; color: #34d399; font-size: 9.5px; font-weight: bold;">${bpStr}</p>
+                            </div>
                         </div>
-                        <p style="color: #cbd5e1; font-size: 9px; margin: 0; line-height: 1.35;">${modernInfo}</p>
-                    </div>
-                    <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 12px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px; border-bottom: 2px solid #10b981; padding-bottom: 4px;">
-                            <h2 style="margin: 0; color: #34d399; font-size: 10px; font-weight: bold; text-transform: uppercase;">Ayurvedic Nidana</h2>
+
+                        <!-- CARD 2: Presenting Complaints & Chronology (Q1 - Q4) -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #10b981; padding-bottom: 3px;">
+                                <h3 style="margin: 0; color: #34d399; font-size: 8.5px; font-weight: bold;">Topography & Chronology (Q1 - Q4)</h3>
+                                <span style="background: #064e3b; color: #6ee7b7; padding: 1px 5px; border-radius: 4px; font-size: 6.5px; font-weight: bold;">Chief Complaint</span>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#1. Affected Body Part(s):</p>
+                                <div>${renderPillTags(q.affectedBodyParts, 'Unspecified', '#020617', '#059669', '#6ee7b7')}</div>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#2. Main Skin Concern(s):</p>
+                                <div>${renderPillTags(q.mainConcerns, 'Unspecified', '#020617', '#2563eb', '#93c5fd')}</div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#3. Duration:</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px;">${q.duration || 'N/A'}</p>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#4. Progression:</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px;">${q.progression || 'N/A'}</p>
+                                </div>
+                            </div>
                         </div>
-                        <p style="color: #cbd5e1; font-size: 9px; margin: 0; line-height: 1.35;">${ayurvedicInfo}</p>
+
+                        <!-- CARD 3: Symptomatology & Triggers (Q5 - Q8) -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #f59e0b; padding-bottom: 3px;">
+                                <h3 style="margin: 0; color: #fbbf24; font-size: 8.5px; font-weight: bold;">Clinical Symptoms & Triggers (Q5 - Q8)</h3>
+                                <span style="background: #78350f; color: #fde68a; padding: 1px 5px; border-radius: 4px; font-size: 6.5px; font-weight: bold;">Symptom Matrix</span>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#5. Symptoms Reported:</p>
+                                <div>${renderPillTags(q.symptoms, 'None', '#020617', '#d97706', '#fde68a')}</div>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#6. Triggers & Aggravators:</p>
+                                <div>${renderPillTags(q.triggers, 'None identified', '#020617', '#dc2626', '#fca5a5')}</div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <div style="flex: 1;">
+                                    <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#7. Past Treatments:</p>
+                                    <div>${renderPillTags(q.treatments, 'None')}</div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#8. Allergies:</p>
+                                    <div>${renderPillTags(q.allergies, 'None', '#020617', '#9333ea', '#d8b4fe')}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 4: Medical History & Heredity (Q9 - Q11, Q20) -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #ec4899; padding-bottom: 3px;">
+                                <h3 style="margin: 0; color: #f472b6; font-size: 8.5px; font-weight: bold;">Medical Profile & History (Q9 - Q11, Q20)</h3>
+                                <span style="background: #831843; color: #fbcfe8; padding: 1px 5px; border-radius: 4px; font-size: 6.5px; font-weight: bold;">Systemic</span>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#10. Existing Conditions:</p>
+                                <div>${renderPillTags(q.medicalConditions, 'None reported')}</div>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#11. Current Medications:</p>
+                                <div>${renderPillTags(q.medications, 'None reported')}</div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#9. Family History:</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px;">${q.familyHistory || 'None'}</p>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#20. Special Exposures:</p>
+                                    <div>${renderPillTags(q.specialConditions || q.femaleHealth, 'None')}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 5: Ayurvedic Ahara & Agni / Metabolism (Q12 - Q15) -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #10b981; padding-bottom: 3px;">
+                                <h3 style="margin: 0; color: #34d399; font-size: 8.5px; font-weight: bold;">Ayurvedic Ahara & Agni (Q12 - Q15)</h3>
+                                <span style="background: #064e3b; color: #6ee7b7; padding: 1px 5px; border-radius: 4px; font-size: 6.5px; font-weight: bold;">Metabolism</span>
+                            </div>
+                            <div style="display: flex; gap: 6px; margin-bottom: 4px;">
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#12. Skin Type (Prakriti):</p>
+                                    <p style="margin: 1px 0 0 0; color: #38bdf8; font-size: 7.5px; font-weight: bold;">${q.skinType || 'Standard'}</p>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#13A. Diet Type:</p>
+                                    <p style="margin: 1px 0 0 0; color: #34d399; font-size: 7.5px; font-weight: bold;">${dietTypeStr}</p>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#13B. Frequently Consumed Foods:</p>
+                                <div>${renderPillTags(consumedFoodsVal, 'Standard diet', '#020617', '#059669', '#a7f3d0')}</div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#14. Digestion (Agni):</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px;">${q.digestion || 'Normal / Sama'}</p>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#15. Bowel (Koshtha):</p>
+                                    <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px;">${q.bowelHabit || 'Regular / Madhyama'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 6: Vihara, Lifestyle & Nidra / Sleep (Q16 - Q18) -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #8b5cf6; padding-bottom: 3px;">
+                                <h3 style="margin: 0; color: #a78bfa; font-size: 8.5px; font-weight: bold;">Vihara, Lifestyle & Sleep (Q16 - Q18)</h3>
+                                <span style="background: #4c1d95; color: #c4b5fd; padding: 1px 5px; border-radius: 4px; font-size: 6.5px; font-weight: bold;">Daily Habits</span>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#16. Lifestyle & Activity:</p>
+                                <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px;">${q.lifestyle || 'Moderate'}</p>
+                            </div>
+                            <div style="margin-bottom: 4px;">
+                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#17. Personal Habits & Addictions:</p>
+                                <div>${renderPillTags(q.habits, 'None reported', '#020617', '#6366f1', '#c7d2fe')}</div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#18. Sleep Duration:</p>
+                                    <p style="margin: 1px 0 0 0; color: #38bdf8; font-size: 7.5px;">${sleepDurationStr}</p>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#18. Sleep Quality:</p>
+                                    <p style="margin: 1px 0 0 0; color: #a78bfa; font-size: 7.5px;">${sleepQualityStr}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Clinical Review & Physician Sign-off Box -->
+                    <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 2;">
+                                <h3 style="margin: 0 0 4px 0; color: #f8fafc; font-size: 8.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Attending Practitioner / Vaidya Review</h3>
+                                <p style="margin: 0; color: #94a3b8; font-size: 7.5px; line-height: 1.3;">
+                                    Clinical assessment cross-verified against multi-modal tensor metrics and 20-point holistic intake data.
+                                </p>
+                                <div style="margin-top: 8px; border-bottom: 1px dashed #334155; width: 85%; height: 12px;"></div>
+                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 6.5px;">Clinical Observation Notes / Dosage Adjustments</p>
+                            </div>
+                            <div style="flex: 1; text-align: right; border-left: 1px solid #1e293b; padding-left: 12px;">
+                                <div style="height: 25px;"></div>
+                                <div style="border-top: 1px solid #475569; padding-top: 3px; display: inline-block; min-width: 130px; text-align: center;">
+                                    <p style="margin: 0; color: #cbd5e1; font-size: 7.5px; font-weight: bold;">Authorized Medical Stamp / Sign</p>
+                                    <p style="margin: 1px 0 0 0; color: #64748b; font-size: 6.5px;">AyurSkin Clinical Network</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page 2 Footer -->
+                    <div style="position: absolute; bottom: 20px; left: 35px; right: 35px; text-align: center; color: #475569; font-size: 7px; border-top: 1px solid #1e293b; padding-top: 6px; display: flex; justify-content: space-between;">
+                        <span>AyurSkin PRO Diagnostic Terminal • Practitioner Confidential Record</span>
+                        <span style="color: #38bdf8; font-weight: bold;">Page 2 of 2 • End of Clinical Dossier</span>
                     </div>
                 </div>
 
-                <!-- Causes & Symptoms Row -->
-                <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                    <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 12px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px; border-bottom: 2px solid #ef4444; padding-bottom: 4px;">
-                            <h2 style="margin: 0; color: #f8fafc; font-size: 10px; font-weight: bold;">Etiology & Root Causes</h2>
-                        </div>
-                        <h3 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 8px; font-weight: bold;">Modern Aspect:</h3>
-                        <p style="color: #cbd5e1; font-size: 8px; margin: 0 0 5px 0; line-height: 1.25;">${detailedRootCause.modern || 'Sebaceous hyperactivity & barrier shifts.'}</p>
-                        <h3 style="margin: 0 0 2px 0; color: #34d399; font-size: 8px; font-weight: bold;">Ayurvedic Aspect:</h3>
-                        <p style="color: #cbd5e1; font-size: 8px; margin: 0; line-height: 1.25;">${detailedRootCause.ayurvedic || 'Dosha aggravation & Ama Srotorodha.'}</p>
-                    </div>
-                    <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 12px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px; border-bottom: 2px solid #f59e0b; padding-bottom: 4px;">
-                            <h2 style="margin: 0; color: #f8fafc; font-size: 10px; font-weight: bold;">Clinical Symptoms</h2>
-                        </div>
-                        <ul style="color: #cbd5e1; font-size: 8.5px; list-style-type: none; padding: 0; margin: 0; line-height: 1.4;">${symptomsList}</ul>
-                    </div>
-                </div>
-                
-                <!-- Dual Recovery Protocols -->
-                <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                    <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 4px;">
-                            <h2 style="color: #f8fafc; font-size: 10px; font-weight: bold; margin: 0;">Modern Science Remedies</h2>
-                            <span style="background: #1e3a8a; color: #60a5fa; padding: 2px 6px; border-radius: 10px; font-size: 6.5px; font-weight: bold;">Dermatology</span>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
-                            ${modernHtml}
-                        </div>
-                    </div>
-                    <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 4px;">
-                            <h2 style="color: #f8fafc; font-size: 10px; font-weight: bold; margin: 0;">Ayurvedic Herbal Protocols</h2>
-                            <span style="background: #064e3b; color: #34d399; padding: 2px 6px; border-radius: 10px; font-size: 6.5px; font-weight: bold;">Natural Lepa</span>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 0;">
-                            ${ayurvedicHtml}
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Footer Disclaimer -->
-                <div style="position: absolute; bottom: 25px; left: 35px; right: 35px; text-align: center; color: #475569; font-size: 7.5px; border-top: 1px solid #1e293b; padding-top: 8px;">
-                    <p style="margin: 0;">Generated by AyurSkin PRO Diagnostic Terminal • Practitioner Copy • Confidential Medical Record</p>
-                    <p style="margin: 2px 0 0 0;">This dossier synthesizes AI microscopic multi-modal tensor scans with 20-point holistic intake data.</p>
-                </div>
             </div>
         `;
 
@@ -466,14 +692,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const patientNameClean = (p.name || 'Patient').replace(/[^a-zA-Z0-9_-]/g, '_');
             const opt = {
                 margin: 0,
-                filename: `AyurSkin-Clinical-Report-${patientNameClean}-${report.id.substring(0,6)}.pdf`,
+                filename: `AyurSkin-Clinical-Dossier-${patientNameClean}-${report.id.substring(0,6)}.pdf`,
                 image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
-                jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait', hotfixes: ["px_scaling"] }
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, letterRendering: true },
+                jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait', hotfixes: ["px_scaling"] },
+                pagebreak: { mode: ['css', 'legacy'] }
             };
 
-            const captureArea = document.getElementById('admin-pdf-capture-area');
-            await html2pdf().set(opt).from(captureArea).save();
+            const captureRoot = document.getElementById('admin-pdf-capture-root');
+            await html2pdf().set(opt).from(captureRoot).save();
 
         } catch (err) {
             console.error("PDF Generation error:", err);
