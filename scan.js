@@ -30,6 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('step-2-indicator').querySelector('.step-icon').classList.replace('text-slate-400', 'text-white');
         document.getElementById('step-2-indicator').querySelector('.step-icon').classList.add('shadow-[0_0_20px_rgba(16,185,129,0.4)]');
         document.getElementById('step-2-indicator').querySelector('span').classList.replace('text-slate-400', 'text-emerald-400');
+
+        // Scroll to top for questionnaire
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 50);
     });
 
     // Handle Questionnaire Submission
@@ -72,6 +78,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('step-3-indicator').querySelector('.step-icon').classList.replace('text-slate-400', 'text-white');
         document.getElementById('step-3-indicator').querySelector('.step-icon').classList.add('shadow-[0_0_20px_rgba(16,185,129,0.4)]');
         document.getElementById('step-3-indicator').querySelector('span').classList.replace('text-slate-400', 'text-emerald-400');
+
+        // Automatically scroll to the top where the photo upload buttons are located
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 50);
     });
     const openCameraBtn = document.getElementById('open-camera-btn');
     const cameraContainer = document.getElementById('camera-container');
@@ -238,6 +250,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 fileInput.value = '';
                 updateImagePromptUI();
                 startAnalysisBtn.onclick = null;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             };
         } else {
             startAnalysisBtn.innerHTML = `Execute Scan <i class="fa-solid fa-microchip"></i>`;
@@ -262,6 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const grid = document.getElementById('multi-image-preview-grid');
         if (grid) grid.innerHTML = '';
         updateImagePromptUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     // 4. Advanced Progress Engine
