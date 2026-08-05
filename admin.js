@@ -270,31 +270,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const circleCircumference = 2 * Math.PI * 15.9155; 
         const strokeDashOffset = circleCircumference - (spread / 100) * circleCircumference;
 
-        // Remedies HTML for Page 1
+        // Remedies HTML for Page 1 - Render ALL remedies provided (Modern + Ayurvedic)
         let ayurvedicHtml = '';
         if (report.analysisData?.ayurvedicRemedies && report.analysisData.ayurvedicRemedies.length > 0) {
-            report.analysisData.ayurvedicRemedies.slice(0, 2).forEach(t => {
+            report.analysisData.ayurvedicRemedies.forEach(t => {
                 ayurvedicHtml += `
-                    <div style="background: #020617; border-left: 3px solid #10b981; border-radius: 6px; padding: 6px 8px; margin-bottom: 5px;">
-                        <h4 style="margin: 0 0 2px 0; color: #34d399; font-size: 8.5px; font-weight: bold;">${t.title}</h4>
-                        <p style="margin: 0; color: #94a3b8; font-size: 7.5px; line-height: 1.25;">${t.instructions}</p>
+                    <div style="background: #020617; border-left: 3px solid #10b981; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">
+                        <h4 style="margin: 0 0 2px 0; color: #34d399; font-size: 8px; font-weight: bold;">${t.title}</h4>
+                        <p style="margin: 0; color: #94a3b8; font-size: 7px; line-height: 1.2;">${t.instructions}</p>
                     </div>`;
             });
         } else {
-            ayurvedicHtml = `<p style="color: #94a3b8; font-size: 8px; margin: 0;">Standard Ayurvedic Lepa & Shodhana recommended.</p>`;
+            ayurvedicHtml = `<p style="color: #94a3b8; font-size: 7.5px; margin: 0;">Standard Ayurvedic Lepa & Shodhana recommended.</p>`;
         }
 
         let modernHtml = '';
         if (report.analysisData?.modernRemedies && report.analysisData.modernRemedies.length > 0) {
-            report.analysisData.modernRemedies.slice(0, 2).forEach(t => {
+            report.analysisData.modernRemedies.forEach(t => {
                 modernHtml += `
-                    <div style="background: #020617; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 6px 8px; margin-bottom: 5px;">
-                        <h4 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 8.5px; font-weight: bold;">${t.title}</h4>
-                        <p style="margin: 0; color: #94a3b8; font-size: 7.5px; line-height: 1.25;">${t.instructions}</p>
+                    <div style="background: #020617; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">
+                        <h4 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 8px; font-weight: bold;">${t.title}</h4>
+                        <p style="margin: 0; color: #94a3b8; font-size: 7px; line-height: 1.2;">${t.instructions}</p>
                     </div>`;
             });
         } else {
-            modernHtml = `<p style="color: #94a3b8; font-size: 8px; margin: 0;">Barrier restoration & non-comedogenic hydration recommended.</p>`;
+            modernHtml = `<p style="color: #94a3b8; font-size: 7.5px; margin: 0;">Barrier restoration & non-comedogenic hydration recommended.</p>`;
         }
 
         // Vitals formatting
