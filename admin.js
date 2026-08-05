@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Q18 Sleep Duration & Quality (Nidra)", "Q20 Special Conditions & Exposures",
                 "Modern Medical Perspective", "Ayurvedic Perspective & Doshas",
                 "Root Cause (Modern Cellular)", "Root Cause (Ayurvedic Samprapti)",
-                "Identified Clinical Symptoms", "Ayurvedic Prescribed Protocols", "Modern Science Prescribed Protocols"
+                "Identified Clinical Symptoms", "Ayurvedic Protocols (Clinical Suggestions)", "Modern Science Protocols (Clinical Suggestions)"
             ];
 
             const formatCell = (val) => {
@@ -270,31 +270,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const circleCircumference = 2 * Math.PI * 15.9155; 
         const strokeDashOffset = circleCircumference - (spread / 100) * circleCircumference;
 
-        // Remedies HTML for Page 1
+        // Remedies HTML for Page 1 - Render ALL remedies provided (Modern + Ayurvedic)
         let ayurvedicHtml = '';
         if (report.analysisData?.ayurvedicRemedies && report.analysisData.ayurvedicRemedies.length > 0) {
-            report.analysisData.ayurvedicRemedies.slice(0, 2).forEach(t => {
+            report.analysisData.ayurvedicRemedies.forEach(t => {
                 ayurvedicHtml += `
-                    <div style="background: #020617; border-left: 3px solid #10b981; border-radius: 6px; padding: 6px 8px; margin-bottom: 5px;">
-                        <h4 style="margin: 0 0 2px 0; color: #34d399; font-size: 8.5px; font-weight: bold;">${t.title}</h4>
-                        <p style="margin: 0; color: #94a3b8; font-size: 7.5px; line-height: 1.25;">${t.instructions}</p>
+                    <div style="background: #020617; border-left: 3px solid #10b981; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">
+                        <h4 style="margin: 0 0 2px 0; color: #34d399; font-size: 8px; font-weight: bold;">${t.title}</h4>
+                        <p style="margin: 0; color: #94a3b8; font-size: 7px; line-height: 1.2;">${t.instructions}</p>
                     </div>`;
             });
         } else {
-            ayurvedicHtml = `<p style="color: #94a3b8; font-size: 8px; margin: 0;">Standard Ayurvedic Lepa & Shodhana recommended.</p>`;
+            ayurvedicHtml = `<p style="color: #94a3b8; font-size: 7.5px; margin: 0;">Standard Ayurvedic Lepa & Shodhana recommended.</p>`;
         }
 
         let modernHtml = '';
         if (report.analysisData?.modernRemedies && report.analysisData.modernRemedies.length > 0) {
-            report.analysisData.modernRemedies.slice(0, 2).forEach(t => {
+            report.analysisData.modernRemedies.forEach(t => {
                 modernHtml += `
-                    <div style="background: #020617; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 6px 8px; margin-bottom: 5px;">
-                        <h4 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 8.5px; font-weight: bold;">${t.title}</h4>
-                        <p style="margin: 0; color: #94a3b8; font-size: 7.5px; line-height: 1.25;">${t.instructions}</p>
+                    <div style="background: #020617; border-left: 3px solid #3b82f6; border-radius: 6px; padding: 5px 8px; margin-bottom: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">
+                        <h4 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 8px; font-weight: bold;">${t.title}</h4>
+                        <p style="margin: 0; color: #94a3b8; font-size: 7px; line-height: 1.2;">${t.instructions}</p>
                     </div>`;
             });
         } else {
-            modernHtml = `<p style="color: #94a3b8; font-size: 8px; margin: 0;">Barrier restoration & non-comedogenic hydration recommended.</p>`;
+            modernHtml = `<p style="color: #94a3b8; font-size: 7.5px; margin: 0;">Barrier restoration & non-comedogenic hydration recommended.</p>`;
         }
 
         // Vitals formatting
@@ -446,20 +446,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     
                     <!-- Dual Recovery Protocols -->
-                    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 3px;">
-                                <h2 style="color: #f8fafc; font-size: 9px; font-weight: bold; margin: 0;">Modern Science Protocols</h2>
-                                <span style="background: #1e3a8a; color: #60a5fa; padding: 2px 6px; border-radius: 10px; font-size: 6.5px; font-weight: bold;">Dermatology</span>
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #1e293b; padding-bottom: 4px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <h2 style="color: #f8fafc; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Dual Recovery Regimen</h2>
+                                <span style="background: #064e3b; color: #34d399; padding: 1px 5px; border-radius: 8px; font-size: 6.5px; font-weight: bold; border: 0.5px solid #10b981;">Dual Matrix</span>
                             </div>
-                            <div>${modernHtml}</div>
+                            <div style="display: inline-flex; align-items: center; gap: 4px; background: #064e3b; border: 1px solid #10b981; padding: 2px 7px; border-radius: 10px; box-shadow: 0 0 10px rgba(16,185,129,0.2);">
+                                <span style="display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: #34d399;"></span>
+                                <span style="color: #a7f3d0; font-size: 7.5px; font-weight: bold; letter-spacing: 0.2px;">Algorithmic Treatment Suggestions for Clinical Review.</span>
+                            </div>
                         </div>
-                        <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 3px;">
-                                <h2 style="color: #f8fafc; font-size: 9px; font-weight: bold; margin: 0;">Ayurvedic Herbal Protocols</h2>
-                                <span style="background: #064e3b; color: #34d399; padding: 2px 6px; border-radius: 10px; font-size: 6.5px; font-weight: bold;">Natural Lepa</span>
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 1.5px solid #3b82f6; padding-bottom: 2px;">
+                                    <h3 style="color: #60a5fa; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase;">Modern Science Protocols</h3>
+                                    <span style="background: #1e3a8a; color: #93c5fd; padding: 1px 5px; border-radius: 8px; font-size: 6px; font-weight: bold;">Dermatology</span>
+                                </div>
+                                <div>${modernHtml}</div>
                             </div>
-                            <div>${ayurvedicHtml}</div>
+                            <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 1.5px solid #10b981; padding-bottom: 2px;">
+                                    <h3 style="color: #34d399; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase;">Ayurvedic Herbal Protocols</h3>
+                                    <span style="background: #064e3b; color: #6ee7b7; padding: 1px 5px; border-radius: 8px; font-size: 6px; font-weight: bold;">Natural Lepa</span>
+                                </div>
+                                <div>${ayurvedicHtml}</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -744,30 +756,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const symptomsList = (a.symptoms || []).map(s => `<li class="mb-1 pl-2 border-l-2 border-amber-500 text-slate-300 text-sm">${s}</li>`).join('');
         
-        let treatmentsHtml = '';
-        if (report.analysisData?.ayurvedicRemedies) {
-            treatmentsHtml += `<h4 class="text-emerald-400 font-bold mb-2 mt-4 text-sm">Ayurvedic Remedies</h4>`;
+        let ayurvedicRemediesHtml = '';
+        if (report.analysisData?.ayurvedicRemedies && report.analysisData.ayurvedicRemedies.length > 0) {
             report.analysisData.ayurvedicRemedies.forEach((t) => {
-                treatmentsHtml += `
-                <div class="bg-[#0f172a] border-l-4 border-emerald-500 rounded-r-xl p-4 mb-3 shadow-lg">
-                    <h4 class="text-emerald-400 text-sm font-bold mb-1 flex items-center gap-2">
+                ayurvedicRemediesHtml += `
+                <div class="bg-slate-950/70 border-l-4 border-emerald-500 rounded-r-2xl p-4 mb-3 border border-white/5 hover:border-emerald-500/30 transition-all shadow-md">
+                    <h5 class="text-emerald-400 text-sm font-bold mb-1 flex items-center gap-2">
                         <i class="${t.icon || 'fa-solid fa-leaf'}"></i> ${t.title}
-                    </h4>
-                    <p class="text-xs text-slate-400 leading-relaxed">${t.instructions}</p>
+                    </h5>
+                    <p class="text-xs text-slate-300 leading-relaxed">${t.instructions}</p>
                 </div>`;
             });
+        } else {
+            ayurvedicRemediesHtml = `<p class="text-xs text-slate-400 italic">No specific Ayurvedic remedies recorded.</p>`;
         }
-        if (report.analysisData?.modernRemedies) {
-            treatmentsHtml += `<h4 class="text-blue-400 font-bold mb-2 mt-4 text-sm">Modern Science</h4>`;
+
+        let modernRemediesHtml = '';
+        if (report.analysisData?.modernRemedies && report.analysisData.modernRemedies.length > 0) {
             report.analysisData.modernRemedies.forEach((t) => {
-                treatmentsHtml += `
-                <div class="bg-[#0f172a] border-l-4 border-blue-500 rounded-r-xl p-4 mb-3 shadow-lg">
-                    <h4 class="text-blue-400 text-sm font-bold mb-1 flex items-center gap-2">
+                modernRemediesHtml += `
+                <div class="bg-slate-950/70 border-l-4 border-blue-500 rounded-r-2xl p-4 mb-3 border border-white/5 hover:border-blue-500/30 transition-all shadow-md">
+                    <h5 class="text-blue-400 text-sm font-bold mb-1 flex items-center gap-2">
                         <i class="${t.icon || 'fa-solid fa-flask'}"></i> ${t.title}
-                    </h4>
-                    <p class="text-xs text-slate-400 leading-relaxed">${t.instructions}</p>
+                    </h5>
+                    <p class="text-xs text-slate-300 leading-relaxed">${t.instructions}</p>
                 </div>`;
             });
+        } else {
+            modernRemediesHtml = `<p class="text-xs text-slate-400 italic">No specific Modern science remedies recorded.</p>`;
         }
 
         const q = report.questionnaireData || {};
@@ -941,14 +957,56 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <!-- Treatments -->
+                <!-- Treatments / Dual Recovery Protocols -->
                 <div class="bg-slate-900 border border-white/10 rounded-2xl p-6">
-                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
-                        <h3 class="text-white text-base font-bold">Dual Recovery Protocol (Ayurveda + Modern Science)</h3>
-                        <span class="bg-emerald-900/50 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">AI Prescribed</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-white/10 gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-base shrink-0 shadow-inner">
+                                <i class="fa-solid fa-notes-medical"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white text-base font-bold">Dual Recovery Protocol (Ayurveda + Modern Science)</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Comprehensive multi-target therapeutic strategy</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Formal Clinical Badge (Replaces legacy AI Prescribed) -->
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-950/90 via-slate-900 to-emerald-950/90 border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.25)] self-start sm:self-auto">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-xs font-bold text-emerald-300 tracking-wide">Algorithmic Treatment Suggestions for Clinical Review.</span>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-0">
-                        ${treatmentsHtml}
+
+                    <!-- Structured Subsections -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Ayurvedic Botanical Protocols -->
+                        <div class="bg-slate-950/50 rounded-2xl p-5 border border-emerald-500/20">
+                            <div class="flex items-center justify-between pb-3 mb-4 border-b border-emerald-500/20">
+                                <h4 class="text-emerald-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-leaf"></i> Ayurvedic Botanical Protocols
+                                </h4>
+                                <span class="text-[10px] font-bold text-emerald-300 bg-emerald-900/40 px-2.5 py-0.5 rounded-full border border-emerald-500/30">Natural</span>
+                            </div>
+                            <div>
+                                ${ayurvedicRemediesHtml}
+                            </div>
+                        </div>
+
+                        <!-- Modern Science Protocols -->
+                        <div class="bg-slate-950/50 rounded-2xl p-5 border border-blue-500/20">
+                            <div class="flex items-center justify-between pb-3 mb-4 border-b border-blue-500/20">
+                                <h4 class="text-blue-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-stethoscope"></i> Modern Science Protocols
+                                </h4>
+                                <span class="text-[10px] font-bold text-blue-300 bg-blue-900/40 px-2.5 py-0.5 rounded-full border border-blue-500/30">Dermatological</span>
+                            </div>
+                            <div>
+                                ${modernRemediesHtml}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
