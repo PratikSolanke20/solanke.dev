@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ASN-882910",
+    "timestamp": "2026-08-08T12:00:00.000Z",
+    "patientDetails": {
+      "name": "Aarav Sharma",
+      "age": "28",
+      "gender": "Male",
+      "phone": "+91 98765 43210",
+      "city": "Mumbai",
+      "state": "Maharashtra"
+    },
+    "questionnaireData": {
+      "chiefComplaint": "Facial inflammatory papules and erythema",
+      "duration": "6 months",
+      "generalExamination": {
+        "pulse": "74 bpm",
+        "bloodPressure": "118/76 mmHg",
+        "temperature": "98.4 F",
+        "hydration": "Adequate"
+      },
+      "agni": "Mandagni",
+      "koshtha": "Madhyama",
+      "prakriti": "Pitta-Kapha",
+      "sleep": "6 hours disturbed",
+      "stress": "High"
+    },
+    "analysisData": {
+      "analysis": {
+        "overallDiseaseType": "Yuvana Pidaka (Inflammatory Acne Vulgaris)",
+        "diagnosisPercentage": "96.4% Neural Match",
+        "spreadPercentage": 32,
+        "modernInfo": "Elevated sebum secretion secondary to androgenic sensitivity, follicular hyperkeratinization, and Cutibacterium acnes colonization leading to erythematous follicular papules.",
+        "ayurvedicInfo": "Pitta and Rakta dushti with Vata aggravation leading to blockage of Swedavaha and Medovaha srotas in the Mukha pradesha (facial region).",
+        "detailedRootCause": {
+          "modern": "Sebaceous gland hyperactivity, microcomedone accumulation, and inflammatory cascade.",
+          "ayurvedic": "Pitta-Kapha imbalance with localized Rakta Dhatu vitiation."
+        },
+        "symptoms": [
+          "Erythematous inflammatory papules on malar region",
+          "Excessive T-zone sebum production",
+          "Mild post-inflammatory hyperpigmentation"
+        ]
+      },
+      "ayurvedicRemedies": [
+        {
+          "title": "Lodhradi Lepa Application",
+          "instructions": "Apply fine paste of Lodhra, Dhanyaka, and Vacha with rose water daily for 20 mins."
+        },
+        {
+          "title": "Manjishtadi Kwatha Oral Regimen",
+          "instructions": "15ml with equal warm water twice daily before meals for Rakta Shodhana."
+        }
+      ],
+      "modernRemedies": [
+        {
+          "title": "Topical Adapalene & Clindamycin",
+          "instructions": "Apply pea-sized amount over affected areas at night after gentle cleansing."
+        },
+        {
+          "title": "Niacinamide 5% & Zinc Barrier Serum",
+          "instructions": "Apply morning and night to regulate sebum and restore epidermal barrier."
+        }
+      ]
+    }
+  }
+]
