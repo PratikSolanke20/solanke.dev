@@ -263,7 +263,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (typeof html2pdf === 'undefined') {
+        const JsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (typeof jsPDF !== 'undefined' ? jsPDF : window.jsPDF);
+        const html2canvasFn = (typeof html2canvas !== 'undefined') ? html2canvas : window.html2canvas;
+
+        if (!JsPDFClass || !html2canvasFn) {
             alert("PDF Generation engine is initializing. Please check your network and try again.");
             return;
         }
@@ -446,8 +449,8 @@ document.addEventListener('DOMContentLoaded', () => {
             : null;
 
         const printContainer = document.createElement('div');
-        printContainer.style.position = 'absolute';
-        printContainer.style.top = '-99999px';
+        printContainer.style.position = 'fixed';
+        printContainer.style.top = '0';
         printContainer.style.left = '0';
         printContainer.style.width = '794px';
         printContainer.style.zIndex = '999999';
@@ -457,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="admin-pdf-capture-root" style="width: 794px; background-color: #020617; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0;">
                 
                 <!-- ==================== PAGE 1: AI DIAGNOSTIC DOSSIER ==================== -->
-                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; page-break-after: always; break-after: page; overflow: hidden;">
+                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; overflow: hidden;">
                     
                     <!-- Page 1 Header -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 10px; margin-bottom: 14px;">
@@ -595,7 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
                 <!-- ==================== PAGE 2: HOLISTIC DIETARY & LIFESTYLE BLUEPRINT ==================== -->
-                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; page-break-after: always; break-after: page; overflow: hidden;">
+                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; overflow: hidden;">
                     
                     <!-- Page 2 Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #10b981; padding-bottom: 10px; margin-bottom: 14px;">
@@ -938,20 +941,42 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo(0, 0);
 
         try {
-            await new Promise(r => setTimeout(r, 150));
+            await new Promise(r => setTimeout(r, 200));
+
+            const pageElements = printContainer.querySelectorAll('.pdf-page');
+            if (!pageElements || pageElements.length === 0) {
+                throw new Error("No PDF pages found to export.");
+            }
+
+            const pdf = new JsPDFClass({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [794, 1122],
+                hotfixes: ["px_scaling"]
+            });
+
+            for (let i = 0; i < pageElements.length; i++) {
+                const pageEl = pageElements[i];
+                const canvas = await html2canvasFn(pageEl, {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0,
+                    scrollX: 0,
+                    letterRendering: true,
+                    backgroundColor: '#020617',
+                    width: 794,
+                    height: 1122
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                if (i > 0) {
+                    pdf.addPage([794, 1122], 'portrait');
+                }
+                pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1122, undefined, 'FAST');
+            }
 
             const patientNameClean = (p.name || 'Patient').replace(/[^a-zA-Z0-9_-]/g, '_');
-            const opt = {
-                margin: 0,
-                filename: `AyurSkin-Clinical-Dossier-${patientNameClean}-${report.id.substring(0,6)}.pdf`,
-                image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, letterRendering: true },
-                jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait', hotfixes: ["px_scaling"] },
-                pagebreak: { mode: ['css', 'legacy'] }
-            };
-
-            const captureRoot = document.getElementById('admin-pdf-capture-root');
-            await html2pdf().set(opt).from(captureRoot).save();
+            pdf.save(`AyurSkin-Clinical-Dossier-${patientNameClean}-${report.id.substring(0,6)}.pdf`);
 
         } catch (err) {
             console.error("PDF Generation error:", err);
@@ -959,7 +984,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             window.scrollTo(0, originalScrollY);
             if (printContainer && printContainer.parentNode) {
-                document.body.removeChild(printContainer);
+                printContainer.parentNode.removeChild(printContainer);
             }
         }
     };
