@@ -419,16 +419,14 @@ document.addEventListener('DOMContentLoaded', () => {
             bpStr = `${genExam.bpSystolic} / ${genExam.bpDiastolic} mmHg`;
         } else if (genExam.bpMmHg) {
             bpStr = genExam.bpMmHg;
-        }
-
-        const renderPillTags = (val, emptyText = 'None reported', bg = '#020617', border = '#334155', text = '#cbd5e1') => {
+                 const renderPillTags = (val, emptyText = 'None', bg = '#020617', border = '#334155', text = '#cbd5e1') => {
             if (!val || (Array.isArray(val) && val.length === 0)) {
-                return `<span style="font-size: 7.5px; color: #64748b; font-style: italic; line-height: 11px; vertical-align: middle;">${emptyText}</span>`;
+                return `<span style="font-size: 7.5px; color: #64748b; font-style: italic; line-height: 14px; vertical-align: middle;">${emptyText}</span>`;
             }
             const arr = Array.isArray(val) ? val.filter(Boolean) : [val];
-            if (arr.length === 0) return `<span style="font-size: 7.5px; color: #64748b; font-style: italic; line-height: 11px; vertical-align: middle;">${emptyText}</span>`;
+            if (arr.length === 0) return `<span style="font-size: 7.5px; color: #64748b; font-style: italic; line-height: 14px; vertical-align: middle;">${emptyText}</span>`;
             return arr.map(item => `
-                <span style="display: inline-block; background: ${bg}; border: 1px solid ${border}; color: ${text}; padding: 2px 6px 3px 6px; border-radius: 4px; font-size: 7px; font-weight: 600; line-height: 10px; margin: 1px 3px 2px 0; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">${item}</span>
+                <span style="display: inline-block; background: ${bg}; border: 1px solid ${border}; color: ${text}; height: 16px; line-height: 14px; padding: 0 6px; border-radius: 4px; font-size: 7px; font-weight: 600; margin: 1px 3px 2px 0; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">${item}</span>
             `).join('');
         };
 
@@ -500,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="flex: 2; background: linear-gradient(135deg, #064e3b 0%, #022c22 100%); border: 1px solid #059669; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: center;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                                 <h2 style="margin: 0; color: #6ee7b7; font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2;">Primary Diagnosis</h2>
-                                <span style="display: inline-block; background: #020617; border: 1px solid #10b981; color: #34d399; padding: 3px 10px 4px 10px; border-radius: 20px; font-size: 8.5px; font-weight: bold; line-height: 12px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">${diagnosisPercentage}</span>
+                                <span style="display: inline-block; background: #020617; border: 1px solid #10b981; color: #34d399; height: 18px; line-height: 16px; padding: 0 10px; border-radius: 20px; font-size: 8px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">${diagnosisPercentage}</span>
                             </div>
                             <h3 style="margin: 0; color: #ffffff; font-size: 16px; font-weight: bold; line-height: 1.25;">${diseaseType}</h3>
                         </div>
@@ -525,15 +523,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <!-- Modern & Ayurvedic Dual Perspectives -->
                     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                         <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
-                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #3b82f6; padding-bottom: 5px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                                 <h2 style="margin: 0; color: #60a5fa; font-size: 9px; font-weight: bold; text-transform: uppercase; line-height: 1.2;">Modern Dermatology</h2>
                             </div>
+                            <div style="height: 1.5px; background: #3b82f6; width: 100%; margin-bottom: 6px;"></div>
                             <p style="color: #cbd5e1; font-size: 8.5px; margin: 0; line-height: 1.35;">${modernInfo}</p>
                         </div>
                         <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
-                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #10b981; padding-bottom: 5px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                                 <h2 style="margin: 0; color: #34d399; font-size: 9px; font-weight: bold; text-transform: uppercase; line-height: 1.2;">Ayurvedic Nidana</h2>
                             </div>
+                            <div style="height: 1.5px; background: #10b981; width: 100%; margin-bottom: 6px;"></div>
                             <p style="color: #cbd5e1; font-size: 8.5px; margin: 0; line-height: 1.35;">${ayurvedicInfo}</p>
                         </div>
                     </div>
@@ -541,47 +541,52 @@ document.addEventListener('DOMContentLoaded', () => {
                     <!-- Causes & Symptoms Row -->
                     <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                         <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
-                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #ef4444; padding-bottom: 5px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                                 <h2 style="margin: 0; color: #f8fafc; font-size: 9px; font-weight: bold; line-height: 1.2;">Etiology & Root Causes</h2>
                             </div>
+                            <div style="height: 1.5px; background: #ef4444; width: 100%; margin-bottom: 6px;"></div>
                             <h3 style="margin: 0 0 2px 0; color: #60a5fa; font-size: 7.5px; font-weight: bold; line-height: 1.2;">Modern Aspect:</h3>
                             <p style="color: #cbd5e1; font-size: 7.5px; margin: 0 0 4px 0; line-height: 1.25;">${detailedRootCause.modern || 'Sebaceous hyperactivity & barrier shifts.'}</p>
                             <h3 style="margin: 0 0 2px 0; color: #34d399; font-size: 7.5px; font-weight: bold; line-height: 1.2;">Ayurvedic Aspect:</h3>
                             <p style="color: #cbd5e1; font-size: 7.5px; margin: 0; line-height: 1.25;">${detailedRootCause.ayurvedic || 'Dosha aggravation & Ama Srotorodha.'}</p>
                         </div>
                         <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
-                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; border-bottom: 2px solid #f59e0b; padding-bottom: 5px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
                                 <h2 style="margin: 0; color: #f8fafc; font-size: 9px; font-weight: bold; line-height: 1.2;">Clinical Symptoms</h2>
                             </div>
+                            <div style="height: 1.5px; background: #f59e0b; width: 100%; margin-bottom: 6px;"></div>
                             <ul style="color: #cbd5e1; font-size: 8px; list-style-type: none; padding: 0; margin: 0; line-height: 1.35;">${symptomsList}</ul>
                         </div>
                     </div>
                     
                     <!-- Dual Recovery Protocols -->
                     <div style="margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #1e293b; padding-bottom: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: inline-flex; align-items: center; gap: 6px;">
                                 <h2 style="color: #f8fafc; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; line-height: 12px;">Dual Recovery Regimen</h2>
-                                <span style="display: inline-block; background: #064e3b; color: #34d399; border: 0.5px solid #10b981; padding: 2px 7px 3px 7px; border-radius: 6px; font-size: 7px; font-weight: bold; line-height: 10px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dual Matrix</span>
+                                <span style="display: inline-block; background: #064e3b; color: #34d399; border: 0.5px solid #10b981; height: 16px; line-height: 14px; padding: 0 7px; border-radius: 6px; font-size: 7px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dual Matrix</span>
                             </div>
-                            <div style="display: inline-block; background: #064e3b; border: 1px solid #10b981; padding: 3px 8px 4px 8px; border-radius: 8px; vertical-align: middle; box-sizing: border-box; box-shadow: 0 0 10px rgba(16,185,129,0.2);">
+                            <div style="display: inline-block; background: #064e3b; border: 1px solid #10b981; height: 18px; line-height: 16px; padding: 0 8px; border-radius: 8px; vertical-align: middle; box-sizing: border-box; box-shadow: 0 0 10px rgba(16,185,129,0.2);">
                                 <span style="display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #34d399; vertical-align: middle; margin-right: 4px;"></span>
-                                <span style="color: #a7f3d0; font-size: 7.5px; font-weight: bold; letter-spacing: 0.2px; line-height: 11px; vertical-align: middle; display: inline-block;">Algorithmic Treatment Suggestions for Clinical Review.</span>
+                                <span style="color: #a7f3d0; font-size: 7.5px; font-weight: bold; letter-spacing: 0.2px; line-height: 16px; vertical-align: middle; display: inline-block;">Algorithmic Treatment Suggestions for Clinical Review.</span>
                             </div>
                         </div>
+                        <div style="height: 1.5px; background: #1e293b; width: 100%; margin-bottom: 8px;"></div>
                         <div style="display: flex; gap: 10px;">
                             <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #3b82f6; padding-bottom: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                     <h3 style="color: #60a5fa; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase; line-height: 12px;">Modern Science Protocols</h3>
-                                    <span style="display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 2px 6px 3px 6px; border-radius: 6px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dermatology</span>
+                                    <span style="display: inline-block; background: #1e3a8a; color: #93c5fd; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 5px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dermatology</span>
                                 </div>
+                                <div style="height: 1.5px; background: #3b82f6; width: 100%; margin-bottom: 8px;"></div>
                                 <div>${modernHtml}</div>
                             </div>
                             <div style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #10b981; padding-bottom: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                     <h3 style="color: #34d399; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase; line-height: 12px;">Ayurvedic Herbal Protocols</h3>
-                                    <span style="display: inline-block; background: #064e3b; color: #6ee7b7; padding: 2px 6px 3px 6px; border-radius: 6px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Natural Lepa</span>
+                                    <span style="display: inline-block; background: #064e3b; color: #6ee7b7; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 5px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Natural Lepa</span>
                                 </div>
+                                <div style="height: 1.5px; background: #10b981; width: 100%; margin-bottom: 8px;"></div>
                                 <div>${ayurvedicHtml}</div>
                             </div>
                         </div>
@@ -618,29 +623,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <!-- Section 1: Ahara Guidance (Dietary Plan) -->
                     <div style="margin-bottom: 14px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #1e293b; padding-bottom: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: inline-flex; align-items: center; gap: 6px;">
                                 <h2 style="color: #f8fafc; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; line-height: 12px;">Section 1: Ahara — Dietary & Nutritional Guidance</h2>
                             </div>
-                            <span style="display: inline-block; background: #064e3b; color: #34d399; padding: 2px 7px 3px 7px; border-radius: 6px; font-size: 6.5px; font-weight: bold; border: 0.5px solid #10b981; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Ayurvedic Pathya + Modern Nutrition</span>
+                            <span style="display: inline-block; background: #064e3b; color: #34d399; height: 16px; line-height: 14px; padding: 0 8px; border-radius: 6px; font-size: 6.5px; font-weight: bold; border: 0.5px solid #10b981; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Ayurvedic Pathya + Modern Nutrition</span>
                         </div>
+                        <div style="height: 1.5px; background: #1e293b; width: 100%; margin-bottom: 8px;"></div>
                         
                         <div style="display: flex; gap: 10px;">
                             <!-- Ayurvedic Diet Column -->
                             <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #10b981; padding-bottom: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                     <h3 style="color: #34d399; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase; line-height: 12px;">Ayurvedic Pathya & Apathya Ahara</h3>
-                                    <span style="display: inline-block; background: #064e3b; color: #6ee7b7; padding: 2px 6px 3px 6px; border-radius: 6px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Rasa & Agni</span>
+                                    <span style="display: inline-block; background: #064e3b; color: #6ee7b7; height: 15px; line-height: 13px; padding: 0 7px; border-radius: 5px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Rasa & Agni</span>
                                 </div>
+                                <div style="height: 1.5px; background: #10b981; width: 100%; margin-bottom: 8px;"></div>
                                 ${pdfAyurPathyaHtml}
                             </div>
 
                             <!-- Modern Nutrition Column -->
                             <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #06b6d4; padding-bottom: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                     <h3 style="color: #22d3ee; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase; line-height: 12px;">Modern Clinical Nutrition Plan</h3>
-                                    <span style="display: inline-block; background: #164e63; color: #a5f3fc; padding: 2px 6px 3px 6px; border-radius: 6px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Nutraceutical</span>
+                                    <span style="display: inline-block; background: #164e63; color: #a5f3fc; height: 15px; line-height: 13px; padding: 0 7px; border-radius: 5px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Nutraceutical</span>
                                 </div>
+                                <div style="height: 1.5px; background: #06b6d4; width: 100%; margin-bottom: 8px;"></div>
                                 ${pdfModernNutriHtml}
                             </div>
                         </div>
@@ -648,29 +656,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <!-- Section 2: Vihara Guidance (Lifestyle Protocols) -->
                     <div style="margin-bottom: 14px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #1e293b; padding-bottom: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: inline-flex; align-items: center; gap: 6px;">
                                 <h2 style="color: #f8fafc; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; line-height: 12px;">Section 2: Vihara — Lifestyle & Circadian Protocols</h2>
                             </div>
-                            <span style="display: inline-block; background: #78350f; color: #fde68a; padding: 2px 7px 3px 7px; border-radius: 6px; font-size: 6.5px; font-weight: bold; border: 0.5px solid #d97706; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dinacharya + Skin Barrier Hygiene</span>
+                            <span style="display: inline-block; background: #78350f; color: #fde68a; height: 16px; line-height: 14px; padding: 0 8px; border-radius: 6px; font-size: 6.5px; font-weight: bold; border: 0.5px solid #d97706; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dinacharya + Skin Barrier Hygiene</span>
                         </div>
+                        <div style="height: 1.5px; background: #1e293b; width: 100%; margin-bottom: 8px;"></div>
                         
                         <div style="display: flex; gap: 10px;">
                             <!-- Ayurvedic Vihara Column -->
                             <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #f59e0b; padding-bottom: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                     <h3 style="color: #fbbf24; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase; line-height: 12px;">Ayurvedic Dinacharya & Vihara</h3>
-                                    <span style="display: inline-block; background: #78350f; color: #fde68a; padding: 2px 6px 3px 6px; border-radius: 6px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dinacharya</span>
+                                    <span style="display: inline-block; background: #78350f; color: #fde68a; height: 15px; line-height: 13px; padding: 0 7px; border-radius: 5px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Dinacharya</span>
                                 </div>
+                                <div style="height: 1.5px; background: #f59e0b; width: 100%; margin-bottom: 8px;"></div>
                                 ${pdfAyurViharaHtml}
                             </div>
 
                             <!-- Modern Circadian Habits Column -->
                             <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #6366f1; padding-bottom: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                     <h3 style="color: #818cf8; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase; line-height: 12px;">Modern Circadian & Barrier Habits</h3>
-                                    <span style="display: inline-block; background: #312e81; color: #c7d2fe; padding: 2px 6px 3px 6px; border-radius: 6px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Circadian</span>
+                                    <span style="display: inline-block; background: #312e81; color: #c7d2fe; height: 15px; line-height: 13px; padding: 0 7px; border-radius: 5px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Circadian</span>
                                 </div>
+                                <div style="height: 1.5px; background: #6366f1; width: 100%; margin-bottom: 8px;"></div>
                                 ${pdfModernHabitsHtml}
                             </div>
                         </div>
@@ -744,10 +755,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         <!-- CARD 1: General Examination & Vitals (Q19) -->
                         <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #3b82f6; padding-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <h3 style="margin: 0; color: #60a5fa; font-size: 8.5px; font-weight: bold; line-height: 12px;">#19. General Examination & Vitals</h3>
-                                <span style="display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 2px 6px 3px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Physical</span>
+                                <span style="display: inline-block; background: #1e3a8a; color: #93c5fd; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Physical</span>
                             </div>
+                            <div style="height: 1.5px; background: #3b82f6; width: 100%; margin-bottom: 8px;"></div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px;">
                                 <div style="background: #020617; padding: 5px 8px; border-radius: 6px; border: 1px solid #1e293b;">
                                     <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; text-transform: uppercase; line-height: 1.2;">Body Weight</p>
@@ -766,10 +778,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <!-- CARD 2: Presenting Complaints & Chronology (Q1 - Q4) -->
                         <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #10b981; padding-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <h3 style="margin: 0; color: #34d399; font-size: 8.5px; font-weight: bold; line-height: 12px;">Topography & Chronology (Q1 - Q4)</h3>
-                                <span style="display: inline-block; background: #064e3b; color: #6ee7b7; padding: 2px 6px 3px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Chief Complaint</span>
+                                <span style="display: inline-block; background: #064e3b; color: #6ee7b7; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Chief Complaint</span>
                             </div>
+                            <div style="height: 1.5px; background: #10b981; width: 100%; margin-bottom: 8px;"></div>
                             <div style="margin-bottom: 4px;">
                                 <p style="margin: 0 0 3px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold; line-height: 1.2;">#1. Affected Body Part(s):</p>
                                 <div style="line-height: 1.2;">${renderPillTags(q.affectedBodyParts, 'Unspecified', '#020617', '#059669', '#6ee7b7')}</div>
@@ -792,10 +805,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <!-- CARD 3: Symptomatology & Triggers (Q5 - Q8) -->
                         <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #f59e0b; padding-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <h3 style="margin: 0; color: #fbbf24; font-size: 8.5px; font-weight: bold; line-height: 12px;">Clinical Symptoms & Triggers (Q5 - Q8)</h3>
-                                <span style="display: inline-block; background: #78350f; color: #fde68a; padding: 2px 6px 3px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Symptom Matrix</span>
+                                <span style="display: inline-block; background: #78350f; color: #fde68a; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Symptom Matrix</span>
                             </div>
+                            <div style="height: 1.5px; background: #f59e0b; width: 100%; margin-bottom: 8px;"></div>
                             <div style="margin-bottom: 4px;">
                                 <p style="margin: 0 0 3px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold; line-height: 1.2;">#5. Symptoms Reported:</p>
                                 <div style="line-height: 1.2;">${renderPillTags(q.symptoms, 'None reported', '#020617', '#d97706', '#fde68a')}</div>
@@ -818,10 +832,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <!-- CARD 4: Medical History & Heredity (Q9 - Q11, Q20) -->
                         <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #ec4899; padding-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <h3 style="margin: 0; color: #f472b6; font-size: 8.5px; font-weight: bold; line-height: 12px;">Medical Profile & History (Q9 - Q11, Q20)</h3>
-                                <span style="display: inline-block; background: #831843; color: #fbcfe8; padding: 2px 6px 3px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Systemic</span>
+                                <span style="display: inline-block; background: #831843; color: #fbcfe8; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Systemic</span>
                             </div>
+                            <div style="height: 1.5px; background: #ec4899; width: 100%; margin-bottom: 8px;"></div>
                             <div style="margin-bottom: 4px;">
                                 <p style="margin: 0 0 3px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold; line-height: 1.2;">#10. Existing Conditions:</p>
                                 <div style="line-height: 1.2;">${renderPillTags(q.medicalConditions, 'None reported')}</div>
@@ -844,10 +859,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <!-- CARD 5: Ayurvedic Ahara & Agni / Metabolism (Q12 - Q15) -->
                         <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #10b981; padding-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <h3 style="margin: 0; color: #34d399; font-size: 8.5px; font-weight: bold; line-height: 12px;">Ayurvedic Ahara & Agni (Q12 - Q15)</h3>
-                                <span style="display: inline-block; background: #064e3b; color: #6ee7b7; padding: 2px 6px 3px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Metabolism</span>
+                                <span style="display: inline-block; background: #064e3b; color: #6ee7b7; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Metabolism</span>
                             </div>
+                            <div style="height: 1.5px; background: #10b981; width: 100%; margin-bottom: 8px;"></div>
                             <div style="display: flex; gap: 6px; margin-bottom: 4px;">
                                 <div style="flex: 1;">
                                     <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold; line-height: 1.2;">#12. Skin Prakriti:</p>
@@ -876,10 +892,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <!-- CARD 6: Lifestyle, Habits & Circadian Nidra (Q16 - Q18) -->
                         <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #8b5cf6; padding-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                                 <h3 style="margin: 0; color: #a78bfa; font-size: 8.5px; font-weight: bold; line-height: 12px;">Vihara, Lifestyle & Sleep (Q16 - Q18)</h3>
-                                <span style="display: inline-block; background: #4c1d95; color: #c4b5fd; padding: 2px 6px 3px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; line-height: 9px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Daily Habits</span>
+                                <span style="display: inline-block; background: #4c1d95; color: #c4b5fd; height: 15px; line-height: 13px; padding: 0 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Daily Habits</span>
                             </div>
+                            <div style="height: 1.5px; background: #8b5cf6; width: 100%; margin-bottom: 8px;"></div>
                             <div style="margin-bottom: 4px;">
                                 <p style="margin: 0 0 3px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold; line-height: 1.2;">#16. Lifestyle & Activity:</p>
                                 <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px; line-height: 1.2;">${q.lifestyle || 'Moderate'}</p>
