@@ -1645,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div id="infographic-capture-area" style="background-color: #020617; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 794px; box-sizing: border-box;">
                     
                     <!-- ==================== PAGE 1: DIAGNOSTIC AUDIT & PROTOCOLS ==================== -->
-                    <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; overflow: hidden; padding: 34px 38px; position: relative; background-color: #020617; page-break-after: always; break-after: page;">
+                    <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; overflow: hidden; padding: 34px 38px; position: relative; background-color: #020617;">
                         
                         <!-- Header -->
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 12px; margin-bottom: 16px;">
@@ -1789,7 +1789,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
 
                     <!-- ==================== PAGE 2: HOLISTIC DIETARY & LIFESTYLE BLUEPRINT ==================== -->
-                    <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; overflow: hidden; padding: 34px 38px; position: relative; background-color: #020617; page-break-after: always; break-after: page;">
+                    <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; overflow: hidden; padding: 34px 38px; position: relative; background-color: #020617;">
                         
                         <!-- Page 2 Header -->
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #10b981; padding-bottom: 10px; margin-bottom: 16px;">
@@ -2135,35 +2135,66 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             document.body.appendChild(printContainer);
             
-            // CRITICAL FIX: Scroll to top to ensure html2canvas doesn't capture an offset blank viewport
+            // Scroll to top to ensure html2canvas captures cleanly without viewport offsets
             const originalScrollY = window.scrollY;
             window.scrollTo(0, 0);
             
-            // Wait 150ms for browser to paint the visible infographic and images
-            await new Promise(r => setTimeout(r, 150));
+            // Wait 200ms for browser to fully render fonts, layout, and images
+            await new Promise(r => setTimeout(r, 200));
             
-            const opt = {
-                margin:       0, // No margins, HTML handles exact padding
-                filename:     `AyurSkin-Clinical-Audit-${patientDetails.name ? patientDetails.name.replace(/\s+/g, '_') : 'Patient'}.pdf`,
-                image:        { type: 'jpeg', quality: 1.0 },
-                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
-                pagebreak:    { mode: ['css', 'legacy'] },
-                jsPDF:        { unit: 'px', format: [794, 1122], orientation: 'portrait', hotfixes: ["px_scaling"] }
-            };
+            const JsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (typeof jsPDF !== 'undefined' ? jsPDF : window.jsPDF);
+            const html2canvasFn = (typeof html2canvas !== 'undefined') ? html2canvas : window.html2canvas;
+
+            if (!JsPDFClass || !html2canvasFn) {
+                throw new Error("PDF Generation library (jsPDF / html2canvas) not loaded.");
+            }
+
+            const pageElements = printContainer.querySelectorAll('.pdf-page');
+            if (!pageElements || pageElements.length === 0) {
+                throw new Error("No PDF pages found to export.");
+            }
+
+            const pdf = new JsPDFClass({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [794, 1122],
+                hotfixes: ["px_scaling"]
+            });
+
+            for (let i = 0; i < pageElements.length; i++) {
+                const pageEl = pageElements[i];
+                const canvas = await html2canvasFn(pageEl, {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0,
+                    scrollX: 0,
+                    letterRendering: true,
+                    backgroundColor: '#020617',
+                    width: 794,
+                    height: 1122
+                });
+                
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                if (i > 0) {
+                    pdf.addPage([794, 1122], 'portrait');
+                }
+                pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1122, undefined, 'FAST');
+            }
+
+            const cleanPatientName = patientDetails.name ? patientDetails.name.replace(/\s+/g, '_') : 'Patient';
+            pdf.save(`AyurSkin-Clinical-Audit-${cleanPatientName}.pdf`);
             
-            const captureArea = document.getElementById('infographic-capture-area');
-            
-            await html2pdf().set(opt).from(captureArea).save();
-            
-            // Restore original scroll position and remove container
+            // Restore original scroll position and clean up container
             window.scrollTo(0, originalScrollY);
-            document.body.removeChild(printContainer);
+            if (printContainer && printContainer.parentNode) {
+                printContainer.parentNode.removeChild(printContainer);
+            }
 
         } catch(err) {
             console.error("PDF Generation Error", err);
             alert("Error generating PDF. Please ensure all data is loaded.");
-            if(document.getElementById('infographic-capture-area')) {
-                document.body.removeChild(document.getElementById('infographic-capture-area').parentElement);
+            if (printContainer && printContainer.parentNode) {
+                printContainer.parentNode.removeChild(printContainer);
             }
         }
     });
