@@ -141,7 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Q18 Sleep Duration & Quality (Nidra)", "Q20 Special Conditions & Exposures",
                 "Modern Medical Perspective", "Ayurvedic Perspective & Doshas",
                 "Root Cause (Modern Cellular)", "Root Cause (Ayurvedic Samprapti)",
-                "Identified Clinical Symptoms", "Ayurvedic Protocols (Clinical Suggestions)", "Modern Science Protocols (Clinical Suggestions)"
+                "Identified Clinical Symptoms", "Ayurvedic Protocols (Clinical Suggestions)", "Modern Science Protocols (Clinical Suggestions)",
+                "Ayurvedic Dietary Plan (Pathya & Apathya Ahara)", "Modern Nutritional Science (Dietary Guidance)",
+                "Ayurvedic Lifestyle & Vihara (Dinacharya & Circadian)", "Modern Circadian & Skin Barrier Habits"
             ];
 
             const formatCell = (val) => {
@@ -184,6 +186,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const modernRemediesStr = (r.analysisData?.modernRemedies || [])
                     .map(rem => `${rem.title}: ${rem.instructions}`).join(' | ');
 
+                const dietAyurStr = (r.analysisData?.dietaryAdvice?.ayurvedicPathya || [])
+                    .map(d => `${d.item}: ${d.description}`).join(' | ');
+
+                const dietModernStr = (r.analysisData?.dietaryAdvice?.modernNutrition || [])
+                    .map(d => `${d.item}: ${d.description}`).join(' | ');
+
+                const lifeAyurStr = (r.analysisData?.lifestyleAdvice?.ayurvedicVihara || [])
+                    .map(l => `${l.item}: ${l.description}`).join(' | ');
+
+                const lifeModernStr = (r.analysisData?.lifestyleAdvice?.modernHabits || [])
+                    .map(l => `${l.item}: ${l.description}`).join(' | ');
+
                 const rootModern = (a.detailedRootCause && typeof a.detailedRootCause === 'object') 
                     ? a.detailedRootCause.modern 
                     : (a.causes ? (Array.isArray(a.causes) ? a.causes.join('; ') : a.causes) : (a.detailedRootCause || ''));
@@ -207,7 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     formatCell(q.lifestyle), formatCell(q.habits), formatCell(sleepStr.join('; ')),
                     formatCell(q.specialConditions || q.femaleHealth), formatCell(a.modernInfo),
                     formatCell(a.ayurvedicInfo), formatCell(rootModern), formatCell(rootAyur),
-                    formatCell(a.symptoms), formatCell(ayurRemediesStr), formatCell(modernRemediesStr)
+                    formatCell(a.symptoms), formatCell(ayurRemediesStr), formatCell(modernRemediesStr),
+                    formatCell(dietAyurStr), formatCell(dietModernStr), formatCell(lifeAyurStr), formatCell(lifeModernStr)
                 ];
 
                 rows.push(row.join(','));
@@ -240,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 2. Single-Click 2-Page Clinical Medical PDF Export for Any Patient
+    // 2. Single-Click 3-Page Clinical Medical PDF Export for Any Patient
     window.downloadPatientPDF = async function(id) {
         const report = allReports.find(r => r.id === id);
         if (!report) {
@@ -297,6 +312,102 @@ document.addEventListener('DOMContentLoaded', () => {
             modernHtml = `<p style="color: #94a3b8; font-size: 7.5px; margin: 0;">Barrier restoration & non-comedogenic hydration recommended.</p>`;
         }
 
+        // Dietary & Lifestyle Advice for Page 2
+        const dietAdvice = report.analysisData?.dietaryAdvice || {};
+        const lifeAdvice = report.analysisData?.lifestyleAdvice || {};
+
+        const ayurPathyaList = (dietAdvice.ayurvedicPathya && dietAdvice.ayurvedicPathya.length > 0) ? dietAdvice.ayurvedicPathya : [
+            {
+                item: "Pathya Ahara (Wholesome Diet)",
+                description: "Favor cooling, bitter (Tikta) and astringent (Kashaya) rasas such as bottle gourd, mung dal, cucumber, and cilantro with digestive spices (fennel, coriander).",
+                icon: "fa-solid fa-bowl-food"
+            },
+            {
+                item: "Apathya Ahara (Restricted Foods)",
+                description: "Avoid Viruddha Ahara (incompatible food combinations), heavy fermented foods, spicy/deep-fried items, and night curd consumption.",
+                icon: "fa-solid fa-ban"
+            }
+        ];
+
+        const modernNutritionList = (dietAdvice.modernNutrition && dietAdvice.modernNutrition.length > 0) ? dietAdvice.modernNutrition : [
+            {
+                item: "Low Glycemic Index Nutrition",
+                description: "Eliminate high-GI refined sugars, processed snacks, and excessive dairy to suppress IGF-1 induced sebocyte hyperproliferation.",
+                icon: "fa-solid fa-apple-whole"
+            },
+            {
+                item: "Microbiome & Barrier Nutrients",
+                description: "Incorporate Zinc, Vitamin E, and Omega-3 rich foods to strengthen epidermal tight junctions and modulate inflammatory cytokines.",
+                icon: "fa-solid fa-seedling"
+            }
+        ];
+
+        const ayurViharaList = (lifeAdvice.ayurvedicVihara && lifeAdvice.ayurvedicVihara.length > 0) ? lifeAdvice.ayurvedicVihara : [
+            {
+                item: "Dinacharya (Daily Regimen)",
+                description: "Wake during Brahma Muhurta, practice gentle face washing with cool water, and avoid direct exposure to harsh midday sun (Atapa) and wind.",
+                icon: "fa-solid fa-sun"
+            },
+            {
+                item: "Nidra & Pranayama",
+                description: "Maintain regular sleep cycles avoiding late nights (Ratrijagarana). Practice 10 minutes of Sheetali and Anulom Vilom Pranayama daily.",
+                icon: "fa-solid fa-moon"
+            }
+        ];
+
+        const modernHabitsList = (lifeAdvice.modernHabits && lifeAdvice.modernHabits.length > 0) ? lifeAdvice.modernHabits : [
+            {
+                item: "Circadian Sleep Regularity",
+                description: "Maintain 7.5-8 hours of continuous nocturnal rest in dark environment to lower cortisol spikes and promote nocturnal cellular regeneration.",
+                icon: "fa-solid fa-bed"
+            },
+            {
+                item: "Photoprotection & Skin Hygiene",
+                description: "Apply broad-spectrum non-comedogenic SPF 50+ sunscreen daily, practice gentle double cleansing, and minimize friction.",
+                icon: "fa-solid fa-shield-halved"
+            }
+        ];
+
+        let pdfAyurPathyaHtml = '';
+        ayurPathyaList.forEach(item => {
+            pdfAyurPathyaHtml += `
+                <div style="background: #020617; border-left: 3px solid #10b981; border-radius: 6px; padding: 6px 9px; margin-bottom: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                    <h4 style="margin: 0 0 2px 0; color: #34d399; font-size: 8px; font-weight: bold;">${item.item}</h4>
+                    <p style="margin: 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">${item.description}</p>
+                </div>
+            `;
+        });
+
+        let pdfModernNutriHtml = '';
+        modernNutritionList.forEach(item => {
+            pdfModernNutriHtml += `
+                <div style="background: #020617; border-left: 3px solid #06b6d4; border-radius: 6px; padding: 6px 9px; margin-bottom: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                    <h4 style="margin: 0 0 2px 0; color: #22d3ee; font-size: 8px; font-weight: bold;">${item.item}</h4>
+                    <p style="margin: 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">${item.description}</p>
+                </div>
+            `;
+        });
+
+        let pdfAyurViharaHtml = '';
+        ayurViharaList.forEach(item => {
+            pdfAyurViharaHtml += `
+                <div style="background: #020617; border-left: 3px solid #f59e0b; border-radius: 6px; padding: 6px 9px; margin-bottom: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                    <h4 style="margin: 0 0 2px 0; color: #fbbf24; font-size: 8px; font-weight: bold;">${item.item}</h4>
+                    <p style="margin: 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">${item.description}</p>
+                </div>
+            `;
+        });
+
+        let pdfModernHabitsHtml = '';
+        modernHabitsList.forEach(item => {
+            pdfModernHabitsHtml += `
+                <div style="background: #020617; border-left: 3px solid #6366f1; border-radius: 6px; padding: 6px 9px; margin-bottom: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                    <h4 style="margin: 0 0 2px 0; color: #818cf8; font-size: 8px; font-weight: bold;">${item.item}</h4>
+                    <p style="margin: 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">${item.description}</p>
+                </div>
+            `;
+        });
+
         // Vitals formatting
         const weightStr = genExam.weightKg ? `${genExam.weightKg} kg` : 'Not recorded';
         const pulseStr = genExam.pulseBpm ? `${genExam.pulseBpm} bpm` : 'Not recorded';
@@ -307,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bpStr = genExam.bpMmHg;
         }
 
-        // Helper to render pill tags on Page 2
+        // Helper to render pill tags on Page 3
         const renderPillTags = (val, emptyText = 'None reported', bg = '#0f172a', border = '#1e293b', text = '#cbd5e1') => {
             if (!val || (Array.isArray(val) && val.length === 0)) {
                 return `<span style="font-size: 7.5px; color: #64748b; font-style: italic;">${emptyText}</span>`;
@@ -320,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `).join('');
         };
 
-        // Format Diet & Sleep for Page 2
+        // Format Diet & Sleep for Page 3
         const dietTypeStr = q.dietType || (Array.isArray(q.diet) ? q.diet[0] : (q.diet || 'Standard'));
         const consumedFoodsVal = q.consumedFoods && q.consumedFoods.length > 0 
             ? q.consumedFoods 
@@ -356,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div>
                                 <h1 style="margin: 0; color: #34d399; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">AyurSkin PRO</h1>
-                                <p style="margin: 1px 0 0 0; color: #10b981; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Official Clinical Skin Dossier • Page 1 of 2</p>
+                                <p style="margin: 1px 0 0 0; color: #10b981; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Official Clinical Skin Dossier • Page 1 of 3</p>
                             </div>
                         </div>
                         <div style="text-align: right; background: #0f172a; padding: 6px 12px; border-radius: 10px; border: 1px solid #1e293b;">
@@ -478,19 +589,147 @@ document.addEventListener('DOMContentLoaded', () => {
                     <!-- Page 1 Footer -->
                     <div style="position: absolute; bottom: 20px; left: 35px; right: 35px; text-align: center; color: #475569; font-size: 7px; border-top: 1px solid #1e293b; padding-top: 6px; display: flex; justify-content: space-between;">
                         <span>AyurSkin PRO Diagnostic Terminal • Confidential Medical Dossier</span>
-                        <span style="color: #10b981; font-weight: bold;">Page 1 of 2 • Continue to Page 2 for 20-Point Clinical Intake Dossier ➔</span>
+                        <span style="color: #10b981; font-weight: bold;">Page 1 of 3 • Continue to Page 2 for Holistic Dietary & Lifestyle Blueprint ➔</span>
                     </div>
                 </div>
 
 
-                <!-- ==================== PAGE 2: 20-POINT CLINICAL INTAKE DOSSIER ==================== -->
-                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; overflow: hidden;">
+                <!-- ==================== PAGE 2: HOLISTIC DIETARY & LIFESTYLE BLUEPRINT ==================== -->
+                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; page-break-after: always; break-after: page; overflow: hidden;">
                     
                     <!-- Page 2 Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #10b981; padding-bottom: 10px; margin-bottom: 14px;">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; border: 2px solid #10b981; background: #064e3b; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                🌿
+                            </div>
+                            <div>
+                                <h1 style="margin: 0; color: #34d399; font-size: 19px; font-weight: 800; letter-spacing: -0.5px;">Holistic Dietary & Lifestyle Prescription</h1>
+                                <p style="margin: 1px 0 0 0; color: #10b981; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px;">Integrative Ahara (Diet) & Vihara (Lifestyle) Therapeutic Strategy • Page 2 of 3</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right; background: #0f172a; padding: 5px 12px; border-radius: 8px; border: 1px solid #1e293b;">
+                            <span style="color: #f8fafc; font-size: 9px; font-weight: bold;">${p.name || 'Anonymous'}</span>
+                            <span style="color: #64748b; font-size: 8px; margin: 0 4px;">•</span>
+                            <span style="color: #34d399; font-size: 8px; font-family: monospace;">ID: ${report.id.substring(0,8).toUpperCase()}</span>
+                        </div>
+                    </div>
+
+                    <!-- Section 1: Ahara Guidance (Dietary Plan) -->
+                    <div style="margin-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #1e293b; padding-bottom: 3px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <h2 style="color: #f8fafc; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Section 1: Ahara — Dietary & Nutritional Guidance</h2>
+                            </div>
+                            <span style="background: #064e3b; color: #34d399; padding: 1px 6px; border-radius: 8px; font-size: 6.5px; font-weight: bold;">Ayurvedic Pathya + Modern Nutrition</span>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <!-- Ayurvedic Diet Column -->
+                            <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #10b981; padding-bottom: 3px;">
+                                    <h3 style="color: #34d399; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase;">Ayurvedic Pathya & Apathya Ahara</h3>
+                                    <span style="background: #064e3b; color: #6ee7b7; padding: 1px 5px; border-radius: 8px; font-size: 6px; font-weight: bold;">Rasa & Agni</span>
+                                </div>
+                                ${pdfAyurPathyaHtml}
+                            </div>
+
+                            <!-- Modern Nutrition Column -->
+                            <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #06b6d4; padding-bottom: 3px;">
+                                    <h3 style="color: #22d3ee; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase;">Modern Clinical Nutrition Plan</h3>
+                                    <span style="background: #164e63; color: #a5f3fc; padding: 1px 5px; border-radius: 8px; font-size: 6px; font-weight: bold;">Nutraceutical</span>
+                                </div>
+                                ${pdfModernNutriHtml}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Vihara Guidance (Lifestyle Protocols) -->
+                    <div style="margin-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #1e293b; padding-bottom: 3px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <h2 style="color: #f8fafc; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Section 2: Vihara — Lifestyle & Circadian Protocols</h2>
+                            </div>
+                            <span style="background: #78350f; color: #fde68a; padding: 1px 6px; border-radius: 8px; font-size: 6.5px; font-weight: bold;">Dinacharya + Skin Barrier Hygiene</span>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <!-- Ayurvedic Vihara Column -->
+                            <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #f59e0b; padding-bottom: 3px;">
+                                    <h3 style="color: #fbbf24; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase;">Ayurvedic Dinacharya & Vihara</h3>
+                                    <span style="background: #78350f; color: #fde68a; padding: 1px 5px; border-radius: 8px; font-size: 6px; font-weight: bold;">Dinacharya</span>
+                                </div>
+                                ${pdfAyurViharaHtml}
+                            </div>
+
+                            <!-- Modern Circadian Habits Column -->
+                            <div style="flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1.5px solid #6366f1; padding-bottom: 3px;">
+                                    <h3 style="color: #818cf8; font-size: 8.5px; font-weight: bold; margin: 0; text-transform: uppercase;">Modern Circadian & Barrier Habits</h3>
+                                    <span style="background: #312e81; color: #c7d2fe; padding: 1px 5px; border-radius: 8px; font-size: 6px; font-weight: bold;">Circadian</span>
+                                </div>
+                                ${pdfModernHabitsHtml}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Recommended Daily Circadian Integration Rhythm -->
+                    <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px 12px; margin-bottom: 12px;">
+                        <h3 style="color: #e2e8f0; font-size: 8.5px; font-weight: bold; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">Recommended Daily Circadian Integration Rhythm</h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                            <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                <p style="margin: 0; color: #34d399; font-size: 7.5px; font-weight: bold;">🌅 06:00 - Morning</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Brahma Muhurta awakening, Ushapana (lukewarm water), cool herbal cleanse.</p>
+                            </div>
+                            <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                <p style="margin: 0; color: #22d3ee; font-size: 7.5px; font-weight: bold;">☀️ 12:30 - Midday</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Principal Pathya meal with digestive spices, high-fiber greens, SPF 50+ reapplication.</p>
+                            </div>
+                            <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                <p style="margin: 0; color: #fbbf24; font-size: 7.5px; font-weight: bold;">🌆 19:30 - Evening</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Light digestive dinner, botanical Mukhalepa application, 10 min Sheetali Pranayama.</p>
+                            </div>
+                            <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                <p style="margin: 0; color: #818cf8; font-size: 7.5px; font-weight: bold;">🌙 22:00 - Night</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Screen curfew, barrier moisture sealing, 7.5-8h restorative darkness sleep.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Clinical Advisory & Disclaimer -->
+                    <div style="background: #064e3b; border: 1px solid #10b981; border-radius: 10px; padding: 7px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1; padding-right: 10px;">
+                            <h4 style="margin: 0; color: #6ee7b7; font-size: 7.5px; font-weight: bold; text-transform: uppercase;">Clinical Advisory Notice</h4>
+                            <p style="margin: 1px 0 0 0; color: #a7f3d0; font-size: 6.5px; line-height: 1.25;">
+                                This integrated dietary and lifestyle blueprint is algorithmically formulated from multi-angle neural tensor evaluations and the patient's 20-point clinical dossier. It serves as an assistive therapeutic guideline for holistic management.
+                            </p>
+                        </div>
+                        <div style="text-align: center; border-left: 1px solid #10b981; padding-left: 10px; min-width: 105px;">
+                            <div style="display: inline-block; border: 1.5px dashed #34d399; border-radius: 6px; padding: 3px 6px;">
+                                <p style="margin: 0; color: #34d399; font-size: 6px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Validated AI Dossier</p>
+                                <p style="margin: 1px 0 0 0; color: #e2e8f0; font-size: 6.5px; font-weight: 800;">AYURSKIN CLINICAL</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page 2 Footer -->
+                    <div style="position: absolute; bottom: 20px; left: 35px; right: 35px; text-align: center; color: #475569; font-size: 7px; border-top: 1px solid #1e293b; padding-top: 6px; display: flex; justify-content: space-between;">
+                        <span>AyurSkin PRO • Holistic Dietary & Lifestyle Prescription • Page 2 of 3</span>
+                        <span style="color: #38bdf8; font-weight: bold;">Continue to Page 3 for 20-Point Clinical Intake Dossier ➔</span>
+                    </div>
+                </div>
+
+
+                <!-- ==================== PAGE 3: 20-POINT CLINICAL INTAKE DOSSIER ==================== -->
+                <div class="pdf-page" style="width: 794px; height: 1122px; max-height: 1122px; min-height: 1122px; box-sizing: border-box; padding: 32px 35px; position: relative; background-color: #020617; overflow: hidden;">
+                    
+                    <!-- Page 3 Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; margin-bottom: 12px;">
                         <div>
                             <h1 style="margin: 0; color: #60a5fa; font-size: 18px; font-weight: 800; letter-spacing: -0.5px;">Comprehensive Clinical Intake Dossier</h1>
-                            <p style="margin: 1px 0 0 0; color: #94a3b8; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px;">20-Point Multi-Modal Patient Record • Page 2 of 2</p>
+                            <p style="margin: 1px 0 0 0; color: #94a3b8; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px;">20-Point Multi-Modal Patient Record • Page 3 of 3</p>
                         </div>
                         <div style="text-align: right; background: #0f172a; padding: 5px 12px; border-radius: 8px; border: 1px solid #1e293b;">
                             <span style="color: #f8fafc; font-size: 9px; font-weight: bold;">${p.name || 'Anonymous'}</span>
@@ -645,7 +884,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <p style="margin: 1px 0 0 0; color: #f8fafc; font-size: 7.5px;">${q.lifestyle || 'Moderate'}</p>
                             </div>
                             <div style="margin-bottom: 4px;">
-                                <p style="margin: 0 0 2px 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#17. Personal Habits & Addictions:</p>
+                                <p style="margin: 0; color: #94a3b8; font-size: 6.5px; font-weight: bold;">#17. Personal Habits & Addictions:</p>
                                 <div>${renderPillTags(q.habits, 'None reported', '#020617', '#6366f1', '#c7d2fe')}</div>
                             </div>
                             <div style="display: flex; gap: 6px;">
@@ -683,10 +922,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
 
-                    <!-- Page 2 Footer -->
+                    <!-- Page 3 Footer -->
                     <div style="position: absolute; bottom: 20px; left: 35px; right: 35px; text-align: center; color: #475569; font-size: 7px; border-top: 1px solid #1e293b; padding-top: 6px; display: flex; justify-content: space-between;">
                         <span>AyurSkin PRO Diagnostic Terminal • Practitioner Confidential Record</span>
-                        <span style="color: #38bdf8; font-weight: bold;">Page 2 of 2 • End of Clinical Dossier</span>
+                        <span style="color: #38bdf8; font-weight: bold;">Page 3 of 3 • End of Clinical Dossier</span>
                     </div>
                 </div>
 
@@ -785,6 +1024,110 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             modernRemediesHtml = `<p class="text-xs text-slate-400 italic">No specific Modern science remedies recorded.</p>`;
         }
+
+        // Build Dietary & Lifestyle HTML for Modal
+        const dietAdvice = report.analysisData?.dietaryAdvice || {};
+        const lifeAdvice = report.analysisData?.lifestyleAdvice || {};
+
+        const ayurPathya = (dietAdvice.ayurvedicPathya && dietAdvice.ayurvedicPathya.length > 0) ? dietAdvice.ayurvedicPathya : [
+            {
+                item: "Pathya Ahara (Wholesome Foods & Agni Deepana)",
+                description: "Incorporate cooling, bitter (Tikta) and astringent (Kashaya) foods like bottle gourd, mung dal, cucumber, and cilantro. Use digestive spices like fennel (Saunf) and coriander (Dhaniya).",
+                icon: "fa-solid fa-bowl-food"
+            },
+            {
+                item: "Apathya Ahara (Strictly Prohibited Items)",
+                description: "Avoid Viruddha Ahara (incompatible food combinations), heavy fermented foods, spicy and deep-fried items, and nighttime curd consumption that exacerbate Pitta-Rakta vitiation.",
+                icon: "fa-solid fa-ban"
+            }
+        ];
+
+        const modernNutrition = (dietAdvice.modernNutrition && dietAdvice.modernNutrition.length > 0) ? dietAdvice.modernNutrition : [
+            {
+                item: "Low Glycemic Load & Insulin Regulation",
+                description: "Eliminate high-GI refined sugars, processed snacks, and excessive dairy to suppress IGF-1 induced sebocyte hyperproliferation.",
+                icon: "fa-solid fa-apple-whole"
+            },
+            {
+                item: "Microbiome & Barrier Nutrients",
+                description: "Consume foods rich in Zinc, Vitamin E, and Omega-3 fatty acids to strengthen epidermal tight junctions and modulate inflammatory cytokines.",
+                icon: "fa-solid fa-seedling"
+            }
+        ];
+
+        const ayurVihara = (lifeAdvice.ayurvedicVihara && lifeAdvice.ayurvedicVihara.length > 0) ? lifeAdvice.ayurvedicVihara : [
+            {
+                item: "Dinacharya & Ritucharya (Daily Routine)",
+                description: "Wake during Brahma Muhurta, practice gentle face washing with cool water, and avoid direct exposure to strong midday sun (Atapa) and hot winds.",
+                icon: "fa-solid fa-sun"
+            },
+            {
+                item: "Nidra & Pranayama (Sleep & Stress Harmony)",
+                description: "Maintain regular sleep cycles avoiding late nights (Ratrijagarana). Practice 10 minutes of Sheetali and Anulom Vilom Pranayama for Pitta pacification.",
+                icon: "fa-solid fa-moon"
+            }
+        ];
+
+        const modernHabits = (lifeAdvice.modernHabits && lifeAdvice.modernHabits.length > 0) ? lifeAdvice.modernHabits : [
+            {
+                item: "Circadian Rhythm & HPA Axis Modulation",
+                description: "Aim for 7.5-8 hours of continuous nocturnal rest to promote tissue repair, optimize collagen synthesis, and lower systemic cortisol spikes.",
+                icon: "fa-solid fa-bed"
+            },
+            {
+                item: "Photoprotection & Barrier Hygiene",
+                description: "Apply broad-spectrum non-comedogenic sunscreen daily (SPF 50+), maintain barrier moisture, and avoid touching the face with unwashed hands.",
+                icon: "fa-solid fa-shield-halved"
+            }
+        ];
+
+        let modalAyurPathyaHtml = '';
+        ayurPathya.forEach(item => {
+            modalAyurPathyaHtml += `
+                <div class="bg-slate-950/70 border-l-4 border-emerald-500 rounded-r-2xl p-4 mb-3 border border-white/5 hover:border-emerald-500/30 transition-all shadow-md">
+                    <h5 class="text-emerald-400 text-sm font-bold mb-1 flex items-center gap-2">
+                        <i class="${item.icon || 'fa-solid fa-bowl-food'}"></i> ${item.item}
+                    </h5>
+                    <p class="text-xs text-slate-300 leading-relaxed">${item.description}</p>
+                </div>
+            `;
+        });
+
+        let modalModernNutriHtml = '';
+        modernNutrition.forEach(item => {
+            modalModernNutriHtml += `
+                <div class="bg-slate-950/70 border-l-4 border-cyan-500 rounded-r-2xl p-4 mb-3 border border-white/5 hover:border-cyan-500/30 transition-all shadow-md">
+                    <h5 class="text-cyan-400 text-sm font-bold mb-1 flex items-center gap-2">
+                        <i class="${item.icon || 'fa-solid fa-apple-whole'}"></i> ${item.item}
+                    </h5>
+                    <p class="text-xs text-slate-300 leading-relaxed">${item.description}</p>
+                </div>
+            `;
+        });
+
+        let modalAyurViharaHtml = '';
+        ayurVihara.forEach(item => {
+            modalAyurViharaHtml += `
+                <div class="bg-slate-950/70 border-l-4 border-amber-500 rounded-r-2xl p-4 mb-3 border border-white/5 hover:border-amber-500/30 transition-all shadow-md">
+                    <h5 class="text-amber-400 text-sm font-bold mb-1 flex items-center gap-2">
+                        <i class="${item.icon || 'fa-solid fa-sun'}"></i> ${item.item}
+                    </h5>
+                    <p class="text-xs text-slate-300 leading-relaxed">${item.description}</p>
+                </div>
+            `;
+        });
+
+        let modalModernHabitsHtml = '';
+        modernHabits.forEach(item => {
+            modalModernHabitsHtml += `
+                <div class="bg-slate-950/70 border-l-4 border-indigo-500 rounded-r-2xl p-4 mb-3 border border-white/5 hover:border-indigo-500/30 transition-all shadow-md">
+                    <h5 class="text-indigo-400 text-sm font-bold mb-1 flex items-center gap-2">
+                        <i class="${item.icon || 'fa-solid fa-bed'}"></i> ${item.item}
+                    </h5>
+                    <p class="text-xs text-slate-300 leading-relaxed">${item.description}</p>
+                </div>
+            `;
+        });
 
         const q = report.questionnaireData || {};
         
@@ -958,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <!-- Treatments / Dual Recovery Protocols -->
-                <div class="bg-slate-900 border border-white/10 rounded-2xl p-6">
+                <div class="bg-slate-900 border border-white/10 rounded-2xl p-6 mb-8">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-white/10 gap-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-base shrink-0 shadow-inner">
@@ -970,7 +1313,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         
-                        <!-- Formal Clinical Badge (Replaces legacy AI Prescribed) -->
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-950/90 via-slate-900 to-emerald-950/90 border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.25)] self-start sm:self-auto">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -1005,6 +1347,122 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div>
                                 ${modernRemediesHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Holistic Dietary & Lifestyle Blueprint (Ahara & Vihara) -->
+                <div class="bg-slate-900 border border-white/10 rounded-2xl p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-white/10 gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-base shrink-0 shadow-inner">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white text-base font-bold">Personalized Dietary & Lifestyle Blueprint (Ahara & Vihara)</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Integrative clinical nutrition and circadian biorhythm synchronization</p>
+                            </div>
+                        </div>
+                        
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-950/90 via-slate-900 to-emerald-950/90 border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.25)] self-start sm:self-auto">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-xs font-bold text-emerald-300 tracking-wide">Derived from Questionnaire & Neural Skin Audit</span>
+                        </div>
+                    </div>
+
+                    <!-- Ahara Section -->
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-white/5">
+                            <i class="fa-solid fa-bowl-food text-emerald-400 text-sm"></i>
+                            <h4 class="text-white font-bold text-sm">Section 1: Ahara — Dietary & Nutritional Guidance</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Ayurvedic Diet -->
+                            <div class="bg-slate-950/50 rounded-2xl p-5 border border-emerald-500/20">
+                                <div class="flex items-center justify-between pb-3 mb-4 border-b border-emerald-500/20">
+                                    <h5 class="text-emerald-400 font-bold text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-leaf"></i> Ayurvedic Pathya & Apathya
+                                    </h5>
+                                    <span class="text-[10px] font-bold text-emerald-300 bg-emerald-900/40 px-2.5 py-0.5 rounded-full border border-emerald-500/30">Rasa & Agni</span>
+                                </div>
+                                <div>
+                                    ${modalAyurPathyaHtml}
+                                </div>
+                            </div>
+
+                            <!-- Modern Nutrition -->
+                            <div class="bg-slate-950/50 rounded-2xl p-5 border border-cyan-500/20">
+                                <div class="flex items-center justify-between pb-3 mb-4 border-b border-cyan-500/20">
+                                    <h5 class="text-cyan-400 font-bold text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-apple-whole"></i> Modern Nutritional Dermatology
+                                    </h5>
+                                    <span class="text-[10px] font-bold text-cyan-300 bg-cyan-900/40 px-2.5 py-0.5 rounded-full border border-cyan-500/30">Metabolic</span>
+                                </div>
+                                <div>
+                                    ${modalModernNutriHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vihara Section -->
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-white/5">
+                            <i class="fa-solid fa-person-running text-amber-400 text-sm"></i>
+                            <h4 class="text-white font-bold text-sm">Section 2: Vihara — Lifestyle & Circadian Protocols</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Ayurvedic Vihara -->
+                            <div class="bg-slate-950/50 rounded-2xl p-5 border border-amber-500/20">
+                                <div class="flex items-center justify-between pb-3 mb-4 border-b border-amber-500/20">
+                                    <h5 class="text-amber-400 font-bold text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-sun"></i> Ayurvedic Dinacharya & Vihara
+                                    </h5>
+                                    <span class="text-[10px] font-bold text-amber-300 bg-amber-900/40 px-2.5 py-0.5 rounded-full border border-amber-500/30">Dinacharya</span>
+                                </div>
+                                <div>
+                                    ${modalAyurViharaHtml}
+                                </div>
+                            </div>
+
+                            <!-- Modern Habits -->
+                            <div class="bg-slate-950/50 rounded-2xl p-5 border border-indigo-500/20">
+                                <div class="flex items-center justify-between pb-3 mb-4 border-b border-indigo-500/20">
+                                    <h5 class="text-indigo-400 font-bold text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-bed"></i> Modern Circadian & Barrier Habits
+                                    </h5>
+                                    <span class="text-[10px] font-bold text-indigo-300 bg-indigo-900/40 px-2.5 py-0.5 rounded-full border border-indigo-500/30">Circadian</span>
+                                </div>
+                                <div>
+                                    ${modalModernHabitsHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Synchronization Rhythm -->
+                    <div class="bg-slate-950/60 rounded-2xl p-5 border border-white/5">
+                        <h4 class="text-slate-300 text-xs font-bold uppercase tracking-wider mb-3">Daily Circadian Synchronization Schedule</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div class="bg-slate-900/80 border border-emerald-500/20 rounded-xl p-3.5">
+                                <p class="text-emerald-400 text-xs font-bold mb-1">🌅 06:00 - Morning</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Brahma Muhurta awakening, Ushapana (lukewarm water), gentle cool cleanse.</p>
+                            </div>
+                            <div class="bg-slate-900/80 border border-cyan-500/20 rounded-xl p-3.5">
+                                <p class="text-cyan-400 text-xs font-bold mb-1">☀️ 12:30 - Midday</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Principal Pathya meal with digestive spices, high-fiber greens, SPF 50+ reapplication.</p>
+                            </div>
+                            <div class="bg-slate-900/80 border border-amber-500/20 rounded-xl p-3.5">
+                                <p class="text-amber-400 text-xs font-bold mb-1">🌆 19:30 - Evening</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Light digestive dinner, botanical Mukhalepa application, 10 min Sheetali Pranayama.</p>
+                            </div>
+                            <div class="bg-slate-900/80 border border-indigo-500/20 rounded-xl p-3.5">
+                                <p class="text-indigo-400 text-xs font-bold mb-1">🌙 22:00 - Night</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Screen curfew, barrier moisture sealing, 7.5-8h restorative darkness sleep.</p>
                             </div>
                         </div>
                     </div>
