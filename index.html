@@ -2,10 +2,31 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AyurSkin - Pro-Max Ayurvedic Skin Audit</title>
     
-    <meta name="description" content="Get a professional Ayurvedic facial treatment and skin audit.">
+    <meta name="description" content="AI-powered Ayurvedic skin analysis. Upload your photo and get personalized skincare insights, natural remedies, and a detailed skin health blueprint.">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#10b981">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AyurSkin">
+    <meta name="application-name" content="AyurSkin">
+    <meta name="msapplication-TileColor" content="#10b981">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+    <link rel="shortcut icon" href="/icons/icon-192x192.png">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -120,13 +141,13 @@
                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Ayurvedic DNA</span>
                         </h1>
                         <p class="mt-6 text-lg text-slate-400 max-w-2xl mx-auto lg:mx-0 font-light">
-                            Upload your photo and let our  Back-End Project analyze visible skin concerns. Receive personalized Ayurvedic insights, natural skincare recommendations, and lifestyle guidance tailored to your skin.
+                            Experience the convergence of 21st-century artificial intelligence and 5,000-year-old Vedic wisdom. Get a microscopic, clinical-grade skin audit in seconds.
                         </p>
                         
                         <!-- Magnetic Hero CTA -->
                         <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <a href="scan.html" class="btn-magnetic btn-massive rounded-full text-lg shadow-[0_0_40px_rgba(16,185,129,0.5)]">
-                                <i class="fa-solid fa-microchip text-white mr-2"></i> Start Scan
+                                <i class="fa-solid fa-microchip text-white mr-2"></i> Execute Neural Scan
                             </a>
                         </div>
                         
@@ -419,6 +440,38 @@
                     }, 500); 
                 });
             });
+        });
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .then((registration) => {
+                        console.log('[AyurSkin] Service Worker registered:', registration.scope);
+                        
+                        // Listen for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('[AyurSkin] New version available — refresh to update.');
+                                }
+                            });
+                        });
+                    })
+                    .catch((err) => {
+                        console.warn('[AyurSkin] Service Worker registration failed:', err);
+                    });
+            });
+        }
+
+        // PWA Install Prompt (optional - for future use)
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
         });
     </script>
 </body>
