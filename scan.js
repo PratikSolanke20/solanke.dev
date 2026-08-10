@@ -1484,6 +1484,72 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
 
                 </div>
+
+                <!-- Section: Daily Circadian Synchronization Schedule -->
+                <div class="glass-card p-6 rounded-3xl border border-emerald-500/30 shadow-xl space-y-4 mt-8">
+                    <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-base font-bold text-white tracking-tight">Daily Circadian Synchronization Schedule</h4>
+                                <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Dinacharya • Solar-Rhythm Alignment • Skin Regeneration Clock</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 uppercase tracking-widest">24h Schedule</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                        <!-- Morning -->
+                        <div class="p-4 rounded-2xl bg-slate-900/80 border border-emerald-500/30 hover:border-emerald-500/60 transition-all group shadow-md">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <span class="text-base">🌅</span> 06:00 AM
+                                </span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/50">Morning</span>
+                            </div>
+                            <h5 class="text-xs font-bold text-white mb-1">Brahma Muhurta & Cleanse</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Brahma Muhurta awakening, Ushapana (lukewarm water), gentle cool cleanse.</p>
+                        </div>
+
+                        <!-- Midday -->
+                        <div class="p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/30 hover:border-cyan-500/60 transition-all group shadow-md">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
+                                    <span class="text-base">☀️</span> 12:30 PM
+                                </span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/50">Midday</span>
+                            </div>
+                            <h5 class="text-xs font-bold text-white mb-1">Solar Zenith & Ahara</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Principal Pathya meal with digestive spices, high-fiber greens, SPF 50+ reapplication.</p>
+                        </div>
+
+                        <!-- Evening -->
+                        <div class="p-4 rounded-2xl bg-slate-900/80 border border-indigo-500/30 hover:border-indigo-500/60 transition-all group shadow-md">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-indigo-400 flex items-center gap-1.5">
+                                    <span class="text-base">🌆</span> 07:30 PM
+                                </span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-800/50">Evening</span>
+                            </div>
+                            <h5 class="text-xs font-bold text-white mb-1">Dusk Calm & Lepa</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Light digestive dinner, botanical Mukhalepa application, 10 min Sheetali Pranayama.</p>
+                        </div>
+
+                        <!-- Night -->
+                        <div class="p-4 rounded-2xl bg-slate-900/80 border border-purple-500/30 hover:border-purple-500/60 transition-all group shadow-md">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                                    <span class="text-base">🌙</span> 10:00 PM
+                                </span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-800/50">Night</span>
+                            </div>
+                            <h5 class="text-xs font-bold text-white mb-1">Nidra & Barrier Repair</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Screen curfew, barrier moisture sealing, 7.5-8h restorative darkness sleep.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
 
