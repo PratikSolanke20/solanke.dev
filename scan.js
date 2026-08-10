@@ -983,9 +983,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             // Securely fetch API key from backend config endpoint
-            const configUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                ? 'http://localhost:3000/api/config' 
-                : '/api/config';
+            let configUrl = '/api/config';
+            if (window.location.protocol === 'file:') {
+                configUrl = 'https://solanke-dev.vercel.app/api/config';
+            } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                configUrl = 'http://localhost:3000/api/config';
+            }
             
             const configRes = await fetch(configUrl);
             if (!configRes.ok) throw new Error("Could not fetch configuration");
@@ -1102,9 +1105,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const chartCanvas = document.getElementById('deformity-pie-chart');
                 const chartImgData = chartCanvas ? chartCanvas.toDataURL('image/png') : null;
                 
-                const saveUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                    ? 'http://localhost:3000/api/save-report' 
-                    : '/api/save-report';
+                let saveUrl = '/api/save-report';
+                if (window.location.protocol === 'file:') {
+                    saveUrl = 'https://solanke-dev.vercel.app/api/save-report';
+                } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    saveUrl = 'http://localhost:3000/api/save-report';
+                }
                     
                 fetch(saveUrl, {
                     method: 'POST',
@@ -1915,7 +1921,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             <div style="text-align: center; border-left: 1px solid #10b981; padding-left: 12px; min-width: 110px;">
                                 <div style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; border: 1.5px dashed #34d399; border-radius: 6px; padding: 4px 8px; line-height: 1.2; box-sizing: border-box;">
-                                    <p style="margin: 0; color: #34d399; font-size: 6.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">Validated AI Dossier</p>
+                                    <p style="margin: 0; color: #34d399; font-size: 6.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">Validated Back-end project Dossier</p>
                                     <p style="margin: 2px 0 0 0; color: #e2e8f0; font-size: 7.5px; font-weight: 800; line-height: 1.2;">AYURSKIN CLINICAL</p>
                                 </div>
                             </div>
@@ -2126,7 +2132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <!-- Page 3 Footer -->
                         <div style="position: absolute; bottom: 20px; left: 35px; right: 35px; text-align: center; color: #475569; font-size: 7px; border-top: 1px solid #1e293b; padding-top: 6px; display: flex; justify-content: space-between;">
                             <span>AyurSkin PRO • Comprehensive Clinical Intake Dossier • Page 3 of 3</span>
-                            <span>Secure Clinical Archival • AyurSkin AI</span>
+                            <span>Secure Clinical Archival • AyurSkin Back-end project</span>
                         </div>
                     </div>
 
