@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AyurSkin - Pro-Max Ayurvedic Skin Audit</title>
     
-    <meta name="description" content="AI-powered Ayurvedic skin analysis. Upload your photo and get personalized skincare insights, natural remedies, and a detailed skin health blueprint.">
+    <meta name="description" content="Back-end project powered Ayurvedic skin analysis. Upload your photo and get personalized skincare insights, natural remedies, and a detailed skin health blueprint.">
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#10b981">
@@ -66,11 +66,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                <a href="index.html" class="flex-shrink-0 flex items-center cursor-pointer" id="header-logo">
                     <span class="font-heading font-bold text-2xl tracking-tight text-white flex items-center gap-2">
                         <i class="fa-solid fa-leaf text-emerald-400"></i> AyurSkin <span class="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">PRO</span>
                     </span>
-                </div>
+                </a>
 
                 <nav class="hidden md:flex space-x-8 items-center h-full">
                     <a href="#how-it-works" class="text-slate-300 hover:text-white font-medium transition-colors text-sm tracking-wide">How it works</a>
@@ -92,7 +92,7 @@
                             <div class="w-1/2 p-6">
                                 <h3 class="font-heading font-semibold text-slate-200 mb-4 flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-400"><i class="fa-solid fa-wand-magic-sparkles"></i> Our Approach</h3>
                                 <ul class="space-y-2">
-                                    <li><a href="ai-technology.html" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-robot"></i></div><div><div class="font-medium text-slate-200 text-sm">AI Technology</div></div></a></li>
+                                    <li><a href="ai-technology.html" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-robot"></i></div><div><div class="font-medium text-slate-200 text-sm">Back-end project Technology</div></div></a></li>
                                     <li><a href="ayurvedic-remedies.html" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-mortar-pestle"></i></div><div><div class="font-medium text-slate-200 text-sm">Ayurvedic Remedies</div></div></a></li>
                                 </ul>
                             </div>
@@ -141,7 +141,7 @@
                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Ayurvedic DNA</span>
                         </h1>
                         <p class="mt-6 text-lg text-slate-400 max-w-2xl mx-auto lg:mx-0 font-light">
-                            Experience the convergence of 21st-century artificial intelligence and 5,000-year-old Vedic wisdom. Get a microscopic, clinical-grade skin audit in seconds.
+                            Decode your skin using our back end project of skin analysis combining modern dermatology + Ayurveda to help identify potential skin concerns, their possible causes, and personalized care, lifestyle, routine, and diet guidance.
                         </p>
                         
                         <!-- Magnetic Hero CTA -->
@@ -160,7 +160,7 @@
                     <div class="mt-16 lg:mt-0 lg:col-span-6 group perspective-1000">
                         <div class="relative rounded-3xl p-1 bg-gradient-to-b from-white/10 to-white/0 shadow-2xl transition-transform duration-700 ease-out group-hover:rotate-y-12 group-hover:rotate-x-12 group-hover:scale-105" style="transform-style: preserve-3d;">
                             <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 rounded-3xl blur-3xl opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                            <img class="relative w-full rounded-[23px] shadow-2xl border border-white/10" src="hero_3d.png" alt="3D AI Scan">
+                            <img class="relative w-full rounded-[23px] shadow-2xl border border-white/10" src="hero_3d.png" alt="3D Back-end project Scan">
                             
                             <div class="absolute -bottom-6 -left-6 glass-card p-4 rounded-2xl flex items-center gap-4 animate-float" style="animation-delay: 0s; transform: translateZ(50px);">
                                 <div class="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl border border-emerald-500/30"><i class="fa-solid fa-microscope"></i></div>
@@ -173,42 +173,106 @@
         </section>
 
         <!-- How It Works Section -->
-        <section id="how-it-works" class="py-24 relative border-t border-white/5 bg-slate-900/30">
+        <section id="how-it-works" class="py-24 relative border-t border-white/5 bg-slate-900/40 overflow-hidden">
+            <!-- Subtle ambient glows -->
+            <div class="absolute top-1/2 left-0 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="text-center mb-16">
-                    <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">How it works</h2>
-                    <p class="text-slate-400 max-w-2xl mx-auto">Our advanced AI maps every minute detail of your facial structure in three simple steps.</p>
+                <div class="text-center mb-20">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold tracking-widest uppercase mb-4 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                        <i class="fa-solid fa-layer-group"></i> 4-Step Clinical Workflow
+                    </div>
+                    <h2 class="font-heading text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">How it works</h2>
+                    <p class="text-slate-400 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">Our advanced Back-end project maps every minute detail of your facial skin profile through an exhaustive 4-step diagnostic algorithm.</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-                    <div class="hidden md:block absolute top-1/2 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/0 -z-10"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 relative">
+                    <!-- Step Progress Connector Line (Desktop) -->
+                    <div class="hidden lg:block absolute top-28 left-[12%] right-[12%] h-1 bg-gradient-to-r from-emerald-500/20 via-purple-500/30 to-amber-500/20 -z-0 rounded-full"></div>
                     
-                    <!-- Step 1 -->
-                    <div class="step-card glass p-8 rounded-3xl text-center border border-white/10">
-                        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 text-emerald-400 text-3xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)] border border-emerald-500/20 relative">
-                            <span class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-emerald-500 text-white text-sm font-bold flex items-center justify-center">1</span>
-                            <i class="fa-solid fa-camera"></i>
+                    <!-- Step 1: Questionnaire Part -->
+                    <div class="group relative glass-card p-8 rounded-3xl border border-white/10 hover:border-emerald-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(16,185,129,0.15)] flex flex-col justify-between overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <div>
+                            <div class="flex items-center justify-between mb-8">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 text-2xl flex items-center justify-center border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                    <i class="fa-solid fa-clipboard-list"></i>
+                                </div>
+                                <span class="px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold font-heading shadow-inner">STEP 01</span>
+                            </div>
+                            <div class="inline-block px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-[11px] font-semibold tracking-wider uppercase mb-3 border border-emerald-500/20">
+                                Questionnaire Part
+                            </div>
+                            <h3 class="text-white font-bold text-xl mb-3 font-heading group-hover:text-emerald-300 transition-colors">Patient Profile & Symptoms</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Answer key skin health questions to assess Dosha balance (Vata/Pitta/Kapha), lifestyle factors, and specific skin concerns.</p>
                         </div>
-                        <h3 class="text-white font-bold text-xl mb-3">Upload or Capture</h3>
-                        <p class="text-slate-400 text-sm">Upload a well-lit frontal photograph or use your live camera. Our tensor algorithms instantly detect human facial structures.</p>
+                        <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs text-emerald-400 font-medium group-hover:translate-x-1 transition-transform">
+                            <span>Veda-Dharma Assessment</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </div>
                     </div>
-                    <!-- Step 2 -->
-                    <div class="step-card glass p-8 rounded-3xl text-center border border-white/10">
-                        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-purple-400 text-3xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(168,85,247,0.2)] border border-purple-500/20 relative">
-                            <span class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-purple-500 text-white text-sm font-bold flex items-center justify-center">2</span>
-                            <i class="fa-solid fa-microchip"></i>
+
+                    <!-- Step 2: Upload Photo or Capture Photo Badge -->
+                    <div class="group relative glass-card p-8 rounded-3xl border border-white/10 hover:border-cyan-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(6,182,212,0.15)] flex flex-col justify-between overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <div>
+                            <div class="flex items-center justify-between mb-8">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-400 text-2xl flex items-center justify-center border border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.2)] group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
+                                    <i class="fa-solid fa-camera-retro"></i>
+                                </div>
+                                <span class="px-3.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold font-heading shadow-inner">STEP 02</span>
+                            </div>
+                            <div class="inline-block px-3 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 text-[11px] font-semibold tracking-wider uppercase mb-3 border border-cyan-500/20">
+                                Upload Photo or Capture Photo
+                            </div>
+                            <h3 class="text-white font-bold text-xl mb-3 font-heading group-hover:text-cyan-300 transition-colors">High-Res Face Scan</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Capture a clear facial photo using your webcam or upload an existing image for deep microscopic feature extraction.</p>
                         </div>
-                        <h3 class="text-white font-bold text-xl mb-3">Neural Analysis</h3>
-                        <p class="text-slate-400 text-sm">Back-end server meticulously scans your skin, taking seconds to map out exact locations of microscopic deformities.</p>
+                        <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs text-cyan-400 font-medium group-hover:translate-x-1 transition-transform">
+                            <span>Live Camera / File Upload</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </div>
                     </div>
-                    <!-- Step 3 -->
-                    <div class="step-card glass p-8 rounded-3xl text-center border border-white/10">
-                        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 text-amber-400 text-3xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(245,158,11,0.2)] border border-amber-500/20 relative">
-                            <span class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center">3</span>
-                            <i class="fa-solid fa-file-medical"></i>
+
+                    <!-- Step 3: Neural Analysis Badge -->
+                    <div class="group relative glass-card p-8 rounded-3xl border border-white/10 hover:border-purple-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(168,85,247,0.15)] flex flex-col justify-between overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <div>
+                            <div class="flex items-center justify-between mb-8">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-purple-400 text-2xl flex items-center justify-center border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.2)] group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                    <i class="fa-solid fa-microchip"></i>
+                                </div>
+                                <span class="px-3.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold font-heading shadow-inner">STEP 03</span>
+                            </div>
+                            <div class="inline-block px-3 py-1 rounded-lg bg-purple-500/10 text-purple-400 text-[11px] font-semibold tracking-wider uppercase mb-3 border border-purple-500/20">
+                                Neural Analysis
+                            </div>
+                            <h3 class="text-white font-bold text-xl mb-3 font-heading group-hover:text-purple-300 transition-colors">Microscopic Tensor Engine</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Back-end server meticulously scans skin texture, pore density, pigment variations, and active inflammation zones in seconds.</p>
                         </div>
-                        <h3 class="text-white font-bold text-xl mb-3">Finalized Blueprint</h3>
-                        <p class="text-slate-400 text-sm">Receive a highly detailed breakdown of infections, causes, spread percentages, and curated Ayurvedic remedies.</p>
+                        <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs text-purple-400 font-medium group-hover:translate-x-1 transition-transform">
+                            <span>Deep Tensor Inspection</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Finalize Blueprint Badge -->
+                    <div class="group relative glass-card p-8 rounded-3xl border border-white/10 hover:border-amber-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(245,158,11,0.15)] flex flex-col justify-between overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <div>
+                            <div class="flex items-center justify-between mb-8">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 text-amber-400 text-2xl flex items-center justify-center border border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.2)] group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
+                                    <i class="fa-solid fa-file-waveform"></i>
+                                </div>
+                                <span class="px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold font-heading shadow-inner">STEP 04</span>
+                            </div>
+                            <div class="inline-block px-3 py-1 rounded-lg bg-amber-500/10 text-amber-400 text-[11px] font-semibold tracking-wider uppercase mb-3 border border-amber-500/20">
+                                Finalize Blueprint
+                            </div>
+                            <h3 class="text-white font-bold text-xl mb-3 font-heading group-hover:text-amber-300 transition-colors">Exhaustive Diagnostic Report</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Receive your complete skin report with identified concerns, root causes, herbal formulations, routine, and diet recommendations.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs text-amber-400 font-medium group-hover:translate-x-1 transition-transform">
+                            <span>Personalized Care Plan</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </div>
                     </div>
                 </div>
             </div>
