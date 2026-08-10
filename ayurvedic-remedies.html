@@ -45,11 +45,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                <a href="index.html" class="flex-shrink-0 flex items-center cursor-pointer" id="header-logo">
                     <span class="font-heading font-bold text-2xl tracking-tight text-white flex items-center gap-2">
                         <i class="fa-solid fa-leaf text-emerald-400"></i> AyurSkin <span class="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">PRO</span>
                     </span>
-                </div>
+                </a>
 
                 <nav class="hidden md:flex space-x-8 items-center h-full">
                     <a href="#how-it-works" class="text-slate-300 hover:text-white font-medium transition-colors text-sm tracking-wide">How it works</a>
@@ -71,7 +71,7 @@
                             <div class="w-1/2 p-6">
                                 <h3 class="font-heading font-semibold text-slate-200 mb-4 flex items-center gap-2 text-xs uppercase tracking-widest text-emerald-400"><i class="fa-solid fa-wand-magic-sparkles"></i> Our Approach</h3>
                                 <ul class="space-y-2">
-                                    <li><a href="ai-technology.html" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-robot"></i></div><div><div class="font-medium text-slate-200 text-sm">AI Technology</div></div></a></li>
+                                    <li><a href="ai-technology.html" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-robot"></i></div><div><div class="font-medium text-slate-200 text-sm">Back-end project Technology</div></div></a></li>
                                     <li><a href="ayurvedic-remedies.html" class="group/item flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-all"><div class="w-8 h-8 rounded bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover/item:scale-110 transition-transform"><i class="fa-solid fa-mortar-pestle"></i></div><div><div class="font-medium text-slate-200 text-sm">Ayurvedic Remedies</div></div></a></li>
                                 </ul>
                             </div>
@@ -190,7 +190,7 @@
                     <span class="font-heading font-bold text-2xl tracking-tight text-white flex items-center gap-2 mb-6">
                         <i class="fa-solid fa-leaf text-emerald-400"></i> AyurSkin
                     </span>
-                    <p class="text-sm leading-relaxed mb-6">We provide natural, dermatologist-approved skincare solutions that combine ancient Ayurvedic wisdom with modern technology.</p>
+                    <p class="text-sm leading-relaxed mb-6">We provide natural, Algorithmic Treatment Suggestions for Clinical Review skincare solutions that combine ancient Ayurvedic wisdom with modern technology.</p>
                 </div>
                 <div>
                     <h4 class="text-white font-semibold mb-6 uppercase tracking-widest text-xs">Services</h4>
@@ -386,9 +386,8 @@
 
                     clickTimer = setTimeout(() => {
                         if (clickCount > 0 && clickCount < 5) {
-                            if(el.tagName === 'A' && el.getAttribute('href')) {
-                                window.location.href = el.getAttribute('href');
-                            }
+                            const href = el.getAttribute('href') || 'index.html';
+                            window.location.href = href;
                         }
                         clickCount = 0;
                     }, 500); 
