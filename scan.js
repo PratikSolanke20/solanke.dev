@@ -705,6 +705,143 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
+        // Validate and normalize Therapeutic Yoga Asanas (Yoga Chikitsa & Mind-Skin Axis)
+        if (!Array.isArray(data.yogaAsanas) || data.yogaAsanas.length === 0) {
+            const disease = (data.analysis && data.analysis.overallDiseaseType) ? data.analysis.overallDiseaseType.toLowerCase() : '';
+            const ayurInfo = (data.analysis && data.analysis.ayurvedicInfo) ? data.analysis.ayurvedicInfo.toLowerCase() : '';
+            
+            if (disease.includes('eczema') || disease.includes('pitta') || disease.includes('acne') || ayurInfo.includes('pitta')) {
+                data.yogaAsanas = [
+                    {
+                        sanskritName: "शीतली प्राणायाम — Sheetali Pranayama",
+                        englishName: "Cooling Breath & Thermal Pacification",
+                        category: "Pitta Pacification & Cooling",
+                        howToPerform: "Roll tongue into a tube, inhale deeply through tongue, hold 3 seconds, exhale smoothly through nostrils.",
+                        benefits: "Directly quenches systemic Pitta heat, lowers cutaneous flushing, reduces inflammatory erythema and itching.",
+                        evidenceLevel: "High: Autonomic modulation reducing neurogenic skin heat",
+                        duration: "5–10 mins daily (Evening)",
+                        icon: "fa-solid fa-wind"
+                    },
+                    {
+                        sanskritName: "बालासन — Balasana",
+                        englishName: "Child's Pose",
+                        category: "Parasympathetic Recovery",
+                        howToPerform: "Kneel on floor, sit on heels, fold torso forward resting forehead on mat, extend arms forward, breathe deeply.",
+                        benefits: "Downregulates fight-or-flight stress triggers, lowers nocturnal cortisol spikes, soothes facial stress tension.",
+                        evidenceLevel: "High: HPA axis stress reduction for inflammatory dermatoses",
+                        duration: "3–5 mins hold (Dusk)",
+                        icon: "fa-solid fa-child"
+                    },
+                    {
+                        sanskritName: "सूर्य नमस्कार — Surya Namaskar",
+                        englishName: "Sun Salutation Sequence",
+                        category: "Whole-Body Microcirculation",
+                        howToPerform: "Perform gentle, rhythmic 12-pose flow with synchronized diaphragmatic breathing at dawn.",
+                        benefits: "Promotes systemic blood flow, enhances oxygenation to facial capillaries, accelerates cell turnover.",
+                        evidenceLevel: "Supportive: General metabolic & cardiovascular conditioning",
+                        duration: "6–12 rounds (06:00 AM)",
+                        icon: "fa-solid fa-sun"
+                    },
+                    {
+                        sanskritName: "शवासन — Shavasana",
+                        englishName: "Corpse Pose",
+                        category: "Cellular Regeneration & Stress Relief",
+                        howToPerform: "Lie flat on back, legs apart, arms relaxed at sides, palms up. Close eyes and practice body-scan relaxation.",
+                        benefits: "Essential relaxation posture; suppresses cortisol-driven sebaceous output and maximizes tissue repair.",
+                        evidenceLevel: "High: Proven parasympathetic recovery & neuro-dermal calm",
+                        duration: "10–15 mins (22:00 PM)",
+                        icon: "fa-solid fa-bed"
+                    }
+                ];
+            } else if (disease.includes('psoriasis') || disease.includes('dry') || disease.includes('vata') || ayurInfo.includes('vata')) {
+                data.yogaAsanas = [
+                    {
+                        sanskritName: "पश्चिमोत्तानासन — Paschimottanasana",
+                        englishName: "Seated Forward Bend",
+                        category: "Vata Grounding & Calming",
+                        howToPerform: "Sit with legs straight, inhale reach overhead, exhale fold forward from hips grasping feet gently.",
+                        benefits: "Calms nervous system hyper-reactivity, reduces cutaneous scaling, nourishes dry stratum corneum.",
+                        evidenceLevel: "Supportive: Autonomic stabilization & tension relief",
+                        duration: "2–3 mins hold",
+                        icon: "fa-solid fa-person-praying"
+                    },
+                    {
+                        sanskritName: "धनुरासन — Dhanurasana",
+                        englishName: "Bow Pose",
+                        category: "Visceral Agni & Circulation",
+                        howToPerform: "Lie prone, bend knees, hold ankles, inhale and lift chest and thighs off floor forming an arch.",
+                        benefits: "Stimulates abdominal motility, clears gut-skin toxins (Ama), improves nutrient absorption.",
+                        evidenceLevel: "Indirect: Digestive Agni deepana & abdominal conditioning",
+                        duration: "30–45 secs (3 reps)",
+                        icon: "fa-solid fa-circle-notch"
+                    },
+                    {
+                        sanskritName: "वृक्षासन — Vrikshasana",
+                        englishName: "Tree Pose",
+                        category: "Neuromuscular Balance",
+                        howToPerform: "Stand on one leg, place sole of other foot on inner thigh, bring palms together at chest in Anjali Mudra.",
+                        benefits: "Fosters mental concentration, emotional stability, and reduces anxiety-triggered skin scratching.",
+                        evidenceLevel: "Supportive: Neuromuscular control & anxiety management",
+                        duration: "1–2 mins per side",
+                        icon: "fa-solid fa-tree"
+                    },
+                    {
+                        sanskritName: "शवासन — Shavasana",
+                        englishName: "Corpse Pose",
+                        category: "Deep Rest & Moisture Retention",
+                        howToPerform: "Lie completely still, practice conscious breath awareness, letting all muscular tension dissolve.",
+                        benefits: "Restores stratum corneum hydration barrier by reducing transepidermal water loss induced by acute stress.",
+                        evidenceLevel: "High: Stress-dermatosis reduction",
+                        duration: "10–15 mins",
+                        icon: "fa-solid fa-bed"
+                    }
+                ];
+            } else {
+                data.yogaAsanas = [
+                    {
+                        sanskritName: "सूर्य नमस्कार — Surya Namaskar",
+                        englishName: "Sun Salutation Dynamic Flow",
+                        category: "Whole-Body Circulation & Vitality",
+                        howToPerform: "Fluid 12-posture sequence synchronized with deep breathing executed gracefully at sunrise.",
+                        benefits: "Boosts systemic lymphatic drainage, enhances cutaneous oxygen delivery, clears localized Ama toxins.",
+                        evidenceLevel: "Supportive: Cardiovascular & metabolic skin conditioning",
+                        duration: "6–12 rounds (06:00 AM)",
+                        icon: "fa-solid fa-sun"
+                    },
+                    {
+                        sanskritName: "भुजंगासन — Bhujangasana",
+                        englishName: "Cobra Pose",
+                        category: "Spinal & Endocrine Stimulation",
+                        howToPerform: "Lie face down, hands under shoulders, inhale and gently arch chest upward keeping pelvis grounded.",
+                        benefits: "Opens thoracic cavity, stimulates thyroid metabolism, aids in dermal barrier repair.",
+                        evidenceLevel: "Supportive: Spinal mobility & circulation enhancement",
+                        duration: "30–60 secs (3 reps)",
+                        icon: "fa-solid fa-staff-snake"
+                    },
+                    {
+                        sanskritName: "बालासन — Balasana",
+                        englishName: "Child's Pose",
+                        category: "Parasympathetic Relaxation",
+                        howToPerform: "Kneel, fold torso forward, rest forehead on ground, breathe slowly with abdomen expanding against thighs.",
+                        benefits: "Immediate stress release, lowers cortisol-driven inflammation, relaxes facial micro-muscles.",
+                        evidenceLevel: "High: Modulates stress-induced dermatological flare-ups",
+                        duration: "3–5 mins (Dusk)",
+                        icon: "fa-solid fa-child"
+                    },
+                    {
+                        sanskritName: "शवासन — Shavasana",
+                        englishName: "Corpse Pose",
+                        category: "Systemic Recovery & Repair",
+                        howToPerform: "Lie flat in complete stillness with soft rhythmic diaphragmatic breathing.",
+                        benefits: "Crucial final posture to integrate physiological benefits and maximize epidermal cell renewal.",
+                        evidenceLevel: "High: Clinical parasympathetic & HPA axis stabilization",
+                        duration: "10 mins (22:00 PM)",
+                        icon: "fa-solid fa-bed"
+                    }
+                ];
+            }
+        }
+
         return data;
     }
 
@@ -975,6 +1112,15 @@ document.addEventListener('DOMContentLoaded', async () => {
              - "item": string (Name, e.g., "Circadian Rhythm & HPA Cortisol Modulation", "Dermal Barrier & Environmental Hygiene")
              - "description": string (Guidance on sleep hygiene, stress reduction to minimize cortisol-driven sebaceous secretion, UV photoprotection, contact sanitation)
              - "icon": string (FontAwesome class, e.g., "fa-solid fa-bed" or "fa-solid fa-shield-halved")
+        8. "yogaAsanas": Array of 4-6 objects for personalized therapeutic Yoga Asanas tailored specifically to the diagnosed skin condition, vitiated doshas, stress profile, and questionnaire responses:
+           - "sanskritName": string (Include Devanagari script and Sanskrit name, e.g., "सूर्य नमस्कार — Surya Namaskar", "पद्मासन — Padmasana", "भुजंगासन — Bhujangasana", "बालासन — Balasana", "शवासन — Shavasana", "त्रिकोणासन — Trikonasana", "ताडासन — Tadasana", "पश्चिमोत्तानासन — Paschimottanasana", "शीतली प्राणायाम — Sheetali Pranayama")
+           - "englishName": string (Modern English posture name, e.g., "Sun Salutation Dynamic Flow", "Lotus Pose", "Cobra Pose", "Child's Pose", "Corpse Pose")
+           - "category": string (Functional category, e.g., "Pitta Pacification & Cooling", "Parasympathetic Stress Recovery", "Whole-Body Microcirculation", "Vata Grounding & Calming", "Visceral Agni & Circulation")
+           - "howToPerform": string (Short step-by-step performance guide written in crisp batch format)
+           - "benefits": string (Direct and indirect dermatological benefits, microcirculation, HPA axis cortisol reduction, and dosha balancing impact)
+           - "evidenceLevel": string (Relevance and evidence level statement, e.g., "High: Clinical parasympathetic & HPA axis stabilization" or "Supportive: Enhances dermal microcirculation & stress management")
+           - "duration": string (Recommended duration or repetitions, e.g., "5–10 mins daily", "6–12 rounds", "3–5 mins hold")
+           - "icon": string (FontAwesome class, e.g., "fa-solid fa-om", "fa-solid fa-spa", "fa-solid fa-sun", "fa-solid fa-child", "fa-solid fa-wind", "fa-solid fa-bed")
         
         CRITICAL OUTPUT COMPLIANCE:
         - Output strictly valid JSON only without markdown wrapping or comments.
@@ -1243,6 +1389,59 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `).join('');
 
+        // Therapeutic Yoga Asanas Bento Card Builder
+        const yogaAsanasList = data.yogaAsanas || [];
+        let yogaAsanasBentoHtml = yogaAsanasList.map(pose => `
+            <div class="bg-slate-900/90 rounded-2xl p-5 border border-purple-500/25 hover:border-purple-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(168,85,247,0.2)] flex flex-col justify-between group/card relative overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-950/90 text-purple-300 border border-purple-700/50 uppercase tracking-wider">
+                            ${pose.category || 'Therapeutic Yoga'}
+                        </span>
+                        <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-sm group-hover/card:scale-110 group-hover/card:bg-purple-500 group-hover/card:text-white transition-all shadow-sm">
+                            <i class="${pose.icon || 'fa-solid fa-spa'}"></i>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="inline-block text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/50 mb-1">
+                            ${pose.sanskritName}
+                        </span>
+                        <h5 class="text-sm font-bold text-white group-hover/card:text-purple-300 transition-colors leading-tight">
+                            ${pose.englishName}
+                        </h5>
+                    </div>
+
+                    <div class="bg-slate-950/60 p-3 rounded-xl border border-white/5 mb-3">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-list-check text-[10px]"></i> How to perform:
+                        </p>
+                        <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                            ${pose.howToPerform}
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-950/30 p-3 rounded-xl border border-purple-500/20 mb-3">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-heart-pulse text-[10px]"></i> Clinical Benefits & Skin Impact:
+                        </p>
+                        <p class="text-xs text-slate-200 leading-relaxed font-medium">
+                            ${pose.benefits}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[10px]">
+                    <span class="text-slate-400 flex items-center gap-1 font-semibold">
+                        <i class="fa-regular fa-clock text-purple-400"></i> ${pose.duration || '5-10 mins'}
+                    </span>
+                    <span class="text-purple-300 font-semibold italic text-right max-w-[150px] truncate" title="${pose.evidenceLevel}">
+                        ${pose.evidenceLevel || 'Supportive Clinical Evidence'}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+
         const spread = data.analysis.spreadPercentage;
         const severityColorCode = spread > 50 ? '#ef4444' : (spread > 20 ? '#f59e0b' : '#10b981');
         const severityText = spread > 50 ? 'text-red-400' : (spread > 20 ? 'text-amber-400' : 'text-emerald-400');
@@ -1485,6 +1684,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 </div>
 
+                <!-- Section: Therapeutic Yoga Asanas Regimen (Yoga Chikitsa & Mind-Skin Axis) -->
+                <div class="glass-card p-6 rounded-3xl border border-purple-500/30 shadow-[0_15px_40px_rgba(168,85,247,0.12)] space-y-5 mt-8 relative overflow-hidden group">
+                    <div class="absolute -right-16 -top-16 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/20 transition-all duration-700"></div>
+                    <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/10 gap-4 relative z-10">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-500/20 via-indigo-500/20 to-pink-500/10 border border-purple-500/40 flex items-center justify-center text-purple-300 text-xl shadow-[0_0_20px_rgba(168,85,247,0.3)] shrink-0">
+                                <i class="fa-solid fa-om"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                                    Therapeutic Yoga Asanas Regimen <span class="text-xs text-purple-300 font-semibold normal-case">(Yoga Chikitsa & Mind-Skin Axis)</span>
+                                </h4>
+                                <p class="text-xs text-purple-400 font-semibold uppercase tracking-wider">Ayurvedic Asana • Neuro-Endocrine Stress Modulation • Cutaneous Microcirculation</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-start sm:self-auto">
+                            <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-purple-950/80 border border-purple-500/40 text-purple-300 uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-spa text-purple-400"></i> Disease-Matched Batch Protocol
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="bg-purple-950/40 p-3.5 rounded-2xl border border-purple-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse shrink-0"></span>
+                            <p class="text-xs text-purple-200 font-medium leading-relaxed">
+                                Targeted postures synthesized from clinical skin scans, identified disease pathophysiology, and 20-point intake dossier.
+                            </p>
+                        </div>
+                        <span class="text-[10px] text-purple-300 font-semibold uppercase tracking-wider shrink-0 bg-purple-900/60 px-2.5 py-1 rounded-lg border border-purple-700/50 self-start sm:self-auto">
+                            Dermato-Neuro-Yoga
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-1 relative z-10">
+                        ${yogaAsanasBentoHtml}
+                    </div>
+                </div>
+
                 <!-- Section: Daily Circadian Synchronization Schedule -->
                 <div class="glass-card p-6 rounded-3xl border border-emerald-500/30 shadow-xl space-y-4 mt-8">
                     <div class="flex items-center justify-between pb-3 border-b border-white/10">
@@ -1494,7 +1734,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             <div>
                                 <h4 class="text-base font-bold text-white tracking-tight">Daily Circadian Synchronization Schedule</h4>
-                                <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Dinacharya • Solar-Rhythm Alignment • Skin Regeneration Clock</p>
+                                <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Dinacharya • Solar-Rhythm Alignment • Skin Regeneration & Yogasana Clock</p>
                             </div>
                         </div>
                         <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 uppercase tracking-widest">24h Schedule</span>
@@ -1507,10 +1747,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
                                     <span class="text-base">🌅</span> 06:00 AM
                                 </span>
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/50">Morning</span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/50">Morning Yogasana</span>
                             </div>
-                            <h5 class="text-xs font-bold text-white mb-1">Brahma Muhurta & Cleanse</h5>
-                            <p class="text-xs text-slate-300 leading-relaxed">Brahma Muhurta awakening, Ushapana (lukewarm water), gentle cool cleanse.</p>
+                            <h5 class="text-xs font-bold text-white mb-1">Brahma Muhurta & Sun Flow</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Brahma Muhurta awakening, Ushapana water, 15 min <strong>Surya Namaskar (सूर्य नमस्कार)</strong> flow & Tadasana, gentle cool cleanse.</p>
                         </div>
 
                         <!-- Midday -->
@@ -1519,10 +1759,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
                                     <span class="text-base">☀️</span> 12:30 PM
                                 </span>
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/50">Midday</span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/50">Midday Agni</span>
                             </div>
-                            <h5 class="text-xs font-bold text-white mb-1">Solar Zenith & Ahara</h5>
-                            <p class="text-xs text-slate-300 leading-relaxed">Principal Pathya meal with digestive spices, high-fiber greens, SPF 50+ reapplication.</p>
+                            <h5 class="text-xs font-bold text-white mb-1">Solar Zenith & Vajrasana</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Principal Pathya meal, 5 min post-prandial <strong>Vajrasana (वज्रासन)</strong> for Agni deepana, high-fiber greens, SPF 50+ reapplication.</p>
                         </div>
 
                         <!-- Evening -->
@@ -1531,10 +1771,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <span class="text-xs font-bold text-indigo-400 flex items-center gap-1.5">
                                     <span class="text-base">🌆</span> 07:30 PM
                                 </span>
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-800/50">Evening</span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-800/50">Dusk Pranayama</span>
                             </div>
-                            <h5 class="text-xs font-bold text-white mb-1">Dusk Calm & Lepa</h5>
-                            <p class="text-xs text-slate-300 leading-relaxed">Light digestive dinner, botanical Mukhalepa application, 10 min Sheetali Pranayama.</p>
+                            <h5 class="text-xs font-bold text-white mb-1">Dusk Calm & Balasana</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Light digestive dinner, botanical Mukhalepa, 10 min <strong>Sheetali Pranayama</strong> & <strong>Balasana (बालासन)</strong> dusk stress relief.</p>
                         </div>
 
                         <!-- Night -->
@@ -1543,10 +1783,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <span class="text-xs font-bold text-purple-400 flex items-center gap-1.5">
                                     <span class="text-base">🌙</span> 10:00 PM
                                 </span>
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-800/50">Night</span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-800/50">Night Shavasana</span>
                             </div>
-                            <h5 class="text-xs font-bold text-white mb-1">Nidra & Barrier Repair</h5>
-                            <p class="text-xs text-slate-300 leading-relaxed">Screen curfew, barrier moisture sealing, 7.5-8h restorative darkness sleep.</p>
+                            <h5 class="text-xs font-bold text-white mb-1">Nidra & Shavasana</h5>
+                            <p class="text-xs text-slate-300 leading-relaxed">Screen curfew, 10 min <strong>Shavasana (शवासन)</strong> parasympathetic calm, barrier moisture sealing, 7.5-8h darkness sleep.</p>
                         </div>
                     </div>
                 </div>
@@ -1672,9 +1912,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             `).join('');
 
             let pdfModernLifeHtml = modernLife.map(item => `
-                <div style="background-color: #0f172a; border-left: 3px solid #6366f1; border-radius: 0 6px 6px 0; padding: 8px; margin-bottom: 6px;">
-                    <h4 style="margin: 0 0 3px 0; color: #818cf8; font-size: 9.5px; font-weight: bold;">${item.item}</h4>
-                    <p style="margin: 0; font-size: 8px; color: #cbd5e1; line-height: 1.3;">${item.description}</p>
+                <div style="background-color: #0f172a; border-left: 3px solid #6366f1; border-radius: 0 6px 6px 0; padding: 6px; margin-bottom: 4px;">
+                    <h4 style="margin: 0 0 2px 0; color: #818cf8; font-size: 8.5px; font-weight: bold;">${item.item}</h4>
+                    <p style="margin: 0; font-size: 7.5px; color: #cbd5e1; line-height: 1.25;">${item.description}</p>
+                </div>
+            `).join('');
+
+            // Page 2: Therapeutic Yoga Asanas items
+            const yogaAsanas = lastAnalysisData.yogaAsanas || [];
+            let pdfYogaAsanasHtml = yogaAsanas.slice(0, 4).map(pose => `
+                <div style="background-color: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 6px 6px 0; padding: 5px 6px; margin-bottom: 3px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <span style="display: inline-block; background: #064e3b; color: #34d399; font-size: 6.5px; font-weight: bold; padding: 1px 4px; border-radius: 3px;">${pose.sanskritName}</span>
+                        <span style="color: #c084fc; font-size: 6px; font-weight: bold; text-transform: uppercase;">${pose.category || 'Yoga'}</span>
+                    </div>
+                    <h4 style="margin: 0 0 2px 0; color: #ffffff; font-size: 8px; font-weight: bold; line-height: 1.15;">${pose.englishName}</h4>
+                    <p style="margin: 0 0 1px 0; font-size: 7px; color: #cbd5e1; line-height: 1.2;"><strong>How:</strong> ${pose.howToPerform}</p>
+                    <p style="margin: 0; font-size: 7px; color: #34d399; line-height: 1.2;"><strong>Impact:</strong> ${pose.benefits}</p>
                 </div>
             `).join('');
 
@@ -1954,25 +2208,39 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                         </div>
 
-                        <!-- Section 3: Daily Holistic Synchronization Schedule -->
-                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px;">
-                            <h3 style="color: #e2e8f0; font-size: 9px; font-weight: bold; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">Recommended Daily Circadian Integration Rhythm</h3>
-                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
-                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 6px 8px;">
-                                    <p style="margin: 0; color: #34d399; font-size: 7.5px; font-weight: bold; line-height: 1.2;">🌅 06:00 - Morning</p>
-                                    <p style="margin: 3px 0 0 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">Brahma Muhurta awakening, Ushapana (lukewarm water), gentle cool cleanse.</p>
+                        <!-- Section 3: Therapeutic Yoga Asanas Regimen (Yoga Chikitsa) -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 1.5px solid #a855f7; padding-bottom: 3px;">
+                                <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                    <h3 style="color: #c084fc; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; line-height: 12px;">3. Therapeutic Yoga Asanas Regimen (Yoga Chikitsa)</h3>
+                                    <span style="display: inline-block; background: #3b0764; color: #e9d5ff; padding: 1.5px 6px 2.5px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; border: 0.5px solid #a855f7; line-height: 8px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Mind-Skin Axis • Disease-Matched</span>
                                 </div>
-                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 6px 8px;">
-                                    <p style="margin: 0; color: #22d3ee; font-size: 7.5px; font-weight: bold; line-height: 1.2;">☀️ 12:30 - Midday</p>
-                                    <p style="margin: 3px 0 0 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">Principal Pathya meal with digestive spices, high-fiber greens, SPF 50+ reapplication.</p>
+                                <span style="color: #94a3b8; font-size: 6.5px; line-height: 1.2;">Autonomic & Microcirculation Protocol</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                                ${pdfYogaAsanasHtml}
+                            </div>
+                        </div>
+
+                        <!-- Section 4: Daily Holistic Synchronization Schedule -->
+                        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;">
+                            <h3 style="color: #e2e8f0; font-size: 8.5px; font-weight: bold; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">4. Recommended Daily Circadian Integration & Yogasana Rhythm</h3>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                    <p style="margin: 0; color: #34d399; font-size: 7px; font-weight: bold; line-height: 1.2;">🌅 06:00 - Morning Flow</p>
+                                    <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Ushapana, 15 min <strong>Surya Namaskar</strong> & Tadasana flow, cool cleanse.</p>
                                 </div>
-                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 6px 8px;">
-                                    <p style="margin: 0; color: #818cf8; font-size: 7.5px; font-weight: bold; line-height: 1.2;">🌆 19:30 - Evening</p>
-                                    <p style="margin: 3px 0 0 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">Light digestive dinner, botanical Mukhalepa application, 10 min Sheetali Pranayama.</p>
+                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                    <p style="margin: 0; color: #22d3ee; font-size: 7px; font-weight: bold; line-height: 1.2;">☀️ 12:30 - Midday Agni</p>
+                                    <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Pathya meal, 5 min post-meal <strong>Vajrasana (वज्रासन)</strong>, SPF 50+ reapplication.</p>
                                 </div>
-                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 6px 8px;">
-                                    <p style="margin: 0; color: #a78bfa; font-size: 7.5px; font-weight: bold; line-height: 1.2;">🌙 22:00 - Night</p>
-                                    <p style="margin: 3px 0 0 0; color: #cbd5e1; font-size: 7px; line-height: 1.25;">Screen curfew, barrier moisture sealing, 7.5-8h restorative darkness sleep.</p>
+                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                    <p style="margin: 0; color: #818cf8; font-size: 7px; font-weight: bold; line-height: 1.2;">🌆 19:30 - Dusk Calm</p>
+                                    <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Light dinner, Mukhalepa, 10 min <strong>Sheetali Pranayama</strong> & <strong>Balasana</strong>.</p>
+                                </div>
+                                <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
+                                    <p style="margin: 0; color: #a78bfa; font-size: 7px; font-weight: bold; line-height: 1.2;">🌙 22:00 - Night Nidra</p>
+                                    <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Screen curfew, 10 min <strong>Shavasana (शवासन)</strong> rest, barrier sealing, sleep.</p>
                                 </div>
                             </div>
                         </div>
