@@ -21,9 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchReports() {
         try {
-            const apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
-                ? 'http://localhost:3000/api/reports' 
-                : '/api/reports';
+            let apiUrl = '/api/reports';
+            if (window.location.protocol === 'file:') {
+                apiUrl = 'https://solanke-dev.vercel.app/api/reports';
+            } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                apiUrl = 'http://localhost:3000/api/reports';
+            }
 
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error("Failed to fetch reports");
@@ -411,6 +414,22 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
+        const yogaAsanasList = report.analysisData?.yogaAsanas || [];
+        let pdfYogaAsanasHtml = '';
+        yogaAsanasList.slice(0, 4).forEach((pose) => {
+            pdfYogaAsanasHtml += `
+                <div style="background-color: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 6px 6px 0; padding: 5px 6px; margin-bottom: 3px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <span style="display: inline-block; background: #064e3b; color: #34d399; font-size: 6.5px; font-weight: bold; padding: 1px 4px; border-radius: 3px;">${pose.sanskritName}</span>
+                        <span style="color: #c084fc; font-size: 6px; font-weight: bold; text-transform: uppercase;">${pose.category || 'Yoga'}</span>
+                    </div>
+                    <h4 style="margin: 0 0 2px 0; color: #ffffff; font-size: 8px; font-weight: bold; line-height: 1.15;">${pose.englishName}</h4>
+                    <p style="margin: 0 0 1px 0; font-size: 7px; color: #cbd5e1; line-height: 1.2;"><strong>How:</strong> ${pose.howToPerform}</p>
+                    <p style="margin: 0; font-size: 7px; color: #34d399; line-height: 1.2;"><strong>Impact:</strong> ${pose.benefits}</p>
+                </div>
+            `;
+        });
+
         // Vitals formatting
         const weightStr = genExam.weightKg ? `${genExam.weightKg} kg` : 'Not recorded';
         const pulseStr = genExam.pulseBpm ? `${genExam.pulseBpm} bpm` : 'Not recorded';
@@ -676,25 +695,39 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
 
-                    <!-- Section 3: Recommended Daily Circadian Integration Rhythm -->
-                    <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 9px 12px; margin-bottom: 12px;">
-                        <h3 style="color: #e2e8f0; font-size: 8.5px; font-weight: bold; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">Recommended Daily Circadian Integration Rhythm</h3>
+                    <!-- Section 3: Therapeutic Yoga Asanas Regimen (Yoga Chikitsa) -->
+                    <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; border-bottom: 1.5px solid #a855f7; padding-bottom: 3px;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                <h3 style="color: #c084fc; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; line-height: 12px;">3. Therapeutic Yoga Asanas Regimen (Yoga Chikitsa)</h3>
+                                <span style="display: inline-block; background: #3b0764; color: #e9d5ff; padding: 1.5px 6px 2.5px 6px; border-radius: 4px; font-size: 6.5px; font-weight: bold; border: 0.5px solid #a855f7; line-height: 8px; vertical-align: middle; box-sizing: border-box; white-space: nowrap;">Mind-Skin Axis • Disease-Matched</span>
+                            </div>
+                            <span style="color: #94a3b8; font-size: 6.5px; line-height: 1.2;">Autonomic & Microcirculation Protocol</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                            ${pdfYogaAsanasHtml}
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Recommended Daily Circadian Integration Rhythm -->
+                    <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;">
+                        <h3 style="color: #e2e8f0; font-size: 8.5px; font-weight: bold; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">4. Recommended Daily Circadian Integration & Yogasana Rhythm</h3>
                         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
                             <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
-                                <p style="margin: 0; color: #34d399; font-size: 7.5px; font-weight: bold; line-height: 1.2;">🌅 06:00 - Morning</p>
-                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Brahma Muhurta awakening, Ushapana (lukewarm water), cool herbal cleanse.</p>
+                                <p style="margin: 0; color: #34d399; font-size: 7px; font-weight: bold; line-height: 1.2;">🌅 06:00 - Morning Flow</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Ushapana, 15 min <strong>Surya Namaskar</strong> & Tadasana flow, cool cleanse.</p>
                             </div>
                             <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
-                                <p style="margin: 0; color: #22d3ee; font-size: 7.5px; font-weight: bold; line-height: 1.2;">☀️ 12:30 - Midday</p>
-                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Principal Pathya meal with digestive spices, high-fiber greens, SPF 50+ reapplication.</p>
+                                <p style="margin: 0; color: #22d3ee; font-size: 7px; font-weight: bold; line-height: 1.2;">☀️ 12:30 - Midday Agni</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Pathya meal, 5 min post-meal <strong>Vajrasana (वज्रासन)</strong>, SPF 50+ reapplication.</p>
                             </div>
                             <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
-                                <p style="margin: 0; color: #fbbf24; font-size: 7.5px; font-weight: bold; line-height: 1.2;">🌆 19:30 - Evening</p>
-                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Light digestive dinner, botanical Mukhalepa application, 10 min Sheetali Pranayama.</p>
+                                <p style="margin: 0; color: #fbbf24; font-size: 7px; font-weight: bold; line-height: 1.2;">🌆 19:30 - Dusk Calm</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Light dinner, Mukhalepa, 10 min <strong>Sheetali Pranayama</strong> & <strong>Balasana</strong>.</p>
                             </div>
                             <div style="background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 5px 7px;">
-                                <p style="margin: 0; color: #818cf8; font-size: 7.5px; font-weight: bold; line-height: 1.2;">🌙 22:00 - Night</p>
-                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.25;">Screen curfew, barrier moisture sealing, 7.5-8h restorative darkness sleep.</p>
+                                <p style="margin: 0; color: #818cf8; font-size: 7px; font-weight: bold; line-height: 1.2;">🌙 22:00 - Night Nidra</p>
+                                <p style="margin: 2px 0 0 0; color: #cbd5e1; font-size: 6.5px; line-height: 1.2;">Screen curfew, 10 min <strong>Shavasana (शवासन)</strong> rest, barrier sealing, sleep.</p>
                             </div>
                         </div>
                     </div>
@@ -1158,6 +1191,58 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
+        const yogaAsanasList = report.analysisData?.yogaAsanas || [];
+        let modalYogaAsanasHtml = yogaAsanasList.map(pose => `
+            <div class="bg-slate-900/90 rounded-2xl p-4 border border-purple-500/25 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-950/90 text-purple-300 border border-purple-700/50 uppercase tracking-wider">
+                            ${pose.category || 'Therapeutic Yoga'}
+                        </span>
+                        <div class="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-xs">
+                            <i class="${pose.icon || 'fa-solid fa-spa'}"></i>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/50 mb-1">
+                            ${pose.sanskritName}
+                        </span>
+                        <h5 class="text-xs font-bold text-white group-hover:text-purple-300 transition-colors leading-tight">
+                            ${pose.englishName}
+                        </h5>
+                    </div>
+
+                    <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5 mb-2">
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-purple-400 mb-0.5 flex items-center gap-1">
+                            <i class="fa-solid fa-list-check"></i> How to perform:
+                        </p>
+                        <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                            ${pose.howToPerform}
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-950/30 p-2.5 rounded-xl border border-purple-500/20 mb-2">
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 mb-0.5 flex items-center gap-1">
+                            <i class="fa-solid fa-heart-pulse"></i> Clinical Benefits & Skin Impact:
+                        </p>
+                        <p class="text-xs text-slate-200 leading-relaxed font-medium">
+                            ${pose.benefits}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[10px]">
+                    <span class="text-slate-400 font-semibold">
+                        <i class="fa-regular fa-clock text-purple-400"></i> ${pose.duration || '5-10 mins'}
+                    </span>
+                    <span class="text-purple-300 font-semibold italic truncate max-w-[130px]" title="${pose.evidenceLevel}">
+                        ${pose.evidenceLevel || 'Supportive Evidence'}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+
         const q = report.questionnaireData || {};
         
         // Helper to format sub-section values for display
@@ -1473,25 +1558,44 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
 
+                    <!-- Therapeutic Yoga Asanas Regimen Section -->
+                    <div class="bg-slate-900/90 rounded-2xl p-6 border border-purple-500/30 mb-6">
+                        <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg border border-purple-500/30">
+                                    <i class="fa-solid fa-om"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold text-sm">Therapeutic Yoga Asanas Regimen (Yoga Chikitsa)</h4>
+                                    <p class="text-xs text-purple-400 font-semibold uppercase tracking-wider">Mind-Skin Axis • Autonomic Modulation • Microcirculation</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold text-purple-300 bg-purple-950/80 px-2.5 py-1 rounded-full border border-purple-500/30 uppercase">Disease-Matched</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            ${modalYogaAsanasHtml}
+                        </div>
+                    </div>
+
                     <!-- Daily Synchronization Rhythm -->
                     <div class="bg-slate-950/60 rounded-2xl p-5 border border-white/5">
-                        <h4 class="text-slate-300 text-xs font-bold uppercase tracking-wider mb-3">Daily Circadian Synchronization Schedule</h4>
+                        <h4 class="text-slate-300 text-xs font-bold uppercase tracking-wider mb-3">Daily Circadian Synchronization & Yogasana Schedule</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <div class="bg-slate-900/80 border border-emerald-500/20 rounded-xl p-3.5">
-                                <p class="text-emerald-400 text-xs font-bold mb-1">🌅 06:00 - Morning</p>
-                                <p class="text-slate-300 text-xs leading-relaxed">Brahma Muhurta awakening, Ushapana (lukewarm water), gentle cool cleanse.</p>
+                                <p class="text-emerald-400 text-xs font-bold mb-1">🌅 06:00 - Morning Flow</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Brahma Muhurta awakening, Ushapana, 15 min <strong>Surya Namaskar (सूर्य नमस्कार)</strong> & Tadasana flow, cool cleanse.</p>
                             </div>
                             <div class="bg-slate-900/80 border border-cyan-500/20 rounded-xl p-3.5">
-                                <p class="text-cyan-400 text-xs font-bold mb-1">☀️ 12:30 - Midday</p>
-                                <p class="text-slate-300 text-xs leading-relaxed">Principal Pathya meal with digestive spices, high-fiber greens, SPF 50+ reapplication.</p>
+                                <p class="text-cyan-400 text-xs font-bold mb-1">☀️ 12:30 - Midday Agni</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Pathya meal, 5 min post-meal <strong>Vajrasana (वज्रासन)</strong> for Agni deepana, high-fiber greens, SPF 50+ reapplication.</p>
                             </div>
                             <div class="bg-slate-900/80 border border-amber-500/20 rounded-xl p-3.5">
-                                <p class="text-amber-400 text-xs font-bold mb-1">🌆 19:30 - Evening</p>
-                                <p class="text-slate-300 text-xs leading-relaxed">Light digestive dinner, botanical Mukhalepa application, 10 min Sheetali Pranayama.</p>
+                                <p class="text-amber-400 text-xs font-bold mb-1">🌆 19:30 - Dusk Calm</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Light dinner, Mukhalepa, 10 min <strong>Sheetali Pranayama</strong> & <strong>Balasana (बालासन)</strong> dusk stress relief.</p>
                             </div>
                             <div class="bg-slate-900/80 border border-indigo-500/20 rounded-xl p-3.5">
-                                <p class="text-indigo-400 text-xs font-bold mb-1">🌙 22:00 - Night</p>
-                                <p class="text-slate-300 text-xs leading-relaxed">Screen curfew, barrier moisture sealing, 7.5-8h restorative darkness sleep.</p>
+                                <p class="text-indigo-400 text-xs font-bold mb-1">🌙 22:00 - Night Nidra</p>
+                                <p class="text-slate-300 text-xs leading-relaxed">Screen curfew, 10 min <strong>Shavasana (शवासन)</strong> rest, barrier moisture sealing, 7.5-8h darkness sleep.</p>
                             </div>
                         </div>
                     </div>
