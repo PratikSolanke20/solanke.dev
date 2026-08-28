@@ -61,6 +61,48 @@
           "title": "Niacinamide 5% & Zinc Barrier Serum",
           "instructions": "Apply morning and night to regulate sebum and restore epidermal barrier."
         }
+      ],
+      "yogaAsanas": [
+        {
+          "sanskritName": "शीतली प्राणायाम — Sheetali Pranayama",
+          "englishName": "Cooling Breath & Thermal Pacification",
+          "category": "Pitta Pacification & Cooling",
+          "howToPerform": "Roll tongue into a tube, inhale deeply through tongue, hold 3 seconds, exhale smoothly through nostrils.",
+          "benefits": "Directly quenches systemic Pitta heat, lowers cutaneous flushing, reduces inflammatory erythema and itching.",
+          "evidenceLevel": "High: Autonomic modulation reducing neurogenic skin heat",
+          "duration": "5–10 mins daily (Evening)",
+          "icon": "fa-solid fa-wind"
+        },
+        {
+          "sanskritName": "बालासन — Balasana",
+          "englishName": "Child's Pose",
+          "category": "Parasympathetic Recovery",
+          "howToPerform": "Kneel on floor, sit on heels, fold torso forward resting forehead on mat, extend arms forward, breathe deeply.",
+          "benefits": "Downregulates fight-or-flight stress triggers, lowers nocturnal cortisol spikes, soothes facial stress tension.",
+          "evidenceLevel": "High: HPA axis stress reduction for inflammatory dermatoses",
+          "duration": "3–5 mins hold (Dusk)",
+          "icon: "fa-solid fa-child"
+        },
+        {
+          "sanskritName": "सूर्य नमस्कार — Surya Namaskar",
+          "englishName": "Sun Salutation Sequence",
+          "category": "Whole-Body Microcirculation",
+          "howToPerform": "Perform gentle, rhythmic 12-pose flow with synchronized diaphragmatic breathing at dawn.",
+          "benefits": "Promotes systemic blood flow, enhances oxygenation to facial capillaries, accelerates cell turnover.",
+          "evidenceLevel": "Supportive: General metabolic & cardiovascular conditioning",
+          "duration": "6–12 rounds (06:00 AM)",
+          "icon": "fa-solid fa-sun"
+        },
+        {
+          "sanskritName": "शवासन — Shavasana",
+          "englishName": "Corpse Pose",
+          "category": "Cellular Regeneration & Stress Relief",
+          "howToPerform": "Lie flat on back, legs apart, arms relaxed at sides, palms up. Close eyes and practice body-scan relaxation.",
+          "benefits": "Essential relaxation posture; suppresses cortisol-driven sebaceous output and maximizes tissue repair.",
+          "evidenceLevel": "High: Proven parasympathetic recovery & neuro-dermal calm",
+          "duration": "10–15 mins (22:00 PM)",
+          "icon": "fa-solid fa-bed"
+        }
       ]
     }
   }
